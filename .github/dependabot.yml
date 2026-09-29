@@ -1,0 +1,7 @@
+# Lean/Lake is not a Dependabot ecosystem; bump the toolchain and Mathlib by hand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

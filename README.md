@@ -2,6 +2,7 @@
 
 * [`pion_completeness/`](pion_completeness/) — Pion completeness (Theorem Π): the note, its supplement, and a Lean 4 / Mathlib
   machine check. See [`pion_completeness/README.md`](pion_completeness/README.md).
+  **Status: draft, not yet peer-reviewed.**
 
 ## License
 

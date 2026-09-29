@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pion Completeness Supplement</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    tags: 'ams',
+    macros: {
+      NLSM: '\\mathrm{NLSM}', cA: '\\mathcal{A}', cG: '\\mathcal{G}', cP: '\\mathcal{P}', cX: '\\mathcal{X}',
+      cT: '\\mathcal{T}', cS: '\\mathcal{S}', cK: '\\mathcal{K}', Fpi: '\\mathcal{F}', Q: '\\mathbb{Q}',
+      Sepall: '\\mathrm{Sep}_{\\mathrm{all}}', sep: '\\mathrm{sep}', minrect: '\\square',
+      ein: 'e_{\\mathrm{in}}', oin: 'o_{\\mathrm{in}}', evens: '\\mathrm{evens}', odds: '\\mathrm{odds}',
+      inside: '\\mathrm{inside}', intr: '\\mathrm{int}', Res: '\\mathrm{Res}',
+      Mix: 'M_{\\mathrm{mix}}', cC: '\\mathcal{C}', Msame: 'M_{\\mathrm{same}}', Sep: '\\mathrm{Sep}'
+    }
+  },
+  chtml: { scale: 1.0 }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+<style>
+:root { --ink: #1a1a1a; --muted: #555; --rule: #bbb; --box: #f6f6f3; --accent: #1f4e79; --warn: #7a3b00; --bg: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ink: #e6e6e6; --muted: #aaa; --rule: #555; --box: #23262b; --accent: #8cb8e8; --warn: #e0a060; --bg: #16181b; }
+}
+:root[data-theme="dark"] { --ink: #e6e6e6; --muted: #aaa; --rule: #555; --box: #23262b; --accent: #8cb8e8; --warn: #e0a060; --bg: #16181b; }
+html { font-size: 16px; }
+body { font-family: "Georgia", "Times New Roman", serif; color: var(--ink); background: var(--bg); line-height: 1.5;
+       max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+h1 { font-size: 1.5rem; text-align: center; margin: 0.5rem 0 0.4rem; line-height: 1.25; }
+.byline, .date { text-align: center; color: var(--muted); margin: 0.2rem 0; }
+.banner { border: 1px solid var(--warn); color: var(--warn); padding: 0.5rem 0.8rem; margin: 1rem 0; font-size: 0.92rem; }
+h2 { font-size: 1.25rem; margin: 2.2rem 0 0.6rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.15rem; }
+h3 { font-size: 1.05rem; margin: 1.5rem 0 0.4rem; }
+h4 { font-size: 0.98rem; margin: 1.1rem 0 0.3rem; font-style: italic; }
+p { margin: 0.55rem 0; text-align: justify; hyphens: auto; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.thm { margin: 0.9rem 0; padding: 0.5rem 0.8rem; background: var(--box); border-left: 3px solid var(--accent); }
+.thm > p:first-child { margin-top: 0; }
+.thm > p:last-child { margin-bottom: 0; }
+.thmhead { font-weight: bold; }
+.proof { margin: 0.6rem 0 1rem; }
+.proofhead { font-style: italic; }
+.qed { float: right; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.src { font-size: 0.82rem; color: var(--muted); }
+ul, ol { margin: 0.4rem 0 0.6rem; padding-left: 1.6rem; }
+li { margin: 0.2rem 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.84rem; margin: 0.8rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.3rem 0.4rem; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+.tablewrap { overflow-x: auto; }
+.toc ol { list-style: none; padding-left: 0.8rem; }
+.toc { font-size: 0.93rem; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; }
+@media print {
+  @page { size: A4; margin: 18mm 17mm; }
+  body { max-width: none; padding: 0; font-size: 10.5pt; background: #fff; color: #000; }
+  .banner { border-color: #999; color: #333; }
+  h2, h3 { break-after: avoid; page-break-after: avoid; }
+  .thm { break-inside: avoid; page-break-inside: avoid; background: none; border-left: 2px solid #444; }
+  table { break-inside: auto; }
+  tr { break-inside: avoid; }
+  a { color: inherit; }
+  .toc { break-after: page; }
+}
+</style>
+</head>
+<body>
+
+<h1>Completeness of the coordinate zeros of tree-level pion amplitudes<br>Supplementary material</h1>
+<p class="byline">Written by AI models (claude-opus-5-5); see the main paper, Methods and provenance, and §<a href="#s3">S3</a> below.</p>
+<p class="date">Draft of 2026-09-29</p>
+<div class="banner">Supplement to <a href="pion-completeness-A.html">the main paper</a>. Not reviewed as a text. Every proof below is a
+restatement of a proof that was reviewed in the project's record; §S3 gives, per ingredient, where the reviewed source is and how it was
+reviewed.</div>
+
+<nav class="toc"><h2>Contents</h2>
+<ol>
+<li><a href="#s1">S1. Full proofs of the analytic and combinatorial steps summarised in the main text</a></li>
+<li><a href="#s2">S2. Proof of the T-separated zero theorem</a></li>
+<li><a href="#s3">S3. Ingredient ledger</a></li>
+<li><a href="#s4">S4. Verification record</a></li>
+<li><a href="#s5">S5. Notation and translation table</a></li>
+</ol></nav>
+
+<section id="s1">
+<h2>S1. Full proofs</h2>
+<p>This section gives in full the proofs that the main text summarises. Statements are restated here so that the section can be read
+on its own; where the main text has an interface anchor for the statement served, it is linked. Notation is that of the main
+text and of §<a href="#s5">S5</a>. Throughout, \(N\) is even, legs \(1,\dots,N\) are cyclic, \(S\) is a set of pairs with missing set \(M\),
+and “restriction”, “regular at generic points of a hyperplane”, “residue” have the meaning fixed in S1.0.</p>
+<p>Where a proof step was compressed in the main text, the step restored here follows the reviewed source named in an HTML comment at the
+step; the ledger in §<a href="#s3">S3</a> lists each source and its review. Nothing here is new mathematics.</p>
+
+<h3 id="s1-0">S1.0 Conventions on rational functions</h3>
+
+<p>Let \(V\) be a finite-dimensional vector space over a field of characteristic 0 and \(x\) a non-zero linear form on \(V\),
+\(H:=\{x=0\}\). A rational function \(f=F/D\) with \(D\) a product of linear forms not vanishing identically on \(V\) restricts to \(V\); it is
+<em>regular at generic points of \(H\)</em> if it can be written with \(x\nmid D|_V\), and then \(f|_H\) is defined; it has <em>at most a simple
+pole along \(H\)</em> if \(xf\) is regular there, with <em>residue</em> \((xf)|_H\). Five standard facts are used.</p>
+<ul>
+<li>(RF1) A polynomial vanishing on \(H\) is divisible by \(x\).</li>
+<li>(RF2) A polynomial divisible by pairwise non-proportional non-zero linear forms is divisible by their product.</li>
+<li>(RF3) A rational function whose denominator is a product of pairwise non-proportional linear forms, and which is regular at generic
+points of each of their hyperplanes, is a polynomial.</li>
+<li>(RF4) A polynomial that is homogeneous of degree 0 is constant.</li>
+<li>(RF5) Regularity along a hyperplane and values on it pull back under a linear map whose image is not contained in the pole locus.</li>
+<li>(RF6) If two linearly independent linear forms \(x,y\) are given, a polynomial vanishing on \(\{x=y=0\}\) lies in the ideal \((x,y)\)
+(choose coordinates in which \(x,y\) are two of the coordinates).</li>
+</ul>
+<p>“\(F\equiv0\) on a linear subspace \(Z\)” always means the rational-function statement, with the relevant genericity making the restriction
+defined.</p>
+
+<h3 id="s1-1">S1.1 The Cayley form: full proof</h3>
+
+<p>This subsection proves the Cayley form \(\NLSM_N=-\mathrm{Cay}_N\) used by the first-order regime of the main text (the theorem there called the Cayley
+form). We recall the objects. Put \(s_{ab}:=-c_{a,b}\) for non-adjacent legs and \(s_{a,a+1}:=X_{a,a+2}\), and \(Q_U:=\sum_{\{a,b\}\subseteq U}s_{ab}\) for a set
+\(U\) of legs (in momentum language \((\sum_Up)^2\)). A <em>dissection</em> \(D\) is a set of pairwise non-crossing odd chords; its faces are polygons with
+alternating vertex parities; \(U_f\) is the set of legs of the sides of the face \(f\) that start at an odd vertex (the leg itself for an edge side, the far
+block for a chord side); \(V_f:=(-1)^{|f|/2-1}Q_{U_f}\); and
+\[ \mathrm{Cay}_N:=\sum_D\prod_{f\in\mathrm{faces}(D)}V_f\prod_{P\in D}\Bigl(-\frac1{X_P}\Bigr), \]
+the sum over all dissections including \(D=\emptyset\). For a leg \(a\), the <em>single-leg locus</em> \(\cK_{a-1,a+1}\) is \(\{c_{a,b}=0\ \text{for all}\ b\}\), the
+T-separated locus of \(T=\{a-1,a+1\}\).</p>
+
+<div class="thm" id="s1-l-forms"><p><span class="thmhead">Lemma S1.1.1 (identities of the forms).</span> For even \(N\ge4\), as linear
+forms: (i) \(X_{i,j}=Q_{[i,j-1]}\); (ii) \(\sum_{b\ne a}s_{ab}=0\) for every leg \(a\); (iii) \(Q_U=Q_{U^c}\), \(Q_{\mathrm{all}}=0\); (iv) any set of mesh variables
+that omits at least one same-parity pair is linearly independent; the pairs of row 1 (\(\{1,b\}\)) and of row 2 (\(\{2,b\}\)) are disjoint and together omit
+\(\{3,5\}\), so \(\mathrm{span}(\text{row }1)\cap\mathrm{span}(\text{row }2)=0\) for \(N\ge6\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> (i) Put \(G(a,b):=X_{a,b+1}\) with \(G(a,a)=G(a+1,a)=0\); then
+\(s_{ab}=G(a,b)-G(a,b-1)-G(a+1,b)+G(a+1,b-1)\) for all \(a\lt b\), adjacent pairs included, and the double sum over \(i\le a\lt b\le j-1\) telescopes to
+\(G(i,j-1)=X_{i,j}\). (ii)–(iii): the same telescoping over the cyclic arcs of \(N-1\) and \(N\) legs gives \(Q_{\mathrm{legs}\setminus a}=0=Q_{\mathrm{all}}\), so
+\(\sum_{b\ne a}s_{ab}=Q_{\mathrm{all}}-Q_{\mathrm{all}\setminus a}=0\), and \(Q_U=-\tfrac12\sum_{U\times U^c}s=Q_{U^c}\). (iv) The one relation has coefficient
+\(\pm1\) on every same-parity pair (the one relation \(\sum_{ee}c=\sum_{oo}c\) of the main text, which is the only relation); a set omitting such a pair contains
+no multiple of it. Row 1 and row 2 share no pair because \(\{1,2\}\) is adjacent. <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s1-l-rowphi3"><p><span class="thmhead">Lemma S1.1.2 (Tr\((\phi^3)\) and \(\NLSM\) vanish on single-leg loci).</span> The
+Tr\((\phi^3)\) amplitude \(A_n\) vanishes on \(\cK_{n,2}\) (the single-leg locus of leg 1), hence on every single-leg locus by cyclic symmetry, and so does every coefficient of its
+\(\delta\)-expansion, \(\NLSM_n\) included.</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> With \(d_b:=X_{1,b}-X_{2,b}\) (\(d_3=X_{1,3}\), \(d_n=-X_{2,n}\)) one has \(c_{1,b}=d_b-d_{b+1}\), so
+\(\cK_{n,2}=\{X_{1,b}=X_{2,b}+\kappa\ (4\le b\le n-1),\ X_{1,3}=\kappa,\ X_{2,n}=-\kappa\}\) with free coordinates \(\kappa\), \(X_{2,b}\) (\(4\le b\le n-1\)), \(X_{i,j}\)
+(\(3\le i\lt j\le n\)). The chord forms restrict to pairwise non-proportional non-zero forms except \(X_{1,3}\mapsto\kappa\), \(X_{2,n}\mapsto-\kappa\), and \((1,3)\),
+\((2,n)\) cross, so every term has simple poles only. Residues: along \(\kappa=0\), \(A(1,3,\dots,n)-A(2,3,\dots,n)\), equal under \(X_{1,b}=X_{2,b}\), so 0; along
+\(X_{1,b}=0\), the piece \(1..b\) (at least four vertices) has row-1 mesh variables \(c_{1,x}\) (\(x=3..b-1\)), the parent's forms with \(X_{1,b}\to0\), so it lies on
+its own row-1 locus; along \(X_{2,b}=0\), the piece \(b..n,1,2\) likewise; along \(X_{i,j}=0\) (\(i,j\ge3\)), the piece \(j..n,1,\dots,i\) has as extra row-1 mesh
+variable that of its new leg, \(X_{1,i}+X_{2,j}-X_{1,j}-X_{2,i}=d_i-d_j=0\). By induction each residue is 0, so \(A_n|_{\cK_{n,2}}\) is a polynomial, homogeneous of
+degree \(3-n\lt0\): zero. Since \(c(v_0)=0\), \(X\in\cK_{n,2}\) implies \(X+\delta v_0\in\cK_{n,2}\), so \(A_n(X+\delta v_0)\equiv0\) there and every coefficient in
+\(\delta\) vanishes; the locus is non-degenerate for the odd poles by the parametrisation. <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s1-t-cayley"><p><span class="thmhead">Theorem S1.1.3 (Cayley form).</span> For every even \(N\ge4\),
+\(\NLSM_N=-\mathrm{Cay}_N\) as rational functions.</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> <em>(1) The Cayley side.</em> (i) \(\mathrm{Cay}_N\) is homogeneous of degree 1
+(\(\#\)faces \(=\#\)chords \(+1\)) and invariant under rotation and reflection: a relabelling swaps the odd-start and even-start sides of each face, and
+\(Q_U=Q_{U^c}\). (ii) \(\Res_{X_P}\mathrm{Cay}_N=-\mathrm{Cay}_L\mathrm{Cay}_R\): the dissections containing \(P\) correspond to pairs \((D_L,D_R)\); for a face of the
+left piece take the alternate class of sides not containing \(P\); its legs lie in one side \(A\) of \(P\), and the parent \(s_{ab}\) (\(a,b\in A\)) are the piece's
+\(s_{ab}\) with its edge \(X_P\) set to 0 (the four-term formula uses only \(X\) among the vertices of the piece, and \(a,b\in A\) are adjacent in the piece iff in the
+parent); the only parent mesh variable involving \(X_P\) becomes the piece's; the sign \((-1)^{|f|/2-1}\) is unchanged, and the extra \(-1\) comes from \(-1/X_P\).
+(iii) A leaf face (one chord side) whose far arc is \(A\) has \(V_f=\pm Q_{\text{end-parity class of }A}\), a combination of same-parity mesh variables.
+(iv) For every odd chord \(P\), \(X_P\equiv\sum_{\square_P}c\) modulo same-parity mesh variables (the minimal-rectangle lemma of the main text), and mixed mesh
+variables are independent modulo same-parity ones (Lemma S1.1.1(iv)).</p>
+<p><em>(2) \(\mathrm{Cay}_N\equiv0\) on every single-leg locus.</em> Induction on \(N\). At \(N=4\), \(\mathrm{Cay}_4=V_{[4]}=-Q_{\{1,3\}}=c_{1,3}=0\) on \(\cK_{4,2}\). Let
+\(N\ge6\); by (1)(i) take the row of leg 1.</p>
+<p><em>Linear step.</em> On \(\cK_{N,2}\) (parametrised as in Lemma S1.1.2) the odd chord forms restrict to \(X_{2,b}+\kappa\) (\(b\) even), \(X_{2,b}\) (\(b\) odd) and
+\(X_{i,j}\) (\(i,j\ge3\)): pairwise non-proportional and non-zero. By (1)(ii) each residue contains the factor \(\mathrm{Cay}\) of the piece carrying leg 1. That
+piece lies on its own row-1 locus by the same checks as in the proof of Lemma S1.1.2: its row-1 mesh variables are the parent's with the cut chord set to 0,
+and when the cut chord is \(X_{i,j}\) with \(i,j\ge3\), the extra one, of its new leg, is \(d_i-d_j=0\). So each residue is 0 by induction, and \(\mathrm{Cay}_N|_{\cK_{N,2}}\)
+is a polynomial of degree 1, a linear form \(\lambda\).</p>
+<p><em>Pairing.</em> Let \(P_0:=(3,N)\) and \(f_0:=(N,1,2,3)\). Then \(V_{f_0}=-Q_{\{1\}\cup[3,N-1]}=-Q_{\{N,2\}}=-s_{N2}\) (Lemma S1.1.1(iii)), and
+\(X_{P_0}=Q_{\{N,1,2\}}=s_{N1}+s_{12}+s_{N2}=s_{N2}\) on \(\cK_{N,2}\) (there \(s_{12}=\kappa=-s_{N1}\)); so \(V_{f_0}\cdot(-1/X_{P_0})=+1\). For \(D\ni P_0\) let \(r\) be the
+other face at \(P_0\) and \(\tilde r\) the face of \(D\setminus P_0\) with legs \(N,1,2\) in place of the side \(P_0\). Then \(U_{\tilde r}=U_r\cup\{1\}\), and
+\(U_r\subseteq[3,N-1]\) because \(r\) lies on the side of \(P_0\) away from legs \(N,1,2\). So \(Q_{U_{\tilde r}}=Q_{U_r}+\sum_{b\in U_r}s_{1b}=Q_{U_r}\) on \(\cK_{N,2}\), since
+every \(s_{1b}\) with \(b\in[3,N-1]\) is \(-c_{1,b}=0\) there. As \(|\tilde r|=|r|+2\), \(V_r=-V_{\tilde r}\), and
+\(\mathrm{term}(D)=\mathrm{term}(D\setminus P_0)\cdot V_{f_0}\cdot(-1/X_{P_0})\cdot V_r/V_{\tilde r}=-\mathrm{term}(D\setminus P_0)\). The map \(D\mapsto D\setminus P_0\) is a
+bijection onto the dissections without \(P_0\) and without a chord at vertex 1 or 2 (a chord at 1 or 2 crosses \(P_0\)), the empty dissection included. So
+\(\mathrm{Cay}_N|_{\cK_{N,2}}=\sum_{D\in\mathcal D_{\mathrm{rem}}}\mathrm{term}(D)\), with \(\mathcal D_{\mathrm{rem}}\) the dissections \(D\not\ni P_0\) with a chord at vertex 1 or 2.</p>
+<p><em>Order count.</em> Let \(W:=\cK_{N,2}\cap\{\text{all same-parity mesh variables}=0\}\). By (1)(iv), an odd chord vanishes on \(W\) iff
+\(\square_P\) consists of row-1 pairs \(\{1,b\}\) (on \(W\) the same-parity and the row-1 mesh variables vanish, and the other mixed ones are independent coordinates), iff \(\odds(B_P)=\{1\}\) (every pair of \(\square_P\) must contain the odd leg 1), iff \(B_P=\{N,1,2\}\), i.e. \(P=P_0\). Take
+\(x_0\in W\) generic and \(y\in\cK_{N,2}\) generic. Every \(D\in\mathcal D_{\mathrm{rem}}\) has at least one chord, hence at least two leaf faces, each with
+\(V_{\mathrm{leaf}}(x_0+zy)=z\,V_{\mathrm{leaf}}(y)\) by (1)(iii); its propagators are non-zero at \(x_0\); so \(\mathrm{term}(D)(x_0+zy)=O(z^2)\). Thus
+\(\lambda(x_0)+z\lambda(y)=O(z^2)\), so \(\lambda(y)=0\) for generic \(y\): \(\lambda\equiv0\). (The sign \(-1/X_P\) is what makes the pairing cancel: with \(+1/X_P\)
+the sum is not 0 on the single-leg locus.)</p>
+<p><em>(3) Conclusion.</em> At \(N=4\), \(\NLSM_4=-(X_{1,3}+X_{2,4})=-\mathrm{Cay}_4\). For \(N\ge6\), \(\ell:=\NLSM_N+\mathrm{Cay}_N\) has at most simple poles on odd
+chords (the \(\delta\)-order fact of the main text), with residues \(\NLSM_L\NLSM_R-\mathrm{Cay}_L\mathrm{Cay}_R=0\) by the pole factorisation of \(\NLSM\), (1)(ii) and
+induction. So \(\ell\) is a polynomial, homogeneous of degree 1, i.e. a linear form. It vanishes on the single-leg loci of legs 1 and 2 by Lemma S1.1.2 and (2), so
+\(\ell\in\mathrm{span}(\text{row }1)\cap\mathrm{span}(\text{row }2)=0\) (Lemma S1.1.1(iv)). <span class="qed">∎</span></p></div>
+
+<h3 id="s1-2">S1.2 The class residue: full proofs</h3>
+
+<p>This subsection proves the class residue theorem (main text, <a href="pion-completeness-A.html#thm-res">thm-res</a>). We recall its setting.
+\(N\ge6\) is even and \(S\in\Fpi_N\). For a set \(K\) of odd chords and \(x:=X_P|_{L_S}\) for some \(P\in K\), the hypotheses are:</p>
+<ul>
+<li>(H1) no odd chord vanishes identically on \(L_S\);</li>
+<li>(H2) for every odd chord \(Q\): \(Q\in K\) iff \(X_Q|_{L_S}\in\Q^\times x\); and \(X_Q|_{L_S}=x\) for every \(Q\in K\);</li>
+<li>(H3) \(K\subseteq\cP_1\) and all members of \(K\) have the same missing flank set \(h_Q\) (so \(\square_{Q}\subseteq S\) for \(Q\in K\), and
+\(\ein(Q)\), \(\oin(Q)\) do not depend on \(Q\in K\));</li>
+<li>(H4) \(K\) has a top \(t\) and a bottom \(b\): \(A_b\subseteq A_Q\subseteq A_t\) for all \(Q\in K\).</li>
+</ul>
+<p>\(H:=L_S\cap\{x=0\}\); by (H2) it is also \(L_S\cap\{X_Q=0\}\) for every \(Q\in K\), and no odd chord outside \(K\) vanishes identically on \(H\)
+(a linear form on \(L_S\) vanishing on the hyperplane \(H\) lies in \(\Q x\)). \(d:=(|A_t|-|A_b|)/2\). The side amplitudes are
+\(a_t:=\NLSM\) of the polygon bounding \(B_t\) and closed by \(t\) (the B-child of \(t\)) and \(b_b:=\NLSM\) of the polygon bounding \(A_b\) and closed
+by \(b\) (the A-child of \(b\)), as functions of the parent planar variables. The claim is: \(x\cdot\NLSM_N|_{L_S}\) is regular at generic points of
+\(H\) and \((x\cdot\NLSM_N|_{L_S})|_H=(-1)^d\,a_t|_H\,b_b|_H\).</p>
+<p class="note">What the proof uses of (H3) is (H3a) \(\square_{Q}\subseteq S\) for every \(Q\in K\) and (H3b) \(\ein(Q)\), \(\oin(Q)\) independent of
+\(Q\in K\). The statement is false for proportionality classes with no \(\cP_1\) member (a tested failure at \(N=12\)).
+</p>
+
+<h4>Sub-polygons and the grouping identity</h4>
+
+<p>A <em>sub-polygon</em> \(r\) of the \(N\)-gon is a cyclically ordered set of \(n_r\ge3\) dual points; its sides are edges or chords of the
+\(N\)-gon, its diagonals are chords, and its planar variables are the parent \(X\) of its diagonals. It is <em>alternating</em> if consecutive
+vertices have different parity, equivalently every side is an edge or an odd chord; then \(n_r\) is even and \(v_0\) restricts to \(\pm\) the
+\(v_0\) of \(r\). For a set \(K\) of odd chords, \(K_r:=K\cap\mathrm{diagonals}(r)\); \(A^{\neg K}_r:=\sum_{\mathbb T\cap K_r=\emptyset}
+\prod_{d\in\mathbb T}X_d^{-1}\) over triangulations of \(r\) avoiding \(K\); \(N^{\neg K}_r\) is the coefficient of \(\delta^{-(n_r-2)}\) of
+\(A^{\neg K}_r(X+\delta v_0)\); \(N_r:=N^{\neg\emptyset}_r\) is \(\NLSM_{n_r}\) of \(r\). A polygon's \(\NLSM\) depends only on its diagonal \(X\).</p>
+
+<div class="thm" id="s1-l-group"><p><span class="thmhead">Lemma S1.2.1 (grouping).</span> Let \(r\) be alternating and \(K\) a set of odd chords.</p>
+<ol type="a">
+<li>\(A^{\neg K}_r(X+\delta v_0)=O(\delta^{-(n_r-2)})\) and \(N^{\neg K}_r=\sum_{D'\subseteq K_r\ \text{non-crossing}}(-1)^{|D'|}\prod_{P\in D'}X_P^{-1}\prod_fN_f\)
+(faces \(f\) of \(D'\) in \(r\)). The only denominators of \(N^{\neg K}_r\) are odd diagonals of \(r\) outside \(K\), each simple.</li>
+<li>\(N_r=\sum_{D\subseteq K_r\ \text{non-crossing}}\prod_{P\in D}X_P^{-1}\prod_fN^{\neg K}_f\). For \(K=\{C\}\): \(N_r=N^{\neg C}_r+N_LN_R/X_C\).</li>
+</ol></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> (a) For a triangulation \(\mathbb T\), \(\sum_{D'\subseteq\mathbb T\cap K_r}(-1)^{|D'|}=
+[\mathbb T\cap K_r=\emptyset]\). Exchange the sums; the triangulations of \(r\) containing \(D'\) are the tuples of triangulations of the faces of
+\(D'\), so \(A^{\neg K}_r=\sum_{D'}(-1)^{|D'|}\prod_{P\in D'}X_P^{-1}\prod_fA_f\). The chords of \(K\) are odd, hence not shifted. Each face is
+alternating, so \(A_f(X+\delta v_0)=O(\delta^{-(n_f-2)})\) by the \(\delta\)-order fact applied to \(f\) (with \(v_0\mapsto\pm v_0^{(f)}\), harmless as
+\(n_f\) is even), and \(\sum_f(n_f-2)=n_r-2\) because \(\sum_fn_f=n_r+2|D'|\) and there are \(|D'|+1\) faces. Taking the coefficient of
+\(\delta^{-(n_r-2)}\) gives the formula. Each term of \(A^{\neg K}_r\) is a product of \(X_d^{-1}\) over a triangulation avoiding \(K_r\); after the
+\(\delta\)-expansion the same-parity factors give polynomials, so \(N^{\neg K}_r\cdot\prod_{P\ \text{odd diagonal of}\ r,\ P\notin K}X_P\) is a
+polynomial. (b) Every triangulation \(\mathbb T\) of \(r\) meets \(K_r\) in a non-crossing set \(D\); grouping by \(D\), and using that the
+triangulations with \(\mathbb T\cap K=D\) are the tuples of \(K\)-free triangulations of the faces of \(D\),
+\(A_r=\sum_D\prod_{P\in D}X_P^{-1}\prod_fA^{\neg K}_f\) exactly. By (a) each \(A^{\neg K}_f\) is \(O(\delta^{-(n_f-2)})\); take the coefficient of
+\(\delta^{-(n_r-2)}\). <span class="qed">∎</span></p></div>
+
+<h4>The collapse identity</h4>
+<div class="thm" id="s1-l-chain"><p><span class="thmhead">Lemma S1.2.2 (chains).</span> Under (H4), two distinct members of \(K\) do not
+cross if and only if their odd-ended sides are strictly nested. So the non-crossing subsets of \(K\) are the chains of the order
+\(Q\succ Q'\iff A_Q\supsetneq A_{Q'}\).</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> Two distinct chords do not cross iff a side of one contains a side of the other:
+\(A_Q\subseteq A_{Q'}\), \(A_{Q'}\subseteq A_Q\), \(A_Q\cap A_{Q'}=\emptyset\) (that is, \(A_Q\subseteq B_{Q'}\)), or \(A_Q\cup A_{Q'}\) is all legs
+(\(B_Q\subseteq A_{Q'}\)). Both odd-ended sides contain \(A_b\ne\emptyset\) and lie in \(A_t\), which is not all legs, so the last two are impossible.
+A chord is determined by its odd-ended side, so nested means strictly nested. <span class="qed">∎</span></p></div>
+
+<p>For \(Q\succ Q'\) in \(K\) write \(A_Q=[a,a']\), \(A_{Q'}=[c,c']\). The <em>strips</em> are \(\mathrm{St}(Q,Q'):=A_Q\setminus A_{Q'}=[a,c-1]\sqcup[c'+1,a']\), each of
+even length (\(a\equiv c\), \(a'\equiv c'\), all odd). The <em>strip region</em> \(\Omega(Q,Q')\) is the sub-polygon with dual points
+\(a,a+1,\dots,c,\;c'+1,\dots,a'+1\); its legs are the strip legs, the side \(\ell_A:=(c,c'+1)\) (the chord \(Q'\), carrying \(\sum_{A_{Q'}}p\)) and the
+side \(\ell_B:=(a'+1,a)\) (the chord \(Q\), carrying \(\sum_{B_Q}p\)). It is alternating. Put \(\varphi(Q,Q):=1\) and \(\varphi(Q,Q'):=N_{\Omega(Q,Q')}/x\) for
+\(Q\succ Q'\); \(a_Q:=N^{\neg K}\) of the B-side polygon of \(Q\) (dual points bounding \(B_Q\), closed by \(Q\)); \(b_Q:=N^{\neg K}\) of its A-side polygon;
+\(N^{\neg K}\) that of the whole \(N\)-gon.</p>
+
+<div class="thm" id="s1-l-collapse"><p><span class="thmhead">Lemma S1.2.3 (collapse identity).</span> Under (H1), (H2), (H4), on \(L_S\):
+\[ x\cdot\NLSM_N=x\cdot N^{\neg K}+\sum_{Q\succeq Q'\ \text{in}\ K}\varphi(Q,Q')\,a_Q\,b_{Q'}, \]
+and \(N^{\neg K}\), \(a_Q\), \(b_Q\) (\(Q\in K\)) are regular at generic points of \(H\).</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> Lemma S1.2.1(b) for the \(N\)-gon and \(K\) gives
+\(\NLSM_N=\sum_{D}\prod_{P\in D}X_P^{-1}\prod_fN^{\neg K}_f\) over non-crossing \(D\subseteq K\). By Lemma S1.2.2, \(D=\{Q_1\succ\dots\succ Q_s\}\); its faces are
+the B-side polygon of \(Q_1\), the regions \(\Omega(Q_i,Q_{i+1})\) (\(1\le i\lt s\)) and the A-side polygon of \(Q_s\). On \(L_S\) every \(X_P\), \(P\in K\),
+equals \(x\) (H2). Fix \(Q:=Q_1\), \(Q':=Q_s\). <em>The \(K\)-diagonals of \(\Omega(Q,Q')\) are exactly the members strictly between \(Q\) and \(Q'\):</em> such a
+member has both endpoints on the two strips, so is a diagonal of \(\Omega\); conversely a \(K\)-diagonal of \(\Omega(Q,Q')\) crosses neither \(Q\) nor \(Q'\),
+so by Lemma S1.2.2 its odd-ended side is comparable with both, and lying in the region it is strictly between. So Lemma S1.2.1(b) inside
+\(\Omega(Q,Q')\), for the set \(K\), gives
+\(\sum_{\text{chains }Q=c_0\succ c_1\succ\dots\succ c_s=Q'}x^{-(s-1)}\prod_iN^{\neg K}_{\Omega(c_i,c_{i+1})}=N_{\Omega(Q,Q')}\). Hence the chains \(D\) with top
+\(Q\) and bottom \(Q'\) sum to \(x^{-1}a_Q\cdot x^{-1}N_{\Omega(Q,Q')}\cdot b_{Q'}\), and to \(x^{-1}a_Qb_Q\) if \(Q=Q'\); \(D=\emptyset\) gives \(N^{\neg K}\).
+Multiply by \(x\). <em>Regularity:</em> by Lemma S1.2.1(a) the denominators of \(N^{\neg K}\), \(a_Q\), \(b_Q\) are odd chords \(Q''\notin K\); by (H1)
+\(X_{Q''}|_{L_S}\not\equiv0\) and by (H2) \(X_{Q''}|_{L_S}\notin\Q x\), so \(X_{Q''}\not\equiv0\) on the hyperplane \(H\). <span class="qed">∎</span></p></div>
+<p><em>Reduction.</em> If (E) \(a_Q|_H=0\) for \(Q\ne t\) and \(b_Q|_H=0\) for \(Q\ne b\), and every \(\varphi(Q,Q')\) is regular at generic points of \(H\),
+then \((x\NLSM_N)|_H=\varphi(t,b)|_H\,a_t|_H\,b_b|_H\): every term with \((Q,Q')\ne(t,b)\) contains a regular factor \(a_Q\) (\(Q\ne t\)) or \(b_{Q'}\)
+(\(Q'\ne b\)) vanishing on \(H\), times regular factors, and \(x\cdot N^{\neg K}\) vanishes on \(H\). If \(t=b\) the surviving term is \(a_tb_t\), with
+\(\varphi=1=(-1)^0\).</p>
+
+<h4>Strip regions, corners and the ear lemma</h4>
+<div class="thm" id="s1-l-strip"><p><span class="thmhead">Lemma S1.2.4 (strip regions).</span> Let \(Q\succ Q'\) be odd chords of \(\cP_0\)
+with \(h_Q=h_{Q'}\). On \(L_S\), in momentum language (true mesh variables \(c=-2p\cdot p\)): (i) every same-parity mesh variable of \(\Omega(Q,Q')\)
+vanishes; (ii) \(\ell_A,\ell_B\) sit at positions of opposite parity in \(\Omega\), and \(X_Q=X_{Q'}\); (iii) each odd strip leg is orthogonal to each
+leg of \(A_{Q'}\), and each even strip leg to each leg of \(B_Q\).</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> For chords of \(\cP_0\), \(\ein=M_e\setminus h\) and \(\oin=M_o\setminus h\), so \(h_Q=h_{Q'}\)
+gives \(\oin(Q)=\oin(Q')\) and \(\ein(Q)=\ein(Q')\). (1) A missing oo pair inside \(A_Q\) meeting \(\mathrm{St}(Q,Q')\) would be in \(\oin(Q)=\oin(Q')\), hence
+inside \(A_{Q'}\): impossible. (2) A missing ee pair inside \(B_{Q'}=\mathrm{St}(Q,Q')\sqcup B_Q\) meeting \(\mathrm{St}(Q,Q')\) would be in \(\ein(Q')=\ein(Q)\), inside \(B_Q\):
+impossible. (3) A pair (even leg of \(A_{Q'}\), odd strip leg) lies in \(\square_{Q'}\subseteq S\) (every even leg of an odd-ended arc is interior;
+the odd leg is in \(B_{Q'}\)). (4) A pair (even strip leg, odd leg of \(B_Q\)) lies in \(\square_{Q}\subseteq S\). <em>Positions around \(\Omega\):</em>
+\([a,c-1]\) runs odd…even, then \(\ell_A\) (odd position), then \([c'+1,a']\) runs even…odd, then \(\ell_B\) (even position); the strip legs next to
+\(\ell_A\) (\(c-1\), \(c'+1\)) are even, those next to \(\ell_B\) (\(a\), \(a'\)) are odd. Same-parity pairs of strip legs are parent pairs, zero by (1),
+(2). For an odd strip leg \(u\), the mesh variable of \((u,\ell_A)\) is \(-2p_u\cdot\sum_{w\in A_{Q'}}p_w=\sum_{w\in A_{Q'}}c_{u,w}\), each \((u,w)\) a
+parent pair (\(u\) is adjacent to no leg of \(A_{Q'}\)), zero by (1) and (3). For an even strip leg \(u\), that of \((u,\ell_B)\) is
+\(\sum_{w\in B_Q}c_{u,w}\), zero by (2) and (4). This proves (i) and (iii). (ii): let \(O\), \(E'\) be the sums of the odd- and even-position momenta of
+\(\Omega\); \(O=-E'\), and \(O^2=X_{Q'}+\sum2p\cdot p\) over odd-position pairs, which are non-adjacent, hence mesh variables, hence 0 by (i); so
+\(O^2=X_{Q'}\), and likewise \(E'^2=X_Q\). <span class="qed">∎</span></p></div>
+<p>So the restriction map sends \(L_S\) into the locus of \(\Omega(Q,Q')\) on which every same-parity mesh variable vanishes, the legs \(\ell_A,\ell_B\) have
+mass \(x\) and the other legs are massless.</p>
+
+<div class="thm" id="s1-l-corner"><p><span class="thmhead">Lemma S1.2.5 (corners).</span> For a polygon with side values \(X_{k,k+1}=m_k\), the
+<em>massless-form</em> mesh variable \(c^{\mathrm{ml}}_{i,j}\) (the four-term formula with every side set to 0) satisfies
+\(c^{\mathrm{ml}}_{k-1,k+1}=c_{k-1,k+1}+m_k\) for each leg \(k\), and \(c^{\mathrm{ml}}_{i,j}=c_{i,j}\) for every other pair.</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> For non-adjacent legs \(i,j\) the only side variable that can occur in
+\(c_{i,j}=X_{i,j}+X_{i+1,j+1}-X_{i,j+1}-X_{i+1,j}\) is \(X_{k,k+1}\), as \(-X_{i+1,j}\) with \((i,j)=(k-1,k+1)\) or as \(-X_{i,j+1}\) with \((i,j)=(k+1,k-1)\):
+one pair. <span class="qed">∎</span></p></div>
+<p>For instance \(\NLSM_4=-c^{\mathrm{ml}}_{1,3}=-(c_{1,3}+m_2+m_4)\). A polygon's \(\NLSM\) sees a point with massive legs only through its massless-form
+mesh variables.</p>
+
+<div class="thm" id="s1-l-ear"><p><span class="thmhead">Lemma S1.2.6 (ear lemma).</span> Let \(\mathsf P\) be an even polygon with legs,
+cyclically, \(s,U,R,V\): \(s\) one leg; \(U,V\) runs of even lengths \(2d_1,2d_2\), \(d_1+d_2\ge1\); \(R\) a run of odd length whose end legs have class
+(position parity) \(\pi+1\), where \(\pi\) is the class of \(s\). Let \(\mu:=U\cup V\), \(\mu^+\) its class-\((\pi+1)\) legs and \(\mu^-\) its
+class-\(\pi\) legs. <em>Members</em> are the chords of \(\mathsf P\) that separate \(s\) from \(R\) and cut \(U\) and \(V\) into runs of even length;
+\(A_Q\) is the side of \(Q\) containing \(R\), \(B_Q\) the other; \(\square_{Q}:=\)(class-\(\pi\) legs of \(A_Q\)) \(\times\) (class-\((\pi+1)\) legs of
+\(B_Q\)); \(\mathsf P_Q\) is the polygon between \(s\) and \(Q\) (legs \(s\), \(\mu\setminus A_Q\), and the side \(\hat Q\)). Let \(K\) be a set of members,
+containing the chord cutting off \(R\) if \(|R|\ge3\). Let \(Z'\) be the locus in the massless kinematic space of \(\mathsf P\) cut out by (z1) the
+\(\mu^+\) legs are pairwise orthogonal; (z2) each \(\mu^+\) leg is orthogonal to each leg of \(R\); (z3) the mesh variables of \(\square_{Q}\) vanish for
+\(Q\in K\). Assume (gen): no odd diagonal of \(\mathsf P\) vanishes identically on \(Z'\). Then on \(Z'\): \(N(\mathsf P)\equiv0\);
+\(N(\mathsf P_Q)\equiv0\) and \(N^{\neg K}(\mathsf P_Q)\equiv0\) for every \(Q\in K\); and \(N^{\neg K}(\mathsf P)\equiv0\).</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> (a) \(G:=\mu^-\cup\{s\}\) is one class, with \(|G|=d_1+d_2+1\ge2\). The arcs of the
+circle minus \(G\) are the single \(\mu^+\) legs and the run \(R\), so \(S_G(\mathsf P)\) is exactly the set of pairs in (z1) and (z2), and
+\(N(\mathsf P)\equiv0\) on \(\cK_G(\mathsf P)\supseteq Z'\) by the T-separated zero theorem (main text, <a href="pion-completeness-A.html#thm-tsplit">thm-tsplit</a>;
+\(|T|=2\) is a diamond anchored at a same-parity chord); (gen) makes the restriction defined.</p>
+<p>(b) Let \(Q\in K\). In \(\mathsf P_Q\) the side \(\hat Q\) sits between two class-\(\pi\) legs (\(u_{2i}\), \(v_{2j+1}\), or \(s\)), so \(\hat Q\) has class \(\pi+1\).
+Let \(G_Q\) be the class-\(\pi\) legs of \(\mathsf P_Q\). \(S_{G_Q}(\mathsf P_Q)\) consists of the pairs of \(\mu^+\) legs outside \(A_Q\) and the pairs (\(\mu^+\) leg \(u\)
+outside \(A_Q\), \(\hat Q\)). The first vanish by (z1). The true mesh variable of \((u,\hat Q)\) is \(-2p_u\cdot\sum_{A_Q}p=\sum_{w\in A_Q}c_{u,w}\), and
+it vanishes on \(Z'\): \(u\) is orthogonal to the legs of \(R\) by (z2), to the \(\mu^+\) legs of \(A_Q\) by (z1), and to the \(\mu^-\) legs of \(A_Q\) by
+\(\square_{Q}\) (z3); for the member cutting off \(R\), \(A_Q=R\). (No pair of \(\square_{Q}\) is adjacent: the boundary pairs across \(Q\) are (class
+\(\pi\) outside, class \(\pi+1\) inside).) By Lemma S1.2.5 the massless form changes only the mesh variables straddling \(\hat Q\) (both ends of class
+\(\pi\), in \(G_Q\), so not in \(S_{G_Q}\)) and straddling \(s\) (massless on \(Z'\)). Hence \(N(\mathsf P_Q)\equiv0\) on \(Z'\) by the T-separated zero theorem.</p>
+<p>(c) The members that are diagonals of \(\mathsf P_Q\) are the members \(Q'\succ Q\) that do not cross \(Q\). Members pairwise nest or cross (all their
+\(A\)-sides contain \(R\), none contains \(s\); the argument of Lemma S1.2.2 applies). Grouping \(\mathsf P_Q\) by \(K\) (Lemma S1.2.1(b)):
+\[ N(\mathsf P_Q)=N^{\neg K}(\mathsf P_Q)+\sum_{\text{chains }Q_1\succ\dots\succ Q_k\succ Q}\ \prod X^{-1}\cdot N^{\neg K}(\mathsf P_{Q_1})\cdot\prod(\neg K\ \text{strips}). \]
+This identity may be restricted to \(Z'\) because no member vanishes identically on \(Z'\). <em>Witness.</em> Give every \(\mu^+\) leg momentum 0 and the
+other legs generic massless momenta with total sum 0. Every condition (z1)–(z3) involves a \(\mu^+\) leg (for (z3): the class-\((\pi+1)\) legs of
+\(B_Q\) are \(\mu^+\) legs, since \(s\) has class \(\pi\)), so the point lies in \(Z'\). At it, \(X_Q=(\sum_{A_Q\setminus\mu^+}p)^2\). Both sides of \(Q\)
+keep at least two legs: \(|A_Q|\ge3\) and \(A_Q\) consists of \(R\) and even runs of strip legs, half of which are \(\mu^-\), so
+\(|A_Q\setminus\mu^+|=|R|+(|A_Q|-|R|)/2\ge2\); and \(B_Q\) consists of \(s\) and even runs of strip legs of total length \(|B_Q|-1\ge2\), half of them
+\(\mu^-\), so \(|B_Q\setminus\mu^+|\ge2\). A sum of at least two generic null momenta, whose complement also has at least two, is not null, so
+\(X_Q\ne0\). (Equivalently, in the Gram model of Lemma S1.2.8 below: set the \(\mu^+\) rows and columns to 0; the remaining legs form a polygon with at least four
+legs in which \(A_Q\setminus\mu^+\) is a cyclic interval with at least two legs on each side, so \(X_Q\) is a planar variable of that polygon, a
+non-zero coordinate.) Now by downward induction on \(\succ\) (a maximal member has no chain terms), \(N^{\neg K}(\mathsf P_Q)\equiv0\) on \(Z'\) for every
+\(Q\in K\), using (b).</p>
+<p>(d) The same grouping for \(\mathsf P\): every chain term contains the factor \(N^{\neg K}(\mathsf P_{Q_1})\equiv0\), and \(N(\mathsf P)\equiv0\) by (a), so
+\(N^{\neg K}(\mathsf P)\equiv0\) on \(Z'\). <span class="qed">∎</span></p>
+<p class="note">The rectangle conditions are needed: without (z3), \(N^{\neg K}(\mathsf P)\ne0\) on 240 of 240 tested instances.</p></div>
+
+<div class="thm" id="s1-l-extreme"><p><span class="thmhead">Lemma S1.2.7 (only the extreme term survives).</span> Under (H1)–(H4):
+\(b_Q|_H=0\) for \(Q\ne b\), \(a_Q|_H=0\) for \(Q\ne t\), and every \(\varphi(Q,Q')\) is regular at generic points of \(H\).</p></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> <em>\(b_Q\), \(Q\succ b\).</em> Let \(\mathsf P\) be the A-side polygon of \(Q\), \(s:=\hat Q\)
+(at an even position, \(\pi\) even), \(R:=A_b\), \(U\cup V:=\mu=A_Q\setminus A_b\), and \(K_{\mathsf P}:=\) the members strictly between \(Q\) and \(b\),
+together with \(b\). (\(K_{\mathsf P}=K\cap\mathrm{diagonals}(\mathsf P)\): members whose odd-ended side contains \(A_Q\) strictly, or which cross \(Q\), are
+not diagonals of \(\mathsf P\).) So \(N^{\neg K_{\mathsf P}}(\mathsf P)=b_Q\). Restrict to \(H\), where \(X_Q=0\) and \(\hat Q\) is massless. The image of \(H\)
+lies in \(Z'\): (z1) is step (1) of Lemma S1.2.4 for the pair \((Q,b)\) (odd strip legs pairwise orthogonal); (z2) is Lemma S1.2.4(iii); for (z3), for
+\(Q'\) strictly between, \(\square^{\mathsf P}_{Q'}=\evens(A_{Q'})\times\odds(A_Q\setminus A_{Q'})\subseteq\evens(A_{Q'})\times\odds(B_{Q'})=\square_{Q'}
+\subseteq S\) by (H3a). (gen): the odd diagonals of \(\mathsf P\) are parent odd chords; those outside \(K\) do not vanish identically on \(H\) (H1, H2),
+hence not on \(Z'\supseteq\) image of \(H\); the members do not vanish identically on \(Z'\) by the witness of Lemma S1.2.6(c) (they are \(\equiv x=0\) on
+\(H\), but not on \(Z'\), and the \(\neg K\) function never divides by them). So Lemma S1.2.6 gives \(N^{\neg K_{\mathsf P}}(\mathsf P)\equiv0\) on \(Z'\). Its
+denominators are non-member chords, not identically 0 on \(H\), so its restriction to \(H\), which is \(b_Q|_H\), is 0 (RF5).</p>
+<p><em>\(a_Q\), \(Q\prec t\).</em> The mirror: \(\mathsf P:=\) the B-side polygon of \(Q\), \(s:=\hat Q\) at an odd position, \(R:=B_t\), with steps (2), (4)
+of Lemma S1.2.4 and \(\odds(B_{Q'})\times\evens(A_{Q'}\setminus A_Q)\subseteq\square_{Q'}\).</p>
+<p><em>Regularity of \(\varphi(Q,Q')\).</em> By the inner grouping in the proof of Lemma S1.2.3, \(N_{\Omega(Q,Q')}=\sum_{\text{chains }Q=c_0\succ\dots\succ
+c_s=Q'}x^{-(s-1)}\prod_iN^{\neg K}_{\Omega(c_i,c_{i+1})}\). Apply Lemma S1.2.6 to each strip region \(\Omega(c,c')\) with \(s:=\ell_B\) (the side \(\hat c\), class
+\(\pi\)), \(R:=\{\ell_A\}\) a single leg (the side \(\hat c'\), massless on \(H\)), \(U,V\) the two strips (so \(d\ge1\)), and \(K_{\mathsf P}\) the members strictly
+between \(c\) and \(c'\), all deleted: (z1), (z2) are Lemma S1.2.4(i), (iii) for \((c,c')\), and (z3) is the inclusion of inner rectangles above. So each
+\(N^{\neg K}_{\Omega(c_i,c_{i+1})}\) vanishes on \(H\), hence equals \(x\cdot\)(regular) by (RF1) on \(L_S\) (its denominators are regular by (H1), (H2)). A chain
+term is \(x^{-(s-1)}\cdot x^s\cdot\)(regular) \(=x\cdot\)(regular). So \(\varphi=N_\Omega/x\) is regular at generic points of \(H\). <span class="qed">∎</span></p>
+<p class="note">One tested failure, on a proportionality class with no \(\cP_1\) member, shows that (H3) is needed.</p></div>
+
+<p>By the reduction after Lemma S1.2.3 and Lemma S1.2.7, \((x\NLSM_N)|_H=\varphi(t,b)|_H\,a_t|_H\,b_b|_H\). It remains to show
+\(\varphi(t,b)|_H=(-1)^d\) (Theorem S1.2.10 below).</p>
+
+<h4>The universal polygon and its loci</h4>
+
+<p>Let \(\mathsf P\) be a polygon with legs \(s,u_1,\dots,u_{2d_1},r,v_1,\dots,v_{2d_2}\) in cyclic order, \(n=2d+2\), \(d=d_1+d_2\). Class \(\pi\) is
+\(\{s,u_{\mathrm{even}},v_{\mathrm{odd}}\}\) and class \(\pi+1\) is \(\{r,u_{\mathrm{odd}},v_{\mathrm{even}}\}\) (position parities). Let \(c_\star\) be the mesh
+variable straddling \(s\) (the pair \(\{v_{2d_2},u_1\}\), class \(\pi+1\)) and \(c_\star'\) the one straddling \(r\) (the pair \(\{u_{2d_1},v_1\}\), class \(\pi\)).
+<em>Members</em> are the chords \(Q=(i,j)\in[0,d_1]\times[0,d_2]\setminus\{(d_1,0),(0,d_2)\}\) with odd-ended side
+\(A_Q=\{u_{2i+1},\dots,u_{2d_1}\}\cup\{r\}\cup\{v_1,\dots,v_{2j}\}\). The two excluded labels are not chords (their \(A\)-side would be \(\{r\}\), resp. all legs
+but \(s\)); we write \(Q_\bot:=(d_1,0)\) and \(Q_\top:=(0,d_2)\) for them and let them stand for the sides \(r\) and \(s\). Order: \(Q\preceq Q'\iff A_Q\subseteq A_{Q'}
+\iff(i\ge i',\ j\le j')\); meet \(Q\wedge Q'=(\max(i,i'),\min(j,j'))\), join \(Q\vee Q'=(\min(i,i'),\max(j,j'))\). For a set \(I\) of members put
+\(\hat I:=I\cup\{Q_\top,Q_\bot\}\); \(I\) is <em>closed</em> if \(\hat I\) is closed under meet and join. For a member \(Q\), \(\mathrm{rows}(Q)\) are the
+class-\((\pi+1)\) legs outside \(A_Q\) and \(\mathrm{cols}(Q)\) the class-\(\pi\) legs inside \(A_Q\) (both are strip legs), and
+\(\square_{Q}=\mathrm{rows}(Q)\times\mathrm{cols}(Q)\). For \(y\succ z\) in \(\hat I\), \(\Omega(y,z)\) is the region between them (with \(\Omega(Q_\top,z)\) the
+region between \(s\) and \(z\), and \(\Omega(y,Q_\bot)\) the region between \(y\) and \(r\)).</p>
+<p>All loci are in the <em>massless</em> kinematic space of \(\mathsf P\) (Lemma S1.2.5). For a set \(I\) of members, \(\Lambda^I\) is the subspace on which
+every same-class mesh variable vanishes except \(c_\star=c_\star'=:x\), and the mesh variables of \(\square_{Q}\) vanish for \(Q\in I\). \(\Lambda:=\Lambda^\emptyset\);
+a subscript 0 means \(x=0\). By Lemma S1.2.5, \(\Lambda\) is the locus of a polygon with two legs \(s,r\) of mass \(x\), all same-class mesh variables zero.</p>
+
+<p class="note"><em>Notation in this subsection.</em> Inside S1.2 only, \(G\) is the Gram matrix of Lemma S1.2.8 (entries \(G_{ab}\), mixed block \(G_{\rm mix}\)) and
+\(W\), \(W_q\) are the auxiliary spaces of Lemma S1.2.9; the main text writes \(\mathsf G\), \(\mathsf G_{\rm mix}\), \(\Xi\), \(\Xi_q\) for them, keeping \(G\) for leg sets
+(as in \(S_G\)) and \(W\) for the even-ended side in the (Tri) setting. The labels (G), (G′), (G″) of Lemma S1.2.9 are names of conditions, not sets.</p>
+<div class="thm" id="s1-l-gram"><p><span class="thmhead">Lemma S1.2.8 (Gram model).</span> Let \(\mathrm{Sym}^0_n\) be the space of symmetric
+\(n\times n\) matrices \(G\) with zero diagonal and zero row sums, and \(X_A(G):=\sum_{a\ne b\in A}G_{ab}\). (i) \(G\mapsto(X_A(G))_{A\ \text{diagonal}}\) is a
+linear isomorphism onto the massless kinematic space, and the massless mesh variable of legs \(a,b\) is \(-2G_{ab}\). (ii) The image of the mesh map
+is exactly the kernel of \(\rho:=\sum_{\text{class }\pi+1}c-\sum_{\text{class }\pi}c\) (the one relation).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> (i) \(\dim\mathrm{Sym}^0_n=n(n-3)/2\); in any Gram realisation \(X_A=(\sum_Ap)^2\), so the
+four-term formula gives \(c_{ab}=-2G_{ab}\). Injective: if all diagonal \(X\) vanish, all mesh variables vanish, so all non-adjacent \(G_{ab}=0\); the
+row sums give \(a_{l-1}+a_l=0\) for \(a_l:=G_{l,l+1}\), so \(a_l=(-1)^la\), and \(X\) of the two-leg arc \(\{l,l+1\}\) is \(2a_l=0\). (ii) Given the
+non-adjacent entries, the adjacent ones solve \(a_{l-1}+a_l=-S_l\) (\(S_l\) the sum of the non-adjacent entries of row \(l\)); for even \(n\) this cyclic
+system is solvable iff \(\sum_l(-1)^lS_l=0\), which is \(\rho=0\) (same-class entries enter with equal signs, mixed ones cancel); the solutions form a
+line (the \(\delta\)-line). <span class="qed">∎</span></p></div>
+<p>In the Gram model \(\Lambda^I\) is: same-class entries zero except \(G_{c_\star}=G_{c_\star'}=-x/2\), and the entries of \(\square_Q\), \(Q\in I\), zero; equivalently the
+<em>massive</em> Gram model with \(G_{ss}=G_{rr}=x\), other diagonal entries 0, zero row sums, same-class off-diagonal entries 0. Write \(G_{\mathrm{mix}}\) for the
+mixed block (rows of class \(\pi+1\), columns of class \(\pi\)) and \(k:=n/2\). At \(x=0\), \(\Lambda_0\cong\{G_{\mathrm{mix}}\ \text{balanced}\}\) (all row and column sums
+0), of dimension \((k-1)^2\), and \(\Lambda^I_0\) is the balanced \(G_{\mathrm{mix}}\) with the entries of \(\square_Q\), \(Q\in I\), equal to 0. For an odd diagonal with a side \(A\), let
+\(R_A\), \(C_A\) be the class-\((\pi+1)\) and class-\(\pi\) legs of \(A\); on \(\Lambda_0\),
+\(X_A=2\,\mathbf 1_{R_A}^{\mathsf T}G_{\mathrm{mix}}\,\mathbf 1_{C_A}=2\langle G_{\mathrm{mix}},(\mathbb P\mathbf 1_{R_A})\otimes(\mathbb P\mathbf 1_{C_A})\rangle\), \(\mathbb P\) the
+centring projector (\(G_{\mathrm{mix}}\) balanced).</p>
+
+<div class="thm" id="s1-l-gen"><p><span class="thmhead">Lemma S1.2.9 (genericity and regions).</span></p>
+<ol type="a">
+<li>(G) No odd diagonal of \(\mathsf P\) vanishes identically on \(\Lambda_0\). (G′) For distinct odd diagonals \(Q,Q'\), \(X_{Q'}\notin\mathrm{span}(X_Q,x)\) on
+\(\Lambda\).</li>
+<li>(G″) If \(d_1\ge1\), let \(b'\) be the chord cutting off \((u_{2d_1-1},u_{2d_1},r)\) and \(\Lambda'':=\Lambda^{\{b'\}}\). Every odd diagonal other than \(b'\) is
+non-zero on \(\Lambda''_0\).</li>
+<li>(W-ind) Let \(c_\circ\) be a class-\((\pi+1)\) mesh variable other than \(c_\star\), and \(W\) the space cut out by “every same-class mesh variable is 0 except
+\(c_\star,c_\star',c_\circ\)” and any set of mixed mesh variables. Then \(c_\star\), \(c_\star'\) are linearly independent on \(W\); indeed
+\(c_\star'=c_\star+c_\circ\) on \(W\) with \(c_\circ\) free.</li>
+<li>(G\(^I\)) If \(I\) is closed, no odd diagonal that is not in \(I\) vanishes identically on \(\Lambda^I_0\).</li>
+<li>(G\(_W\)) For \(q\in I\), let \(c_\circ\) be the mesh variable of the two end legs of \(A_q\) (class \(\pi+1\), a pair since \(|A_q|,|B_q|\ge3\), and
+\(\ne c_\star\)), and \(W_q\) the space on which the same-class entries vanish except \(c_\star,c_\star',c_\circ\), and \(\square_{q}=0\). On \(W_q\), for every
+member \(Q\), \(X_Q=c_\star'-[c_\circ\subseteq A_Q]\,c_\circ-2\sum_{\square_{Q}}G\), and the forms \(c_\star\), \(c_\star'\), \(X_Q\) (\(Q\in I\setminus q\)) are non-zero
+and pairwise non-proportional.</li>
+<li>(Regions) Let \(I\) be any set of members and \(y\succ z\) in \(\hat I\). On \(\Lambda^I\): \(X_Q=x\) for every \(Q\in I\); the region \(\Omega(y,z)\) has every
+same-class mesh variable 0 and both sides \(\hat y,\hat z\) of mass \(x\); and for \(Q\in I\) strictly between, \(\square^{\Omega}_{Q}\subseteq\square_{Q}\). So the
+restriction maps \(\Lambda^I\) into the locus \(\Lambda^J\) of \(\Omega(y,z)\), \(J:=I\cap(z,y)\).</li>
+</ol></div>
+
+<div class="proof"><p><span class="proofhead">Proof.</span> (a) (G): for an odd diagonal with a side \(A\) whose end legs have class \(\pi+1\),
+\(|R_A|=|C_A|+1\) with \(2\le|R_A|\le k-1\) and \(1\le|C_A|\le k-2\). Balanced matrices are \((\mathbf 1^\perp)\otimes(\mathbf 1^\perp)\) and the pairing is
+non-degenerate there, so \(X_A|_{\Lambda_0}\ne0\) iff \(\mathbb P\mathbf 1_{R_A}\ne0\ne\mathbb P\mathbf 1_{C_A}\), i.e. iff \(R_A\), \(C_A\) are proper and non-empty: true.
+(G′): two such forms on \(\Lambda_0\) are proportional iff \(R'\in\{R,R^c\}\) and \(C'\in\{C,C^c\}\) (for 0/1 vectors, \(\mathbf 1_R-\lambda\mathbf 1_{R'}\in\Q\mathbf 1\)
+forces \(R'=R\) or \(R^c\)). For sides \(A\ne A'\) with class-\((\pi+1)\) ends: \((R,C)\) gives \(A'=A\); \((R^c,C^c)\) gives \(A'=\) the complement of \(A\), which has
+class-\(\pi\) ends; \((R,C^c)\): \(A'\) holds two consecutive class-\((\pi+1)\) legs of \(A\) but not the class-\(\pi\) leg between them, so \(A'\) is everything but
+that leg and \(|R_{A'}|=k>|R_A|\); \((R^c,C)\): \(A'\) holds a class-\(\pi\) leg of \(A\), interior to \(A\), but neither neighbour, so \(|A'|=1\). All are
+impossible. On \(\Lambda\): if \(X_{Q'}=\alpha X_Q+\beta x\), restrict to \(\Lambda_0\) and contradict (G) (\(\alpha=0\)) or the above (\(\alpha\ne0\)).</p>
+<p>(b) \(\Lambda''_0\) contains the balanced \(G_{\mathrm{mix}}\) with column \(u_{2d_1}\) zero (the \(\square_{b'}\) entries are \(\mathrm{rows}(b')\times\{u_{2d_1}\}\)). On
+these, \(X_A=2\langle G_{\mathrm{mix}}',\mathbb P'\mathbf 1_{R_A}\otimes\mathbb P''\mathbf 1_{C_A\setminus u_{2d_1}}\rangle\) with \(G_{\mathrm{mix}}'\) the balanced \(k\times(k-1)\) block, which
+vanishes identically iff \(C_A\setminus\{u_{2d_1}\}\) is empty or all \(k-1\) other columns. The latter is impossible (\(|C_A|\le k-2\)); the former means
+\(C_A=\{u_{2d_1}\}\), \(|R_A|=2\), i.e. \(A\) is the side of \(b'\).</p>
+<p>(c) By Lemma S1.2.8(ii) the mesh image of \(W\) is \(\{c\in\ker\rho: c_e=0\ \text{for}\ e\notin\{c_\star,c_\star',c_\circ\}\cup\text{free mixed pairs}\}\). \(\rho\)
+has no mixed terms, so on this image \(\rho\) reads \(c_\star+c_\circ-c_\star'=0\), and \(c_\star\), \(c_\circ\) and the free mixed variables are independent
+coordinates. (This uses that \(\rho\) is the only relation.)</p>
+<p>(d) <em>Witnesses.</em> For class-\((\pi+1)\) legs \(w_1\ne w_2\) and class-\(\pi\) legs \(c_1\ne c_2\), \(G_{\mathrm{mix}}:=(e_{w_1}-e_{w_2})(e_{c_1}-e_{c_2})^{\mathsf T}\) is
+balanced; it lies in \(\Lambda^I_0\) iff none of its four entries is a rectangle entry of a member of \(I\), and entries in row \(r\) or column \(s\) never are
+(\(r\in A_Q\) and \(s\notin A_Q\) for every member). For a side \(A\),
+\(X_A(G_{\mathrm{mix}})=2(\mathbf 1_{R_A}(w_1)-\mathbf 1_{R_A}(w_2))(\mathbf 1_{C_A}(c_1)-\mathbf 1_{C_A}(c_2))\). Adjacent legs never form a rectangle entry. Let an odd diagonal
+not in \(I\) be given.</p>
+<ul>
+<li><em>Case 2: it does not separate \(s\) from \(r\).</em> One side \(A_0\) lies inside \(U\) or inside \(V\), with \(|A_0|\ge3\). Take \(w_1,c_1\in A_0\) adjacent,
+\(w_2=r\), \(c_2=s\): \(X_{A_0}=\pm2\).</li>
+<li><em>Case 1: it separates \(s\) from \(r\).</em> Its side containing \(r\) is \(B=\{u_{k'},\dots,u_{2d_1}\}\cup\{r\}\cup\{v_1,\dots,v_l\}\), and \(|B|\) odd forces
+\(k'-1\equiv l\pmod 2\).
+<ul>
+<li><em>Case 1b: \(l\) odd</em> (so \(B\) has class-\(\pi\) ends, \(k'\) even, \(\alpha:=k'-1\ge1\) odd, and \(u_\alpha\) exists). Take \(w_1=u_\alpha\),
+\(c_1=u_{\alpha+1}\) (adjacent), \(w_2=r\), \(c_2=s\): \(X_B=2(0-1)(1-0)=-2\).</li>
+<li><em>Case 1a: \(l\) even</em>, so the diagonal is of member type \((i_0,j_0)=((k'-1)/2,\,l/2)\), with \((i_0,j_0)\notin I\). Take \(w_2=r\), \(c_1=s\) and
+\((w_1,c_2)\in\{u_{2i_0-1},v_{2j_0+2}\}\times\{u_{2i_0+2},v_{2j_0-1}\}\), those that exist (\(u_{2i_0-1}\) needs \(i_0\ge1\), \(v_{2j_0+2}\) needs \(j_0\le d_2-1\),
+\(u_{2i_0+2}\) needs \(i_0\le d_1-1\), \(v_{2j_0-1}\) needs \(j_0\ge1\)). Then \(w_1\notin B\), \(c_2\in B\) and \(X_B=2(0-1)(0-1)=2\), unless \((w_1,c_2)\) is a
+rectangle entry of some \(Q=(i,j)\in I\). From \(\mathrm{rows}(i,j)=\{u_{2m-1}:m\le i\}\cup\{v_{2m}:m\ge j+1\}\) and \(\mathrm{cols}(i,j)=\{u_{2m}:m\ge i+1\}\cup\{v_{2m-1}:m\le j\}\):
+<br>(A) \((u_{2i_0-1},u_{2i_0+2})\in\square_{Q}\iff i=i_0\); (B) \((u_{2i_0-1},v_{2j_0-1})\iff i\ge i_0,\ j\ge j_0\); (C) \((v_{2j_0+2},u_{2i_0+2})\iff i\le i_0,\
+j\le j_0\); (D) \((v_{2j_0+2},v_{2j_0-1})\iff j=j_0\).
+<br>Suppose every available option is blocked, by blockers \(Q_1=(i_0,j_1)\) for (A), \(Q_2=(i_2,j_2)\) for (B), \(Q_3=(i_3,j_3)\) for (C), \(Q_4=(i_4,j_0)\)
+for (D), as available.
+<br><em>Interior</em> (\(1\le i_0\le d_1-1\), \(1\le j_0\le d_2-1\); all four exist): if \(j_1\ge j_0\), \(i_4\le i_0\), then \(Q_1\wedge Q_4=(i_0,j_0)\); if \(j_1\le j_0\),
+\(i_4\ge i_0\), then \(Q_1\vee Q_4=(i_0,j_0)\); if \(j_1\ge j_0\), \(i_4\ge i_0\), then \(Q_1\wedge Q_3=(i_0,j_3)\) and \((Q_1\wedge Q_3)\vee Q_4=(i_0,j_0)\); if
+\(j_1\le j_0\), \(i_4\le i_0\), then \(Q_1\vee Q_2=(i_0,j_2)\) and \((Q_1\vee Q_2)\wedge Q_4=(i_0,j_0)\).
+<br><em>Boundary:</em> \(i_0=0\lt d_1\) (options (C), (D)): \(Q_3=(0,j_3)\), \(j_3\le j_0\), and \(Q_3\vee Q_4=(0,j_0)\) (if \(j_0=0\) only (C) exists and \(Q_3=(0,0)\) is
+the diagonal itself); \(i_0=d_1\gt0\) (options (B), (D)): \(Q_2=(d_1,j_2)\), \(j_2\ge j_0\), and \(Q_2\wedge Q_4=(d_1,j_0)\) (if \(j_0=d_2\) only (B) exists and
+\(Q_2=(d_1,d_2)\) is the diagonal itself); \(j_0=0\lt d_2\) (options (A), (C)): \(Q_1\wedge Q_3=(i_0,0)\); \(j_0=d_2\gt0\) (options (A), (B)):
+\(Q_1\vee Q_2=(i_0,d_2)\).
+<br><em>Degenerate corners</em> (where a listed option does not exist): \(i_0=0=d_1\): only (D), whose blocker \((i_4,j_0)\) with \(i_4\in[0,d_1]=\{0\}\) is the
+diagonal itself; \(j_0=0=d_2\): only (A), blocker the diagonal itself; \((i_0,j_0)=(0,0)\), resp. \((d_1,d_2)\): only (C), resp. (B), blocker the diagonal
+itself. (In particular the boundary case “\(i_0=d_1\): (B), (D)” needs \(u_{2i_0-1}\), absent when \(d_1=0\); that case is the corner \(i_0=0=d_1\).)
+<br>In every case \((i_0,j_0)\in\hat I\); it is a diagonal, so not \(Q_\top\) or \(Q_\bot\), hence \((i_0,j_0)\in I\): a contradiction.</li>
+</ul></li>
+</ul>
+<p>So some witness gives a non-zero value. (Closedness is needed: (G\(^I\)) fails on 298 of 298 non-closed \(I\) tested.)</p>
+<p>(e) \(X_Q=2\sum_{R_Q\times C_Q}G+2\sum(\text{same-class entries inside }A_Q)\). Column sums give
+\(\sum_{R_Q\times C_Q}G=-\sum_{c\in C_Q}(\text{same-class entries of column }c)-\sum_{\square_{Q}}G\). The only non-zero same-class entries are \(c_\star,c_\star',c_\circ\);
+\(c_\star\) never lies inside \(A_Q\); \(c_\star'\) lies inside \(A_Q\) unless \(Q\) is of the form \((d_1,\cdot)\) or \((\cdot,0)\), in which case it enters once through a
+column; in all cases \(c_\star'\) enters with coefficient 1 for every member, and \(c_\circ\) enters through the bracket. This gives the formula. By Lemma S1.2.8(ii)
+the rectangle entries outside \(\square_{q}\), \(c_\star\) and \(c_\circ\) are free coordinates on \(W_q\). Put \(E_Q:=\square_{Q}\setminus\square_{q}\).
+<em>Rectangle lemma:</em> \(E_Q\ne\emptyset\) for \(Q\ne q\) (\(\mathrm{rows}(Q)\subseteq\mathrm{rows}(q)\) and \(\mathrm{cols}(Q)\subseteq\mathrm{cols}(q)\) force \(Q=q\)), and
+\(E_Q\ne E_{Q'}\) for \(Q\ne Q'\): if \(E_Q=E_{Q'}\), the symmetric difference of the two rectangles lies in \(\square_{q}\); with \(i\lt i'\), a pair
+\((u_{2i+1},c)\), \(c\in\mathrm{cols}(Q')\), lies in \(\square_{Q'}\setminus\square_{Q}\), so \(u_{2i+1}\in\mathrm{rows}(q)\), i.e. \(i\lt i_q\); a pair \((w,u_{2i+2})\),
+\(w\in\mathrm{rows}(Q)\), lies in \(\square_{Q}\setminus\square_{Q'}\), so \(u_{2i+2}\in\mathrm{cols}(q)\), i.e. \(i\ge i_q\): a contradiction; \(i=i'\), \(j\lt j'\) is the same
+with \(v_{2j+2}\), \(v_{2j+1}\). Hence each \(X_Q\) (\(Q\ne q\)) involves, with coefficient \(-2\), the free coordinates of \(E_Q\ne\emptyset\), which
+\(c_\star\) and \(c_\star'=c_\star+c_\circ\) do not involve; and for \(Q\ne Q'\) the sets \(E_Q\ne E_{Q'}\) differ, so \(X_Q-\lambda X_{Q'}\ne0\) for every \(\lambda\).
+Also \(c_\star\), \(c_\star'\) are non-proportional because \(c_\circ\) is free.</p>
+<p>(f) In the massive Gram model, \(X_Q=\sum_{A_Q}G=G_{rr}+2\sum_{R_Q\times C_Q}G_{\mathrm{mix}}\) (same-class entries 0). Each column \(c\in C_Q\) (\(c\ne s\)) sums to 0, so
+\(\sum_{R_Q\times C_Q}G_{\mathrm{mix}}=-\sum_{c\in C_Q}\sum_{w\notin A_Q}(G_{\mathrm{mix}})_{wc}=-\sum_{\square_{Q}}G_{\mathrm{mix}}=0\); and \(G_{rr}=x\). Region \(\Omega(y,z)\): for a class-\((\pi+1)\)
+strip leg \(w\), its pair with \(\hat z\) is \(-2p_w\cdot p_{A_z}=\sum_{l\in A_z}c_{w,l}\): same-class \(l\) give 0, class-\(\pi\) legs \(l\in A_z\) give \(\square_{z}\) (for
+\(z=Q_\bot\), \(A_z=\{r\}\) and there is nothing). For a class-\(\pi\) strip leg \(v\), its pair with \(\hat y\) is \(\sum_{l\in B_y}c_{v,l}\): same-class \(l\) (including
+\(s\)) give 0, class-\((\pi+1)\) strip legs \(l\in B_y\) give \(\square_{y}\) (for \(y=Q_\top\), nothing). Strip–strip same-class pairs vanish on \(\Lambda\); the
+masses are \(X_y=X_z=x\) by the first claim. Finally the region's class-\(\pi\) strip legs inside \(A_Q\) times its class-\((\pi+1)\) strip legs outside
+\(A_Q\) form a subset of \(\square_{Q}\). <span class="qed">∎</span></p></div>
+
+<h4>The value of the strip factor</h4>
+<div class="thm" id="s1-t-value"><p><span class="thmhead">Theorem S1.2.10 (value on the universal locus).</span> For every even \(n\ge4\), every
+choice of \(d_1,d_2\) and every closed \(I\): \(N(\mathsf P)=(-1)^dx+x^2R\) on \(\Lambda^I\), with \(R\) regular wherever the odd diagonals not in \(I\) are
+non-zero. Consequently, under (H1)–(H4), \(\varphi(t,b)|_H=(-1)^d\).</p></div>
+
+<div class="proof">
+<p><span class="proofhead">Proof. Step 1 (constancy).</span>  On \(\Lambda_0\) every same-class mesh variable vanishes, so in the
+massless form \(\Lambda_0\) lies in the T-separated locus of either class (\(T\) a whole class, \(|T|=n/2\ge2\)), and \(N:=N(\mathsf P)\equiv0\) on \(\Lambda_0\) by
+the T-separated zero theorem (<a href="pion-completeness-A.html#thm-tsplit">thm-tsplit</a>). By (G), \(N=F/D\) with \(D\not\equiv0\) on \(\Lambda_0\); \(F\)
+vanishes on the hyperplane \(\{x=0\}\) of \(\Lambda\), so \(x\mid F\) (RF1), and \(\varphi:=N/x\) is regular at generic points of \(\Lambda_0\). \(N\) is homogeneous of
+degree 1 and \(x\) is linear, so \(\varphi|_{\Lambda_0}\) is homogeneous of degree 0. Its only possible poles on \(\Lambda_0\) are hyperplanes \(\{X_Q=0\}\), \(Q\) an odd
+diagonal. Fix \(Q\) and a generic point \(p\) of \(\{X_Q=0\}\cap\Lambda_0\). By Lemma S1.2.1(b) with \(K=\{Q\}\), \(N=N^{\neg Q}+N_LN_R/X_Q\), where \(N_L,N_R\) are the
+\(\NLSM\) of the two sides of \(Q\) (each with the side \(\hat Q\)); by (G′) no other odd diagonal vanishes identically on \(\{X_Q=0\}\cap\Lambda_0\), so all three are
+regular at \(p\).</p>
+<p><em>Case \(Q\) separates \(s\) from \(r\).</em> Each side of \(Q\) is a polygon with an even number \(\ge4\) of legs; let \(T\) be its legs of the class of \(\hat Q\)
+in that side, so \(|T|\ge2\). The pairs of \(S_T\) are the pairs of its legs of the other class. Those not straddling \(\hat Q\) are same-class mesh variables of
+\(\mathsf P\) among the legs of that side, which vanish on \(\Lambda\) except \(c_\star\) and \(c_\star'\), both equal to \(x\) (a pair straddling \(s\) or \(r\) inside the
+side is \(c_\star\), resp. \(c_\star'\), or has both legs in \(T\)); the one straddling \(\hat Q\) is, by Lemma S1.2.5, a same-class mesh variable of \(\mathsf P\) plus
+\(X_Q\). So both sides are massless and on their T-separated loci at \(x=X_Q=0\), and \(N_L\), \(N_R\) vanish on \(\{x=X_Q=0\}\cap\Lambda\). As \(x\) and \(X_Q\) are
+independent (G′), (RF6) gives \(N_L=x\alpha+X_Q\beta\) and \(N_R=x\gamma+X_Q\varepsilon\) with \(\alpha,\beta,\gamma,\varepsilon\) regular at \(p\). Then
+\[ x\varphi=N=N^{\neg Q}+x^2\frac{\alpha\gamma}{X_Q}+x(\alpha\varepsilon+\beta\gamma)+X_Q\beta\varepsilon. \]
+Since \(N\) vanishes at \(x=0\), the terms not divisible by \(x\) satisfy \((N^{\neg Q}+X_Q\beta\varepsilon)|_{x=0}=0\), so \(N^{\neg Q}+X_Q\beta\varepsilon=x\zeta\)
+with \(\zeta\) regular at \(p\) (RF1). Dividing by \(x\): \(\varphi=\zeta+x\alpha\gamma/X_Q+\alpha\varepsilon+\beta\gamma\), and
+\(\varphi|_{\Lambda_0}=(\zeta+\alpha\varepsilon+\beta\gamma)|_{x=0}\), which is regular along \(X_Q=0\).
+</p>
+<p><em>Case \(Q\) does not separate \(s\) from \(r\).</em> The side of \(Q\) containing neither \(s\) nor \(r\) consists of strip legs of \(U\) or of \(V\) and \(\hat Q\); on
+\(\Lambda_0\) its same-class mesh variables vanish except the one straddling \(\hat Q\), which by Lemma S1.2.5 is shifted by \(X_Q\). So that side is on its
+T-separated locus at \(X_Q=0\), its \(N\) vanishes on \(\{X_Q=0\}\cap\Lambda_0\) and is divisible by \(X_Q\) there (RF1), and \(N_LN_R/X_Q\) is regular at \(p\).</p>
+<p>So \(\varphi|_{\Lambda_0}\) is regular in codimension 1. Its denominator is a product of pairwise non-proportional linear forms (G′ on \(\Lambda_0\)), so it
+is a polynomial (RF3), homogeneous of degree 0, hence a constant \(c(n)\) (RF4).</p>
+
+<p><span class="proofhead">Step 2 (\(I=\emptyset\)): \(c(n)=(-1)^{(n-2)/2}\).</span>  Induction on \(n\). At \(n=4\) the legs are
+\(s,u_1,u_2,r\) (or the reflected choice); both mesh variables straddle a massive leg, \(\Lambda_4=\{X_{13}+X_{24}=x\}\) in the massless form, and
+\(N=-(X_{13}+X_{24})=-x\). Let \(n\ge6\); by the reflection exchanging \(U\) and \(V\) take \(d_1\ge1\). Let \(R':=(u_{2d_1-1},u_{2d_1},r)\), \(b'\) the chord cutting \(R'\)
+off, \(\hat R'\) the 4-gon \((R',\hat b')\), and \(\Omega'\) the polygon \((s,u_1,\dots,u_{2d_1-2},\hat b',V)\).</p>
+<p>(i) On all of \(\Lambda\): \(N(\hat R')=-(c_{u_{2d_1-1},r}+m_{u_{2d_1}}+X_{b'})=-X_{b'}\) (Lemma S1.2.5: \(c_{u_{2d_1-1},r}\) is a class-\((\pi+1)\) mesh variable, zero on
+\(\Lambda\), and \(u_{2d_1}\) is massless). Grouping by \(b'\) (Lemma S1.2.1(b)) gives the exact identity \(N(\mathsf P)=N^{\neg b'}(\mathsf P)-N(\Omega')\) on \(\Lambda\).</p>
+<p>(ii) Let \(\Lambda'':=\Lambda^{\{b'\}}\), i.e. \(\Lambda\) with every class-\((\pi+1)\) strip leg of \(\Omega'\) orthogonal to \(u_{2d_1}\) (this is \(\square_{b'}\)). On \(\Lambda''\),
+\(X_{b'}=x\) (Lemma S1.2.9(f)), and \(\Omega'\) lies on its own \(\Lambda_{n-2}\): the class of \(\Omega'\) opposite to \(s\) is orthogonal to \(\hat b'\) because each such leg is
+orthogonal to \(u_{2d_1-1}\), \(u_{2d_1}\) and \(r\), with one exception: for \(d_1=1\) the leg \(v_{2d_2}\) is not orthogonal to \(u_1=u_{2d_1-1}\) (the pair
+\(\{v_{2d_2},u_1\}\) is \(c_\star=x\)); there the pair \(\{v_{2d_2},\hat b'\}\) is \(\Omega'\)'s own straddling variable \(c_\star\), which on \(\Lambda_{n-2}\) is allowed to be
+non-zero, and it equals \(x\), so the conclusion is unchanged. By induction \(N(\Omega')=(-1)^{d-1}x+O(x^2)\) there; the pull-back is valid because the odd diagonals of \(\Omega'\) are
+odd diagonals of \(\mathsf P\) other than \(b'\), non-zero on \(\Lambda''_0\) by (G″).</p>
+<p>(iii) <em>\(N^{\neg b'}(\mathsf P)=O(x^2)\) on \(\Lambda''\).</em> Let \(c_\circ:=c_{u_{2d_1-1},r}\) and let \(W\) be the linear space cut out by the conditions of \(\Lambda''\) with
+the three conditions on \(c_\star\), \(c_\star'\), \(c_\circ\) dropped. By Lemma S1.2.9(c), \(c_\star'=c_\star+c_\circ\) on \(W\), so \(\Lambda''=W\cap\{c_\circ=0\}\), where
+\(c_\star=c_\star'=x\). We apply the ear lemma (Lemma S1.2.6) twice, with \(K=\{b'\}\).</p>
+<ul>
+<li><em>First decomposition:</em> \(s\), \(U':=(u_1,\dots,u_{2d_1-2})\), \(R'\), \(V\). Here \(\mu^+\) is the class-\((\pi+1)\) legs of \(U'\cup V\). On \(W\cap\{c_\star=0\}\):
+(z1) holds, since pairs of \(\mu^+\) legs are class-\((\pi+1)\) mesh variables other than \(c_\circ\), zero on \(W\) except \(c_\star\), now 0; (z2) holds, since
+\(\mu^+\) legs are orthogonal to \(u_{2d_1-1}\) and \(r\) (same class, and \(c_\circ\) is internal to \(R'\)) and to \(u_{2d_1}\) (the condition \(\square_{b'}\) of
+\(\Lambda''\)); (z3) is \(\square_{b'}=\{u_{2d_1}\}\times\mu^+\), a condition of \(\Lambda''\). So \(W\cap\{c_\star=0\}\subseteq Z'_1\).</li>
+<li><em>Mirror decomposition:</em> \(s':=r\) (so the roles of the classes are exchanged), \(U'':=\emptyset\), \(R'':=(v_1,\dots,v_{2d_2},s,u_1,\dots,u_{2d_1-2})\),
+\(V'':=(u_{2d_1-1},u_{2d_1})\). The end legs \(v_1\), \(u_{2d_1-2}\) of \(R''\) have class \(\pi\), opposite to \(r\), as required. Here \(\mu^+=\{u_{2d_1}\}\), so (z1) is empty;
+(z2) says \(u_{2d_1}\) is orthogonal to every leg of \(R''\): for class-\(\pi\) legs these are class-\(\pi\) mesh variables, zero on \(W\) except \(c_\star'\), which is 0 on
+\(W\cap\{c_\star'=0\}\); for class-\((\pi+1)\) legs it is the condition \(\square_{b'}\); \(u_{2d_1}\) is adjacent to no leg of \(R''\). (z3): in this decomposition the
+rectangle of \(b'\) is again \(\{u_{2d_1}\}\times\)(class-\((\pi+1)\) legs of \(R''\)) \(=\square_{b'}\). The variable \(c_\circ\) pairs a leg of \(V''\) with \(s'\) and is not a
+condition of \(Z'\). So \(W\cap\{c_\star'=0\}\subseteq Z'_2\).</li>
+</ul>
+<p>(gen) holds in both: odd diagonals other than \(b'\) are non-zero on \(\Lambda''_0\subseteq W\cap\{c_\star=0\}\cap\{c_\star'=0\}\) by (G″), and \(b'\) is non-zero on
+\(Z'_i\) by the witness of Lemma S1.2.6(c). So \(N^{\neg b'}(\mathsf P)\) vanishes on the hyperplanes \(\{c_\star=0\}\) and \(\{c_\star'=0\}\) of \(W\), which are distinct
+because \(c_\star'-c_\star=c_\circ\) is free on \(W\). Write \(N^{\neg b'}|_W=F/D\) with \(D\) the product of the odd diagonals other than \(b'\), non-zero on \(\Lambda''_0\).
+Then \(F=c_\star c_\star'F_3\) (RF1, RF2), and on \(\Lambda''\), where \(c_\star=c_\star'=x\), \(N^{\neg b'}=x^2F_3/D\).
+</p>
+<p>(iv) By (i)–(iii), \(N(\mathsf P)=(-1)^dx+O(x^2)\) on \(\Lambda''\). By (i), \(N=N^{\neg b'}-N(\Omega')\) is regular at generic points of \(\Lambda''_0\) as a function on
+\(\Lambda\) (its denominators are diagonals \(\ne b'\)). \(N\) vanishes on \(\Lambda_0\), and \(\Lambda''_0\subseteq\Lambda_0\), where \(\varphi\) is the constant \(c(n)\) of
+Step 1; so \(c(n)=(-1)^d=(-1)^{(n-2)/2}\). (On a generic point of \(\Lambda\) no diagonal is proportional to \(x\), so there is no chord to peel off; this is why
+the sub-locus \(\Lambda''\) is used.) In particular \(N(\mathsf P)=(-1)^dx+x^2F_2/D\) on \(\Lambda\), \(D\) the product of the odd diagonals.</p>
+
+<p><span class="proofhead">Step 3 (key lemma).</span>  <em>Claim: for closed \(I\) and \(q\in I\), \(N^{\neg q}(\mathsf P)=x^2F_5/D'\) on \(\Lambda^I\), where \(D'\) is the product of the odd
+diagonals not in \(I\).</em> Write \(N^{\neg q}=F/D\), \(D\) the product of the odd diagonals other than \(q\) (Lemma S1.2.1(a)). Work on \(W:=W_q\) of Lemma S1.2.9(e),
+with \(c_\circ\) the mesh variable of the end legs of \(A_q\). Then \(\Lambda^I\subseteq W\cap\{c_\circ=0\}\) with \(c_\star=c_\star'=x\), and
+\(\Lambda^I_0\subseteq W\cap\{c_\star=0\}\cap\{c_\star'=0\}\).</p>
+<p>(a) <em>\(F\) vanishes on \(W\cap\{c_\star=0\}\).</em> Apply the ear lemma to the decomposition \((s,U_1,R_1=A_q,V_1)\) with \(K=\{q\}\) (\(q\) cuts off \(R_1\),
+\(|R_1|\ge3\)). Its \(Z'_1\) is the massless locus on which every class-\((\pi+1)\) mesh variable vanishes except those inside \(A_q\), and \(\square_q=0\).
+\(W\cap\{c_\star=0\}\) satisfies these: \(c_\star\) is a (z1) or (z2) pair and is now 0; \(c_\circ\) lies inside \(A_q\); \(\square_q\) makes the \(\mu^+\) legs orthogonal to the
+class-\(\pi\) legs of \(A_q\); the outside neighbours of \(A_q\) have class \(\pi\), so no required pair is adjacent. (gen): odd diagonals not in \(I\) are non-zero on
+\(\Lambda^I_0\subseteq W\cap\{c_\star=0\}\) by (G\(^I\)); members \(Q\in I\setminus q\) are non-zero there by (G\(_W\)); \(q\) itself is non-zero on \(Z'_1\) by the witness
+of Lemma S1.2.6(c). So \(N^{\neg q}\equiv0\) on \(Z'_1\), and, \(D\) not vanishing identically there, \(F\equiv0\) on \(W\cap\{c_\star=0\}\).</p>
+<p>(b) <em>\(F\) vanishes on \(W\cap\{c_\star'=0\}\):</em> the mirror decomposition, with \(s':=r\) and \(R_2:=B_q\) (class-\(\pi\) ends; \(q\) cuts it off), \(K=\{q\}\). Its
+\(Z'_2\) requires every class-\(\pi\) mesh variable to vanish except those inside \(B_q\), and \(\square_q=0\); \(W\cap\{c_\star'=0\}\) satisfies this (\(c_\circ\) has class
+\(\pi+1\)). (gen) as in (a).</p>
+<p>(c) <em>No pole along \(H_Q:=W\cap\{X_Q=0\}\) for \(Q\in I\setminus q\).</em> Grouping by \(Q\) (Lemma S1.2.1(b)):
+\(N^{\neg q}=N^{\neg\{q,Q\}}+N^{\neg q}(\Omega_1)\,N^{\neg q}(\Omega_2)/X_Q\), with \(\Omega_1:=\Omega(Q_\top,Q)\) (the region between \(s\) and \(Q\)) and
+\(\Omega_2:=\Omega(Q,Q_\bot)\) (the region between \(Q\) and \(r\)). At generic points of \(H_Q\) every other denominator is non-zero ((G\(^I\)), (G\(_W\))). One of the
+two regions does not contain \(q\) as a diagonal, and lies on its T-separated locus on \(H_Q\):</p>
+<ul>
+<li><em>If \(Q\prec q\):</em> take \(\Omega_2\) (legs \(A_Q\) and \(\hat Q\)); \(q\) is not a diagonal of it, since \(A_q\supsetneq A_Q\). In \(\Omega_2\), \(\hat Q\) sits between the
+class-\((\pi+1)\) end legs of \(A_Q\), so it has class \(\pi\); let \(T\) be the class-\(\pi\) legs of \(\Omega_2\), \(|T|=d(Q,Q_\bot)+1\ge2\). The pairs of \(S_T\) are pairs of
+class-\((\pi+1)\) legs of \(A_Q\). Those not straddling \(\hat Q\) are class-\((\pi+1)\) mesh variables of \(\mathsf P\) inside \(A_Q\), zero on \(W\): neither \(c_\circ\) (the
+interval \(A_Q\subsetneq A_q\) cannot contain both end legs of \(A_q\)) nor \(c_\star\) (which straddles \(s\notin A_Q\)) lies inside \(A_Q\). The pair straddling \(\hat Q\) is,
+by Lemma S1.2.5, the mesh variable of \(\mathsf P\) on the two end legs of \(A_Q\) (zero on \(W\): it is \(c_\circ\) only if \(Q=q\)) plus \(X_Q=0\).</li>
+<li><em>If \(Q\succ q\) or \(Q\) crosses \(q\):</em> take \(\Omega_1\) (legs \(s\), the legs of \(B_Q\) other than \(s\), and \(\hat Q\)); \(q\) is not a diagonal of it (if
+\(Q\succ q\), \(q\) lies on the other side of \(Q\); a chord crossing \(Q\) is a diagonal of neither side). Here \(\hat Q\) has class \(\pi+1\); let \(T\) be the
+class-\((\pi+1)\) legs of \(\Omega_1\), \(|T|=d(Q_\top,Q)+1\ge2\). The pairs of \(S_T\) are pairs among \(s\) and the class-\(\pi\) strip legs of \(B_Q\): class-\(\pi\) mesh
+variables of \(\mathsf P\), zero on \(W\) except \(c_\star'\), which does not lie inside \(B_Q\) since \(Q\ne Q_\bot\); and the pair straddling \(\hat Q\) is the
+\(\mathsf P\)-mesh variable \((u_{2i},v_{2j+1})\) (or a pair with \(s\)) plus \(X_Q=0\), where the first term is again a class-\(\pi\) mesh variable other than \(c_\star'\).</li>
+</ul>
+<p>By the T-separated zero theorem the chosen region's \(\NLSM\) vanishes on \(H_Q\) (its odd diagonals are non-zero there by (G\(^I\)), (G\(_W\))), so it is
+divisible by \(X_Q\) (RF1) and \(N^{\neg q}\) is regular at generic points of \(H_Q\); hence \(F=N^{\neg q}\cdot X_Q\cdot(D/X_Q)\) vanishes on \(H_Q\). (In all 3&nbsp;860
+checks of the review the other region vanished too; this is not needed.)</p>
+<p>(d) By (a)–(c), (W-ind) and (G\(_W\)), \(F|_W\) is divisible by the pairwise non-proportional linear forms \(c_\star\), \(c_\star'\) and \(X_Q\) (\(Q\in I\setminus q\))
+(RF1, RF2): \(F|_W=c_\star c_\star'\prod_{Q\ne q}X_Q\cdot F_5\). On \(\Lambda^I\) all these forms equal \(x\) (Lemma S1.2.9(f)), and \(D=x^{|I|-1}D'\). So
+\(N^{\neg q}=x^2F_5/D'\), with \(D'\not\equiv0\) on \(\Lambda^I_0\) by (G\(^I\)).</p>
+
+<p><span class="proofhead">Step 4 (closed \(I\)).</span>  Induction on \(|I|\); \(I=\emptyset\) is Step 2. For \(|I|\ge1\)
+pick \(q\in I\). Grouping by \(q\): \(N(\mathsf P)=N^{\neg q}(\mathsf P)+N(\Omega(Q_\top,q))\,N(\Omega(q,Q_\bot))/X_q\). Here \(X_q=x\) (Lemma S1.2.9(f)) and
+\(N^{\neg q}=x^2F_5/D'\) (Step 3). The two regions carry the sets \(I_{\succ q}\), \(I_{\prec q}\), which are closed (intervals of the lattice \(\hat I\)) and smaller; by
+Lemma S1.2.9(f) the restriction maps \(\Lambda^I\) into their own loci, and the induction hypothesis pulls back because their odd diagonals not in \(I\) are odd
+diagonals of \(\mathsf P\) not in \(I\), non-zero on \(\Lambda^I_0\) (G\(^I\)). So the product is \(x^2\bigl((-1)^{d(Q_\top,q)}(-1)^{d(q,Q_\bot)}+O(x)\bigr)\), and
+dividing by \(x\) gives \(N(\mathsf P)=(-1)^dx+O(x^2)\) with the stated regularity, as \(d(Q_\top,q)+d(q,Q_\bot)=d\).</p>
+
+<p><span class="proofhead">Step 5 (pull-back to \(L_S\)).</span>  Take the region
+\(\Omega(t,b)\) of the parent, with \(s:=\hat t\) (the side \(\ell_B\)) and \(r:=\hat b\) (the side \(\ell_A\)); its members are the parent chords of \(K\) strictly between
+\(t\) and \(b\) (proof of Lemma S1.2.3); put \(I:=K\cap(b,t)\). The restriction map sends \(L_S\) into \(\Lambda^I(\Omega(t,b))\): by Lemma S1.2.4 the region's same-class mesh
+variables vanish on \(L_S\), so \(X_Q=x\) forces \(\sum_{\square_Q}c=0\) on \(L_S\) (Lemma S1.2.9(f)); mixed mesh variables not in \(S\) are free coordinates of \(L_S\)
+(the one relation has no mixed terms), so each rectangle pair of \(Q\in I\) is in \(S\) (under (H3a) this is immediate). <em>\(I\) is closed:</em> for crossing
+\(P,Q\in K\), \(\mathrm{rows}(P\wedge Q)=\mathrm{rows}(P)\cup\mathrm{rows}(Q)\) and \(\mathrm{cols}(P\wedge Q)=\mathrm{cols}(P)\cap\mathrm{cols}(Q)\), and dually for \(\vee\), so
+\(\square_{P\wedge Q},\square_{P\vee Q}\subseteq\square_P\cup\square_Q\); by Lemma S1.2.9(f), \(X_{P\wedge Q}=X_{P\vee Q}=x\) on \(L_S\), and both are in \(K\) by (H2). The odd
+diagonals of \(\Omega(t,b)\) not in \(I\) are parent odd chords outside \(K\), non-zero on \(H\) (H1, H2). By Step 4, \(N_{\Omega(t,b)}=(-1)^dx+x^2R\) on the image, with
+\(R\) regular at generic points of \(H\) (RF5). So \(\varphi(t,b)|_H=(-1)^d\). <span class="qed">∎</span></p></div>
+
+<div class="proof"><p><span class="proofhead">Proof of the class residue theorem (<a href="pion-completeness-A.html#thm-res">thm-res</a>).</span>
+ By Lemma
+S1.2.3, \(x\NLSM_N|_{L_S}\) is a sum of terms regular at generic points of \(H\). By Lemma S1.2.7 every term except \((t,b)\) restricts to 0 on \(H\) and every \(\varphi\) is
+regular; by Theorem S1.2.10, \(\varphi(t,b)|_H=(-1)^d\). Finally \(a_t\), \(b_b\) as defined in the statement are the \(\neg K\) side amplitudes of Lemma S1.2.3 at \(Q=t\),
+resp. \(Q=b\), because no chord of \(K\) is a diagonal of the B-side polygon of \(t\) or of the A-side polygon of \(b\): a chord \(Q\in K\) is a diagonal of the B-side
+polygon of \(t\) iff one of its sides lies inside \(B_t\); its odd-ended side cannot (\(A_Q\supseteq A_b\ne\emptyset\) and \(A_b\subseteq A_t\) is disjoint from \(B_t\)),
+and its even-ended side cannot (\(B_Q\subseteq B_t\iff A_Q\supseteq A_t\); \(A_Q\supsetneq A_t\) contradicts the top, and \(A_Q=A_t\) means \(Q=t\), not a diagonal).
+The A-side of \(b\) is the mirror. On \(H\), \(X_t=x=0\), so the closing side of the B-side polygon is massless, and that polygon is the B-child of \(t\). Hence
+\(x\NLSM_N|_{L_S}\) is regular at generic points of \(H\) and \((x\NLSM_N|_{L_S})|_H=(-1)^da_t|_H\,b_b|_H\). In the normalisation \(\cA_n=(-1)^{n/2-1}\NLSM_n\):
+the child sizes \(|B_t|+1\) and \(|A_b|+1\) sum to \(N+2-2d\), so the child prefactors multiply to \((-1)^{N/2-1-d}\) and
+\((x\cA_N)|_H=(-1)^{N/2-1}(-1)^d(-1)^{N/2-1-d}\cA_B\cA_A=\cA_B\cA_A\). <span class="qed">∎</span></p></div>
+
+<h3 id="s1-3">S1.3 The children: full proof</h3>
+
+<p>This subsection proves the children proposition (main text, <a href="pion-completeness-A.html#prop-child">prop-child</a>). Let \(P\) be an odd chord with dual
+points \(\alpha\) (odd) and \(\omega+1\), so \(A=A_P=[\alpha,\omega]\) and \(B=B_P=[\omega+1,\alpha-1]\). For \(L\in\{A,B\}\) with \(L^c\) the other side, \(k:=|L|\) and
+\(m:=k+1\). The <em>child on side \(L\)</em> has legs \(L\) in order and one new leg \(\hat P\) in place of \(L^c\), labelled so that parities are preserved: for the
+A-child, child dual point \(j\mapsto\alpha+j-1\) (\(j=1..m\)) and \(\hat P\) is the even child leg \(m\); for the B-child, child dual point \(j\mapsto\omega+j-1\)
+(\(j=2..m\)), \(1\mapsto\alpha\), and \(\hat P\) is the odd child leg 1. In both cases the map \(\delta_L\) lists the parent dual points of the sub-polygon on side
+\(L\) in cyclic order, with parities preserved. \(\rho_L:\cX_N\to\cX_m\) is the linear map \(\rho_L(X)_{j,l}:=X_{\delta_L(j),\delta_L(l)}\) on non-adjacent child dual
+points; the child pair \(\{\delta_L^{-1}(\alpha),\delta_L^{-1}(\omega+1)\}\) is a child edge, whose parent value is \(X_P\). The <em>pair map</em> \(\pi_L\) sends a pair
+\(t\subseteq L\) to itself, a pair \(\{u,w\}\) with \(u\in\intr L\), \(w\in L^c\) to \(\{u,\hat P\}\), and every other pair (inside \(L^c\), or crossing at an end leg
+\(l_1\), \(l_k\) of \(L\)) to nothing. It is well defined (legs of \(L\) are adjacent in the child iff in the parent, and \(l_1,l_k\) are non-adjacent in both) and
+onto. The child missing set is \(M_L:=\pi_L(M)\) and the child set \(S_L\) its complement:
+\(S_L=\{t\subseteq L: t\in S\}\cup\{\{u,\hat P\}: u\in\intr L,\ \{u,w\}\in S\ \text{for all}\ w\in L^c\}\). Its linear version is
+\(\pi^{\mathrm{lin}}_L:\Q^M\to\Q^{M_L}\), \((\pi^{\mathrm{lin}}_Ly)_\sigma:=\sum_{t\in M,\ \pi_L(t)=\sigma}y_t\). Write \(\mathbb Y_S:=\{y\in\Q^M: y(M_e)=y(M_o)\}\); by the one
+relation, \(X\mapsto(c_t(X))_{t\in M}\) maps \(L_S\) onto \(\mathbb Y_S\) with kernel \(\Q v_0\).</p>
+
+<div class="thm" id="s1-p-child"><p><span class="thmhead">Proposition S1.3.1 (children).</span> Let \(P\in\cP_1\).</p>
+<ol>
+<li>\(\rho_L(L_S\cap\{X_P=0\})=L^{(m)}_{S_L}\), the coordinate locus of \(S_L\) at size \(m\). (No hypothesis on \(S\) beyond \(P\in\cP_1\); for \(L=A\) only
+\(P\in\cP_0\) and \(\ein(P)\ne\emptyset\) are used, for \(L=B\) only \(P\in\cP_0\) and \(\oin(P)\ne\emptyset\).)</li>
+<li>\(m\) is even and \(4\le m\le N-2\).</li>
+<li>If \(S\in\Fpi_N\), then \(S_L\in\Fpi_m\) if and only if \(L\) is linked.</li>
+<li>If \(K\subseteq\cP_1\) is a flank class with top \(t\) and bottom \(b\) and \(H_K:=L_S\cap\{X_t=0\}\), then \(H_K=L_S\cap\{X_b=0\}\), and \(\rho_{B_t}\), \(\rho_{A_b}\) map
+\(H_K\) onto the child loci of \(S_{B_t}\), \(S_{A_b}\). If \(\NLSM_m\not\equiv0\) on a child locus, then \(\NLSM_m\circ\rho_L\not\equiv0\) on \(H_K\).</li>
+</ol></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> <em>Child mesh variables.</em> As linear forms on \(\cX_N\): for a child pair \(\sigma=t\subseteq L\)
+other than \(\{l_1,l_k\}\), \(c^{(m)}_\sigma\circ\rho_L=c_t\); for \(\sigma=\{l_1,l_k\}\), \(c^{(m)}_\sigma\circ\rho_L=c_{l_1,l_k}+X_P\); for \(\sigma=\{u,\hat P\}\),
+\(u\in\intr L\), \(c^{(m)}_\sigma\circ\rho_L=\sum_{w\in L^c}c_{u,w}\). Indeed \(\rho_L\) sends each child \(X\) in the four-term formula to the parent \(X\) of the image dual
+points; the only child variable that is an edge of the child but a chord of the parent is the one with parent value \(X_P\), and it occurs only in the mesh
+variable of \(\{l_1,l_k\}\) (as the term \(-X_{j,l+1}\)); edges of both read 0. For \(\{u,\hat P\}\), the block formula with blocks \(\{u\}\) and \(L^c\) gives
+\(\sum_{w\in L^c}c_{u,w}=X_{u,e_1}+X_{u+1,e_0}-X_{u+1,e_1}-X_{u,e_0}\), with \(e_0,e_1\) the parent dual points bounding \(L^c\), and the child mesh variable expands to
+the same four terms (\(u\) interior, so none of them is the edge with value \(X_P\)). Also \(\rho_L(v_0)=v_0^{(m)}\), since \(\delta_L\) preserves parity.</p>
+<p>(1) “\(\subseteq\)”. For \(X\in L_S\) with \(X_P=0\) and \(\sigma\in S_L\): if \(\sigma=t\subseteq L\), \(t\in S\), then \(c^{(m)}_\sigma(\rho_LX)=c_t(X)(+X_P)=0\); if
+\(\sigma=\{u,\hat P\}\) with all \(\{u,w\}\in S\), then \(c^{(m)}_\sigma(\rho_LX)=\sum_wc_{u,w}(X)=0\).</p>
+<p>(1) “\(\supseteq\)”, for \(L=A\).  At an even \(u\in\intr A\) the missing crossing
+pairs \(\{u,w\}\), \(w\in B\), are ee (an odd \(w\) would give a pair of \(\square_P\subseteq S\)); at an odd \(u\) they are oo or opposite-parity. \(\hat P\) is even, so
+\(\{u,\hat P\}\) is a child ee pair for \(u\) even and a child opposite-parity pair for \(u\) odd.</p>
+<p><em>(a) The child relation pulls back to \(X_P\).</em> The child relation is \(\sum_{\text{child ee}}c^{(m)}=\sum_{\text{child oo}}c^{(m)}\). Pulled back by
+\(\pi^{\mathrm{lin}}_A\): the child ee sum becomes \(y(M_e\cap\inside A)+y(\text{missing ee crossing pairs})=y(M_e\setminus\inside B)\) (every ee crossing pair has its
+\(A\)-leg even, hence interior); the child oo sum becomes \(y(M_o\cap\inside A)=y(\oin(P))\). So the child relation composed with \(\pi^{\mathrm{lin}}_A\) is
+\(y(M_e\setminus\inside B)-y(\oin(P))\), which on \(\mathbb Y_S\) equals \(X_P\) by the chord formula for \(P\in\cP_0\) (main text; \(X_P|_{L_S}=y(h_P)-E\) with
+\(h_P\cap M_e=M_e\setminus\inside B\) and \(h_P\cap M_o=M_o\setminus\inside A\)).</p>
+<p><em>(b) Surjectivity on \(\mathbb Y\).</em> \(\pi^{\mathrm{lin}}_A\) maps \(\mathbb Y_S\cap\{X_P=0\}\) onto \(\mathbb Y^{(m)}:=\{z\in\Q^{M_A}:\text{child relation}(z)=0\}\) (well defined by
+(a)). Given \(z\), build \(y\in\Q^M\): (i) for \(t\in M\) inside \(A\), \(y_t:=z_t\); (ii) for each \(u\in\intr A\) with \(G_u:=\{\text{missing }\{u,w\}: w\in B\}\ne\emptyset\), choose
+one \(t_u\in G_u\), put \(y_{t_u}:=z_{u,\hat P}\) and 0 on the rest of \(G_u\); (iii) 0 on missing crossing pairs at the end legs \(\alpha\), \(\omega\); (iv) 0 on missing
+pairs inside \(B\) except one chosen \(g\in\ein(P)\) (non-empty as \(P\in\cP_1\)). Then \(\pi^{\mathrm{lin}}_Ay=z\) (the fibres of \(\pi_A\) are disjoint: an inside pair is its
+own fibre, and \(\{u,\hat P\}\) has fibre \(G_u\)). The global relation \(y(M_e)=y(M_o)\) reads \(y(M_e\setminus\inside B)+y(\ein(P))=y(\oin(P))+y(M_o\setminus\inside A)\);
+the first and third terms are equal by the child relation and (a), so it reduces to \(y_g=y(M_o\setminus\inside A)\), which fixes \(y_g\); \(g\) lies in no fibre of
+\(\pi_A\). So \(y\in\mathbb Y_S\), and \(X_P=\text{child relation}(z)=0\) on it.</p>
+<p><em>(c) Lift.</em> Let \(Z\in L^{(m)}_{S_A}\) and \(z:=(c^{(m)}_\sigma(Z))_{\sigma\in M_A}\in\mathbb Y^{(m)}\). Take \(y\) from (b) and \(X\in L_S\) with \((c_t(X))_{t\in M}=y\). Then
+\(X_P(X)=0\), and by the child mesh variables \(c^{(m)}(\rho_AX)=c^{(m)}(Z)\) on every child pair (on \(M_A\) both are \(z\); on \(S_A\) both are 0). By the one relation at
+size \(m\) (kernel \(\Q v_0^{(m)}\)), \(\rho_AX-Z=\theta\,v_0^{(m)}=\rho_A(\theta v_0)\) for some \(\theta\). Since \(v_0\in L_S\) and \(X_P(v_0)=0\) (\(P\) is odd),
+\(X-\theta v_0\in L_S\cap\{X_P=0\}\) and \(\rho_A(X-\theta v_0)=Z\).</p>
+<p><em>\(L=B\)</em>, written out because the parities differ. \(\hat P\) is odd. Missing crossing pairs at an odd \(u\in B\) are oo (an even \(w\in A\) would give
+\((w,u)\in\square_P\subseteq S\)); at an even \(u\in\intr B\) they are ee or opposite-parity. \(\{u,\hat P\}\) is child oo for \(u\) odd and child opposite-parity for \(u\)
+even. The pull-back of the child relation is \(y(\ein(P))-y(M_o\setminus\inside A)=-X_P\) on \(\mathbb Y_S\). Surjectivity as above, with the balancing coordinate a
+chosen \(f\in\oin(P)\ne\emptyset\) (inside \(A\), in no fibre of \(\pi_B\)); the lift is as in (c).</p>
+<p class="note">Off \(\cP_1\) the statement is false: on \(\cP_0\setminus\cP_1\) sides the numerically computed child missing set differs from \(\pi_L(M)\) on 19&nbsp;423 of
+39&nbsp;618 tested sides, and the child locus is not a coordinate locus on 321 of them.</p>
+<p>(2) \(|L|\) is odd, so \(m\) is even. The dual points of \(P\) are non-adjacent, so \(|L|\ne1\), hence \(|L|\ge3\) and \(m\ge4\); \(|L^c|\ge3\) gives \(m\le N-2\).</p>
+<p>(3)  The members of \(\cG_m\) are \(S^{(m)}_T\) for \(T\) a non-adjacent pair of
+child legs or at least two child legs of one parity (a same-parity pair is also a non-adjacent pair).</p>
+<p><em>(a) \(\hat P\notin T\).</em> Then \(T\subseteq L\), and non-adjacency and parity transfer, so \(S_T\) is a member of \(\cG_N\). The arc \(L^c\) misses \(T\) and lies in one
+component \(C\) of the leg circle minus \(T\); the child circle is the parent circle with \(L^c\) contracted to \(\hat P\), so the components of the child circle minus
+\(T\) are those of the parent with \(C\) replaced by \((C\cap L)\cup\{\hat P\}\). Claim: \(\pi_L(t)\in S^{(m)}_T\iff t\in S_T\) for every parent pair \(t\). If \(t\subseteq L\),
+\(\pi(t)=t\) and the component test is the same. If \(t=\{u,w\}\), \(u\in L\), \(w\in L^c\): \(t\in S_T\iff u\notin T\cup C\). If \(u\in\{l_1,l_k\}\), \(u\) is adjacent to a leg of
+\(L^c\subseteq C\), so \(u\in T\cup C\), \(t\notin S_T\), and \(\pi(t)\) is nothing. If \(u\in\intr L\), \(\pi(t)=\{u,\hat P\}\in S^{(m)}_T\iff u\notin T\) and
+\(u\notin(C\cap L)\cup\{\hat P\}\): the same condition. If \(t\subseteq L^c\subseteq C\), \(t\notin S_T\) and \(\pi(t)\) is nothing. So \(M_L\) meets \(S^{(m)}_T\) iff \(M\)
+meets \(S_T\), which holds as \(S\in\Fpi_N\).</p>
+<p><em>(b) \(\hat P\in T\).</em> If \(|T|=2\), \(T=\{x,\hat P\}\) with \(x\) non-adjacent to \(\hat P\), i.e. \(x\in\intr L\), and \(\Theta:=\{x\}\) is an admissible separator of \(L\). If
+\(|T|\ge3\), \(T\) has the parity of \(\hat P\), which is the separator parity of \(L\) (the end legs of \(L\) have the other parity), so \(\Theta:=T\setminus\{\hat P\}\subseteq\intr L\)
+has at least two legs of that parity: admissible. Conversely every admissible separator \(\Theta\) of \(L\) gives \(T:=\Theta\cup\{\hat P\}\). Removing \(\hat P\) from the child
+circle leaves the arc \(L\); removing \(\Theta\) leaves the runs of \(L\setminus\Theta\). So \(S^{(m)}_T\) is the set of child pairs inside \(L\), with no leg in \(\Theta\), in
+different runs, and no child pair at \(\hat P\) is in it. The only parent pairs mapping to child pairs inside \(L\) are the pairs inside \(L\), so
+\(\pi_L^{-1}(S^{(m)}_T)=\sep_L(\Theta)\).</p>
+<p>Hence \(M_L\) meets every member of \(\cG_m\) iff \(M\) meets every \(S_T\) of type (a), which holds, and \(M\cap\sep_L(\Theta)\ne\emptyset\) for every admissible \(\Theta\),
+which is “\(L\) is linked”. \(S_L\in\Fpi_m\) iff \(S_L\) is non-degenerate and contains no member of \(\cG_m\), i.e. iff \(M_L\) meets every member; non-degeneracy is then
+automatic by the transversal form (main text) at size \(m\), which holds for every even \(m\ge4\) (at \(m=4\), \(\Fpi_4=\{\emptyset\}\)). So \(S_L\in\Fpi_m\iff L\) is linked.</p>
+<p>(4) Members of \(K\) have equal missing flank sets, so \(X_t=X_b\) on \(L_S\) by the chord formula. If \(\NLSM_m=\mathrm{num}/\mathrm{den}\) with \(\mathrm{num}\not\equiv0\) and
+\(\mathrm{den}\not\equiv0\) on \(V:=L^{(m)}_{S_L}\), and \(\rho_L:H_K\to V\) is linear and onto, then \(\mathrm{num}\circ\rho_L\) and \(\mathrm{den}\circ\rho_L\) are non-zero on \(H_K\):
+a polynomial vanishing on \(H_K\) vanishes on \(\rho_L(H_K)=V\). The denominator does not vanish identically on \(V\) because \(S_L\) is non-degenerate. <span class="qed">∎</span></p></div>
+
+<h3 id="s1-4">S1.4 The inputs of (Bot): full proofs</h3>
+
+<p>Everything here is combinatorial: it concerns the missing set \(M\) and arcs of the leg circle \(C_N\). “Clean” means “not missing”. For an odd chord \(P'\) with
+sides \(A',B'\) and a chord \(Q\) with \(A_Q\subseteq A'\), \(Q\) is <em>o-clean</em> (with respect to \(P'\)) if \(\oin(Q)=\oin(P')\). For \(Q\in\cP_0\) with \(A_Q\subsetneq A'\) and an
+\(M\)-free admissible separator \(\tau\) of \(B_Q\), \(R_\tau\) is the piece of \(B_Q\setminus\tau\) containing \(\intr B'\), with \(y\) adjoined when \(\tau=\{y\}\) with \(y\) even,
+and \(R_\tau^c:=C_N\setminus R_\tau\). We use two statements of the main text, restated:</p>
+<ul>
+<li>(W-avoidance) If \(B'\) is linked and \(A_Q\subsetneq A'\), every \(M\)-free admissible separator of \(B_Q\) avoids \(\intr B'\), and an odd one avoids \(B'\). No
+hypothesis on \(S\).</li>
+<li>(Interval, top half) For \(P^*\in\cS_B\) and \(Q\) in its flank class \(K^*\), \(A_Q\subseteq A^*\).</li>
+</ul>
+
+<div class="thm" id="s1-l-side"><p><span class="thmhead">Lemma S1.4.1 (side lemma).</span> Let \(S\in\Fpi_N\), \(P'\in\cS_B\) with
+\(A'=[\alpha,\omega]\), \(B'=[\omega+1,\alpha-1]\), and let \(Q\in\cP_1\) with \(A_Q=[a,a_1]\subseteq A'\) and \(\oin(Q)=\oin(P')\) (\(Q=P'\) allowed; equality of \(\ein\) is
+not needed). Suppose \(\{x\}\), \(x\) odd, is an \(M\)-free separator of \(A_Q\) (so \(a\lt x\lt a_1\) along \(A'\)), and the piece \(R:=[x,a_1]\) contains a pair of \(\oin(Q)\).
+Then there is \(Z\in\cS_B\) with \(A_Z\subseteq[x,\omega]\subsetneq A'\). The mirror statement holds for the piece \([a,x]\) and \([\alpha,x]\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> Put \(D_L:=[\alpha,a-1]\), \(D_R:=[a_1+1,\omega]\) (each empty or of even length) and \(D:=D_L\cup D_R\).
+<em>Standing facts.</em></p>
+<ul>
+<li>(s1) Every pair joining \([a,x-1]\) to \([x+1,a_1]\) is clean (\(\{x\}\) is \(M\)-free).</li>
+<li>(s2) \(\square_Q=\evens(A_Q)\times\odds(B_Q)\) is clean (\(Q\in\cP_0\)), and \(\odds(D)\subseteq B_Q\).</li>
+<li>(s3) Every missing oo pair inside \(A'\) is in \(\oin(P')=\oin(Q)\), hence inside \(A_Q\); so an oo pair inside \(A'\) with a leg in \(D\) is clean.</li>
+</ul>
+<p><em>The \(B'\)-keeping step.</em> Let \(Q_j\in\cP_1\setminus\cS_B\) with \(A_{Q_j}\subsetneq A'\), and let \(\tau\) be an \(M\)-free admissible separator of \(B_{Q_j}\). By W-avoidance,
+\(R_\tau\supseteq B'\) (an odd \(\tau\) avoids \(B'\), so \(B'\) is connected in \(B_{Q_j}\setminus\tau\); for \(\tau=\{y\}\), \(y\notin\intr B'\), and \(y\) is adjoined if it is an end leg
+of \(B'\)). \(R_\tau\) is even-ended (bounded by odd \(\tau\)-legs, by \(y\), or by the even end legs of \(B_{Q_j}\)) with \(|R_\tau|\ge3\), and \(R_\tau\subsetneq B_{Q_j}\) (\(\tau\) is
+non-empty and interior). Let \(Q_j^+\) be the odd chord with \(B_{Q_j^+}=R_\tau\), so \(A_{Q_j^+}=R_\tau^c\supsetneq A_{Q_j}\). Then \(Q_j^+\in\cP_1\): \(\square_{Q_j^+}=\evens(A_{Q_j^+})\times
+\odds(R_\tau)\); \(\evens(A_{Q_j})\times\odds(R_\tau)\subseteq\square_{Q_j}\); an even leg \(e\) of \(A_{Q_j^+}\setminus A_{Q_j}=B_{Q_j}\setminus R_\tau\) is not in \(\tau\) (\(\tau\) has no even leg, or
+\(\tau=\{y\}\) with \(y\in R_\tau\)), so \(e\) lies in another run or piece of \(B_{Q_j}\setminus\tau\) than \(o\in\odds(R_\tau)\) (\(o\notin\tau\)), and \(\{e,o\}\in\sep_{B_{Q_j}}(\tau)\) is
+clean; \(\ein(Q_j^+)\supseteq\ein(P')\ne\emptyset\) (\(B'\subseteq R_\tau\)); \(\oin(Q_j^+)\supseteq\oin(Q_j)\ne\emptyset\). Even-ended sides shrink strictly and contain \(B'\), so
+every sequence \(Q_0\), \(Q_{j+1}:=Q_j^+\) (with <em>any</em> choice of \(M\)-free separator at each step, continued while \(Q_j\notin\cS_B\)) terminates, and it terminates at a chord
+of \(\cS_B\).</p>
+<p><em>Start.</em> \(Q_0\) is the chord with \(A_{Q_0}=R=[x,a_1]\). \(Q_0\in\cP_1\): \(\square_{Q_0}=\evens(R)\times\odds(B_Q)\,\cup\,\evens(R)\times\odds([a,x-1])\); the first part
+lies in \(\square_Q\), the second in \(\sep_{A_Q}(\{x\})\) (\(x\notin\evens(R)\)), clean by (s1); \(\ein(Q_0)\supseteq\ein(P')\ne\emptyset\); \(\oin(Q_0)\ne\emptyset\) by the choice of
+\(R\).</p>
+<p><em>Invariant.</em> \(\mathrm{H}_j\): \(A_{Q_m}=[x,w_m]\) for every \(m\le j\). \(\mathrm H_0\) holds. Assume \(\mathrm H_j\) and \(Q_j\notin\cS_B\); put \(w:=w_j\) (\(w\in[a_1,\omega]\)
+since odd-ended sides grow). \(A_{Q_j}\subsetneq A'\) (\(x\ne\alpha\), as \(x\in\intr A_Q\)), so W-avoidance applies. \(B_{Q_j}=[w+1,x-1]=(w,\omega]\cup B'\cup D_L\cup[a,x-1]\). Let \(\tau\)
+be the chosen \(M\)-free separator of \(B_{Q_j}\).</p>
+<p><em>The next odd-ended side lies in \([x,\omega]\) if and only if \(\tau\cap[\alpha-1,x-2]=\emptyset\).</em> 
+The leg \(x-1\) is an end leg of \(B_{Q_j}\), so it is never in \(\tau\); hence \(\tau\cap[\alpha-1,x-1]=\tau\cap[\alpha-1,x-2]\). If \(\tau\) avoids \([\alpha-1,x-2]\), then no
+\(\tau\)-leg lies in \(\intr B'\cup[\alpha-1,x-1]\), so \(R_\tau\supseteq B'\cup[\alpha,x-1]\) (an even singleton \(\tau=\{\omega+1\}\) is adjoined), \(A_{Q_j^+}\subseteq[x,\omega]\), and
+\(A_{Q_j^+}\ni x\) (as \(A_{Q_j^+}\supseteq A_{Q_j}\)), so \(A_{Q_j^+}=[x,w^+]\). If \(\tau\) contains \(y\in[\alpha-1,x-2]\), the legs of \([y+1,x-1]\ne\emptyset\) lie on the far side of \(y\)
+from \(B'\), so they are not in \(R_\tau\) and belong to \(A_{Q_j^+}\), outside \([x,\omega]\).</p>
+<p><em>Two auxiliary facts under \(\mathrm H_j\).</em></p>
+<ul>
+<li>(s6, history) If \(r\in A_{Q_j}\setminus R\) is even and \(s\in[\alpha,x-1]\), then \(\{r,s\}\) is clean.  <em>Proof.</em> \(r\)
+entered the odd-ended side at some step \(m\lt j\): \(r\in B_{Q_m}\setminus R_{\tau_m}\), and \(r\notin\tau_m\) (\(\tau_m\) has no even leg, or \(\tau_m=\{y\}\) with \(y\in R_{\tau_m}\)). By
+\(\mathrm H_{m+1}\) and the equivalence above, \(\tau_m\cap[\alpha-1,x-2]=\emptyset\), and \(x-1\notin\tau_m\); so \(s\notin\tau_m\) and \(R_{\tau_m}=B_{Q_{m+1}}\supseteq[\alpha,x-1]\ni s\).
+(In particular \(s\ne y\): a singleton \(y\in[\alpha,x-2]\) would put \([y+1,x-1]\) into the next odd-ended side, against \(\mathrm H_{m+1}\).) So \(r\) and \(s\) lie in different
+runs or pieces of \(B_{Q_m}\setminus\tau_m\): \(\{r,s\}\in\sep_{B_{Q_m}}(\tau_m)\), clean. \(\square\) This is an induction over the whole sequence, using the invariant at every
+earlier step.</li>
+<li>(s4) Every pair \(\{s,r\}\) with \(s\in[a,x-1]\) and \(r\in[x+1,w]\) is clean: if \(r\in A_Q\), by (s1); if \(r\in D_R\) and both legs are odd, by (s3); if \(s\) is even and \(r\)
+odd, by (s2) (\(r\in\odds(D_R)\subseteq\odds(B_Q)\), \(s\in\evens(A_Q)\)); if \(s\) is odd and \(r\) even, by \(\square_{Q_j}\) (\(r\in\evens(A_{Q_j})\), \(s\in\odds(B_{Q_j})\)); if both are even, then
+\(r\in D_R\subseteq A_{Q_j}\setminus R\) and \(s\in[\alpha,x-1]\), so by (s6).</li>
+<li>(s5) Every pair \(\{o,u\}\) with \(o\in\odds(D_L)\) and \(u\in[a,w]\) (\(x\) included) is clean: if \(u\) is odd, by (s3); if \(u\) is even and in \(A_Q\), by (s2)
+(\(o\in\odds(B_Q)\)); if \(u\) is even and in \(D_R\), by \(\square_{Q_j}\) (\(u\in\evens(A_{Q_j})\), \(o\in\odds(B_{Q_j})\)).</li>
+</ul>
+<p><em>The zone is avoided.</em> Suppose \(\tau\cap[\alpha-1,x-2]\ne\emptyset\). <em>Coverage</em> : \(\tau\) is an even
+singleton or has only odd legs (admissibility). An even singleton \(\{y\}\) in the zone has \(y\le x-3\) (\(x-2\) is odd) and \(y\ne a-2\) (\(a-2\) is odd), so
+\(y\in[a-1,x-3]\) (case A(a)) or \(y\in[\alpha-1,a-3]\) (case C). An odd \(\tau\) avoids \(B'\) (W-avoidance), and \(\alpha-1\) is even, so its legs in the zone are odd legs of
+\(D_L\cup[a,x-2]\); either it meets \([a,x-2]\) (case A(b)), or not and \(a-2\in\tau\) (case B), or it meets \(D_L\) only below \(a-2\) (case D). Exactly one case applies. In each
+case a named leg set \(G\) with \(S_G\in\cG_N\) (in cases A(a) and B an opposite-parity pair, so that \(S_G\) is an odd-chord diamond; in the other cases
+at least two legs of one parity) has \(M\cap S_G=\emptyset\), against \(S\in\Fpi_N\):</p>
+<ul>
+<li><em>A(a): \(\tau=\{y\}\), \(y\) even, \(y\in[a-1,x-3]\).</em> \(G:=\{y,x\}\), an opposite-parity non-adjacent pair (so \(S_G\) is an odd-chord diamond). Its components are
+\(I:=[y+1,x-1]\subseteq[a,x-1]\) and \(O\). Pairs \(I\times(O\cap B_{Q_j})\) join the two pieces of \(B_{Q_j}\setminus\{y\}\), so lie in \(\sep_{B_{Q_j}}(\{y\})\); pairs \(I\times[x+1,w]\) are clean
+by (s4).</li>
+<li><em>A(b): \(\tau\) odd, \(\tau_A:=\tau\cap[a,x-2]\ne\emptyset\).</em> \(G:=\tau_A\cup\{x\}\), odd legs, at least two (if \(|\tau_A|=1\), \(G=\{t,x\}\) with \(t\le x-2\), non-adjacent).
+Components: segments \(G_1,\dots,G_m\subseteq[a+1,x-1]\) between consecutive legs of \(G\) (they hold no \(\tau\)-leg), and \(K_0\supseteq[x+1,w]\cup(w,\omega]\cup B'\cup D_L\cup
+[a,\min\tau_A-1]\). Segment–segment pairs and segment–(non-\(\tau\) leg of \(K_0\cap B_{Q_j}\)) pairs lie in different runs of \(B_{Q_j}\setminus\tau\): in \(\sep_{B_{Q_j}}(\tau)\). A segment
+leg against a leg \(t\) of \(\tau\setminus\tau_A\): \(t\) is odd and lies in \(D\) (not in \(B'\) by W-avoidance, not in \(A_{Q_j}\)), so the pair is clean by (s3) (segment leg odd) or
+(s2) (segment leg even, \(t\in\odds(B_Q)\)). Segment–\([x+1,w]\) pairs: (s4).</li>
+<li><em>B: \(\tau\) odd, \(\tau\cap[a-1,x-2]=\emptyset\), \(a-2\in\tau\)</em> (so \(D_L\ne\emptyset\)). \(G:=\{a-1,x\}\), opposite parity, non-adjacent (\(a-1\le x-3\)).
+\(I:=[a,x-1]\) lies in the run \([a-1,x-1]\) of \(B_{Q_j}\setminus\tau\). Pairs \(I\times(O\cap B_{Q_j})\): non-\(\tau\) legs are in other runs (\(\sep_{B_{Q_j}}(\tau)\)); \(\tau\)-legs are odd legs of
+\(D\) ((s3)/(s2)). Pairs \(I\times[x+1,w]\): (s4).</li>
+<li><em>C: \(\tau=\{y\}\), \(y\) even, \(y\in[\alpha-1,a-3]\).</em> \(G:=\{y,y+2,\dots,a-1\}\), even, at least two legs. Components: the odd singletons \(y+1,\dots,a-2\) (all in
+\(\odds(D_L)\)) and \(K:=[a,y-1]\). Odd–odd pairs: (s3). An odd singleton \(o\) against \(K\cap[a,w]\): (s5); against \(K\cap[w+1,y-1]\): the other piece of \(B_{Q_j}\setminus\{y\}\),
+so \(\sep_{B_{Q_j}}(\{y\})\).</li>
+<li><em>D: \(\tau\) odd, \(\tau\cap[a-2,x-2]=\emptyset\), \(\tau\cap D_L\ne\emptyset\).</em> Let \(t^*\) be the leg of \(\tau\cap D_L\) nearest \(a\) (\(t^*\le a-4\)).
+\(G:=\{t^*+1,t^*+3,\dots,a-1\}\), even, at least two legs. Components: the odd singletons \(t^*+2,\dots,a-2\) and \(K:=[a,t^*]\). Odd–odd: (s3). \(o\) against \(K\cap[a,w]\):
+(s5); against \(K\cap[w+1,t^*]\): non-\(\tau\) legs lie in runs other than \(o\)'s run \([t^*+1,x-1]\), so \(\sep_{B_{Q_j}}(\tau)\); \(\tau\)-legs are odd legs of \(D\), (s3).</li>
+</ul>
+<p>So \(\mathrm H_{j+1}\) holds. The sequence ends (even-ended sides shrink) at \(Z\in\cS_B\) with \(A_Z=[x,w]\subseteq[x,\omega]\subsetneq A'\). The mirror follows by the
+parity-preserving reflection \(v\mapsto N+2-v\). <span class="qed">∎</span></p>
+<p class="note">A computation outside \(\Fpi\) (26&nbsp;554 zone steps, each classified A/B/C/D with an unmet \(G\)) was run in the review as evidence only.</p></div>
+
+<div class="thm" id="s1-c-oddsing"><p><span class="thmhead">Corollary S1.4.2 (no odd singleton).</span> Let \(S\in\Fpi_N\) and \(P^*\) be innermost. No
+member \(Q\) of \(K^*\), \(P^*\) included, has an odd singleton \(M\)-free separator of \(A_Q\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> Let \(Q\in K^*\) and \(\{x\}\), \(x\) odd, be \(M\)-free for \(A_Q\). \(A_Q\subseteq A^*\) (interval, top half) and
+\(\oin(Q)=\oin(P^*)\ne\emptyset\), \(Q\in\cP_1\). Every pair of \(\oin(Q)\) lies inside \([a,x]\) or inside \([x,a_1]\) (a pair joining the two and avoiding \(x\) is in
+\(\sep_{A_Q}(\{x\})\), clean). Lemma S1.4.1 or its mirror with \(P'=P^*\), applied to the piece holding such a pair, gives \(Z\in\cS_B\) with \(A_Z\subsetneq A^*\), against
+innermostness. <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s1-l-thin"><p><span class="thmhead">Lemma S1.4.3 (thin runs).</span> Let \(S\in\Fpi_N\), \(P'\in\cS_B\), and \(Q\in\cP_0\) o-clean with
+\(A_Q\subsetneq A'\), \(D:=A'\setminus A_Q=B_Q\setminus B'\). Every \(M\)-free admissible separator \(\tau\) of \(B_Q\) is odd (so \(\tau\subseteq\odds(D)\)), \(B'\) lies in one run \(R_\natural\) of
+\(B_Q\setminus\tau\), and every other run is a single even leg. <em>Corollary:</em> if moreover \(\ein(Q)\ne\emptyset\), the chord \(Q^+\) with \(B_{Q^+}=R_\natural\) is in \(\cP_1\),
+o-clean, with \(h_{Q^+}=h_Q\) and \(A_Q\subsetneq A_{Q^+}\subseteq A'\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> By W-avoidance, \(\tau\subseteq D\cup\{\text{end legs of }B'\}\), and an odd \(\tau\) lies in \(D\).
+<em>\(\tau=\{y\}\), \(y\) even.</em> Let \(V'\) be the piece of \(B_Q\setminus\{y\}\) not containing \(B'\setminus\{y\}\), with \(y\) adjoined; \(V'\subseteq D\cup\{y\}\) is even-ended (ends
+\(y\) and an end of \(B_Q\)) with \(|V'|\ge3\) (\(y\) is interior). \(G:=\evens(V')\) has at least two legs and isolates the odd legs of \(V'\). For \(u\in\odds(V')\subseteq D\): an oo
+pair \(\{u,v\}\) with \(v\in A'\) is inside \(A'\) with a leg in \(D\), clean by o-cleanness (a missing one would be in \(\oin(P')=\oin(Q)\), inside \(A_Q\)); with \(v\in B'\) it joins
+the two pieces of \(B_Q\setminus\{y\}\), so lies in \(\sep_{B_Q}(\{y\})\). An opposite-parity pair \(\{u,e\}\): \(e\in\evens(A_Q)\) gives \(\square_Q\); \(e\in\evens(B_Q)\setminus G\) lies
+in the other piece, \(\sep_{B_Q}(\{y\})\). So \(M\cap S_G=\emptyset\), against \(\Fpi\): this case never occurs. <em>\(\tau\subseteq\odds(D)\).</em> \(B'\) is even-ended and meets no
+\(\tau\)-leg, so it lies in one run \(R_\natural\). Every other run \(X'\) lies in \(D\), bounded by odd \(\tau\)-legs or an even end leg of \(B_Q\), so is even-ended; if
+\(|X'|\ge3\), \(G:=\evens(X')\) gives the same contradiction. So \(|X'|=1\). <em>Corollary.</em> \(R_\natural\supseteq B'\) is even-ended with \(|R_\natural|\ge3\), and
+\(A_{Q^+}=C_N\setminus R_\natural\subseteq A'\). \(\square_{Q^+}=\evens(A_Q\cup(B_Q\setminus R_\natural))\times\odds(R_\natural)\): \(\evens(A_Q)\times\odds(R_\natural)\subseteq\square_Q\); an
+even leg of \(B_Q\setminus R_\natural\) lies in another run (\(\tau\) is odd), so its pairs to \(\odds(R_\natural)\) lie in \(\sep_{B_Q}(\tau)\). Every missing ee pair inside \(B_Q\)
+avoids the odd \(\tau\) and lies in one run (else it would be in \(\sep_{B_Q}(\tau)\)) of at least two legs, i.e. in \(R_\natural\): \(\ein(Q^+)=\ein(Q)\ne\emptyset\). And
+\(A_Q\subseteq A_{Q^+}\subseteq A'\) gives \(\oin(Q)\subseteq\oin(Q^+)\subseteq\oin(P')=\oin(Q)\). <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s1-l-absorb"><p><span class="thmhead">Lemma S1.4.4 (absorption).</span> Let \(S\in\Fpi_N\) and \(P^*\) be innermost. Every o-clean
+\(Q\in\cP_1\) (with respect to \(P^*\)) with \(A_Q\subseteq A^*\) is in \(K^*\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> If \(Q=P^*\), done. Otherwise \(A_Q\subsetneq A^*\), so \(Q\notin\cS_B\) by innermostness: \(B_Q\) has an \(M\)-free
+separator. By Lemma S1.4.3 and its Corollary, \(Q^+\in\cP_1\) is o-clean, \(h_{Q^+}=h_Q\), \(A_Q\subsetneq A_{Q^+}\subseteq A^*\). Iterate; even-ended sides shrink strictly, so the process stops,
+and only at \(Z\in\cS_B\) with \(A_Z\subseteq A^*\) and \(h_Z=h_Q\). Innermostness forces \(A_Z=A^*\), so \(Z=P^*\) and \(Q\in K^*\). <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s1-l-lift"><p><span class="thmhead">Lemma S1.4.5 (lift).</span> Let \(P^*\in\cS_B\), \(P\in K^*\) with \(A_P\subsetneq A^*\), and \(\Theta\)
+an \(M\)-free even separator of \(A_P\) such that the pairs of \(\oin(P)\) lie in at least two runs of \(A_P\setminus\Theta\). Then \(\Theta^*:=\Theta\cup\evens(A^*\setminus A_P)\) is a
+spread \(M\)-free even separator of \(A^*\). No hypothesis on \(S\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> \(D:=A^*\setminus A_P=D_L\cup D_R\), each empty or an even-length arc from an odd end of \(A^*\) to an even
+neighbour of \(A_P\), not both empty; \(\evens(D)\subseteq\intr A^*\). \(\Theta^*\) is even, inside \(\intr A^*\), with \(|\Theta^*|\ge2\): admissible. The runs of \(A^*\setminus\Theta^*\) are
+the odd legs of \(D\) (singletons) and the runs of \(A_P\setminus\Theta\) (the even neighbours of \(A_P\) in \(A^*\) are in \(\Theta^*\)). A pair \(\{u,v\}\in\sep_{A^*}(\Theta^*)\): if both
+legs are in \(A_P\), it lies in \(\sep_{A_P}(\Theta)\), clean. Otherwise one leg \(u\) is an odd leg of \(D\); if \(v\) is odd, \(\{u,v\}\) is an oo pair inside \(A^*\) with a leg outside
+\(A_P\), clean since \(\oin(P^*)=\oin(P)\) lies inside \(A_P\); if \(v\) is even, \(v\in\evens(A_P)\setminus\Theta\) and \(u\in\odds(D)\subseteq\odds(B_P)\), so \(\{u,v\}\in\square_P\), clean.
+The occupied runs of \(\Theta\) are occupied runs of \(\Theta^*\). <span class="qed">∎</span></p></div>
+
+<div class="proof"><p><span class="proofhead">The descent for (Bot).</span>  Let \(S\in\Fpi_N\), \(\cP_1\ne\emptyset\), \(P^*\) innermost, and assume
+(NoSpread): \(P^*\) has no spread \(M\)-free even separator of \(A^*\) (main text, <a href="pion-completeness-A.html#thm-tri">thm-tri</a> and the lemma deriving
+(NoSpread) from it). Put \(P_0:=P^*\). Given \(P_k\in K^*\) (so \(A_{P_k}\subseteq A^*\)): if \(A_{P_k}\) is linked, put \(b:=P_k\) and stop. Otherwise take an \(M\)-free admissible
+separator \(\Theta\) of \(A_{P_k}\). An odd singleton is impossible by Corollary S1.4.2 (which covers \(P^*\) too). So \(\Theta\) is even, and every pair of \(\oin(P^*)\) lies inside one run
+of \(A_{P_k}\setminus\Theta\) (its legs are odd, not in \(\Theta\); a pair joining two runs would be in \(\sep_{A_{P_k}}(\Theta)\)). If these pairs lie in two or more runs, (NoSpread) is
+contradicted directly (\(P_k=P^*\)) or through Lemma S1.4.5 (\(P_k\ne P^*\)). So they lie in one run \(R\), odd-ended (bounded by even \(\Theta\)-legs or odd ends of \(A_{P_k}\)), with
+\(|R|\ge3\). Let \(Q_R\) be the chord with \(A_{Q_R}=R\). \(\square_{Q_R}=\evens(R)\times(\odds(B_{P_k})\cup\odds(A_{P_k}\setminus R))\): the first block lies in \(\square_{P_k}\); the
+second consists of pairs between \(R\) and other runs (\(\Theta\) is even, so odd legs are not in \(\Theta\)), in \(\sep_{A_{P_k}}(\Theta)\); so \(Q_R\in\cP_0\).
+\(\ein(Q_R)\supseteq\ein(P_k)\ne\emptyset\) (\(B_{Q_R}\supseteq B_{P_k}\)); \(\oin(Q_R)=\oin(P^*)\) (\(\subseteq\) as \(R\subseteq A_{P_k}\); \(\supseteq\) as all these pairs are inside \(R\)). So
+\(Q_R\in\cP_1\) is o-clean and \(A_{Q_R}\subsetneq A_{P_k}\subseteq A^*\); by Lemma S1.4.4, \(Q_R\in K^*\). Put \(P_{k+1}:=Q_R\). Odd-ended sides shrink strictly, so the process stops at
+a member \(b\) of \(K^*\) with \(A_b\) linked. <span class="qed">∎</span></p></div>
+
+<h3 id="s1-5">S1.5 Further restored steps</h3>
+<p>Three shorter steps that the main text states with less detail than its sources.</p>
+
+<h4 id="s1-5-1">(a) The shortening lemma, in full</h4>
+
+<p><em>Statement.</em> Let \(P'\) be an odd chord with \(B'\) linked, \(A'=[\alpha,\omega]\); \(\Theta\) an \(M\)-free even separator of \(A'\); \(\mathsf X=[x_0,x_1]\) before
+\(\mathsf Y=[y_0,y_1]\) two occupied runs of \(A'\setminus\Theta\) (so \(x_1+1,y_0-1\in\Theta\) and \(x_1,y_0\) are odd); \(\tau\) an \(M\)-free admissible separator of
+\(B_{\mathsf X}:=B_{Q_{\mathsf X}}\). If \(\tau\) is non-reaching (\(y_0\notin R_\tau^c\)), then \(\Theta':=\Theta\setminus R_\tau^c\) is an \(M\)-free even separator of \(A'\) with
+\(\Theta'\subsetneq\Theta\) that separates \(\mathsf X\) from \(\mathsf Y\); so \(\Theta'\) is spread. The mirror holds for \(\mathsf Y\). No hypothesis on \(S\).</p>
+<div class="proof"><p><span class="proofhead">Proof.</span> (1) <em>\(R_\tau^c\) is an arc with \(\mathsf X\subsetneq R_\tau^c\subseteq A'\).</em> By W-avoidance
+(\(A_{Q_{\mathsf X}}=\mathsf X\subsetneq A'\)), \(\tau\cap\intr B'=\emptyset\) and an odd \(\tau\) avoids \(B'\). So \(R_\tau\supseteq B'\) (for odd \(\tau\), \(B'\) is connected in
+\(B_{\mathsf X}\setminus\tau\); for \(\tau=\{y\}\), \(y\notin\intr B'\) and \(y\) is adjoined if it is an end leg of \(B'\)). \(R_\tau\subseteq B_{\mathsf X}\) is an arc, so \(R_\tau^c\) is an arc
+with \(\mathsf X\subseteq R_\tau^c\subseteq A'\). \(R_\tau^c\ne\mathsf X\): \(\tau\subseteq R_\tau^c\) unless \(\tau=\{y\}\) is an adjoined even singleton, and then the other piece of
+\(B_{\mathsf X}\setminus\{y\}\) (non-empty, \(y\) interior) lies in \(R_\tau^c\).</p>
+<p>(2) <em>\(\Theta'\subsetneq\Theta\).</em> \(R_\tau^c\supsetneq\mathsf X\) extends past \(\mathsf X\) on some side, inside \(A'\). On the right the neighbour \(x_1+1\) is in \(\Theta\); on the
+left either \(x_0=\alpha\) (and \(R_\tau^c\) cannot extend left inside \(A'\)) or \(x_0-1\in\Theta\). So \(R_\tau^c\) contains a \(\Theta\)-leg.</p>
+<p>(3) <em>\(y_0-1\in\Theta'\).</em> The right end \(h\) of \(R_\tau^c\) along \(A'\) is an odd leg of \(\tau\) (\(\tau\) odd), or \(x_1\) (\(R_\tau\) reaches \(x_1+1\)), or \(y-1\)
+(\(\tau=\{y\}\) even, adjoined): odd in every case. If \(y_0-1\in R_\tau^c\), then \(h\ge y_0-1\) and \(h\) odd give \(h\ge y_0\), so \(y_0\in R_\tau^c\), against non-reaching. So
+\(y_0-1\in\Theta\setminus R_\tau^c=\Theta'\), and \(\mathsf X,\mathsf Y\) lie in different runs of \(A'\setminus\Theta'\); both hold missing oo pairs; \(\Theta'\) is a non-empty set of
+even legs of \(\intr A'\) with at least two occupied runs.</p>
+<p>(4) <em>\(\Theta'\) is \(M\)-free.</em> Let \(\{u,v\}\in\sep_{A'}(\Theta')\). If \(u,v\notin\Theta\), they lie in different runs of \(A'\setminus\Theta\) (\(\Theta\supseteq\Theta'\)), so
+the pair is in \(\sep_{A'}(\Theta)\), clean. Otherwise one leg, say \(u=d\), is in \(\Theta\setminus\Theta'=\Theta\cap R_\tau^c\). \(R_\tau^c\) contains no \(\Theta'\)-leg, so it lies in one
+run \(R_\ast\) of \(A'\setminus\Theta'\). <em>When \(\tau=\{y\}\) with \(y\in A'\setminus\Theta'\), \(y\) is adjacent to \(R_\tau^c\)</em> (it bounds the piece \(R_\tau\) to which it is
+adjoined, or lies in \(R_\tau^c\)) <em>and so also lies in \(R_\ast\).</em> \(v\notin R_\ast\) (different runs), so \(v\notin R_\tau^c\), i.e. \(v\in R_\tau\), and \(v\ne y\). So \(v\) lies in
+\(R_\tau\setminus\{y\}\), the component of \(B_{\mathsf X}\setminus\tau\) holding \(\intr B'\). <em>And \(d\notin\mathsf X\cup\tau\):</em> \(d\in\Theta\) is not in the run \(\mathsf X\);
+\(d\) is even, so not in an odd \(\tau\); and \(d\ne y\) because \(y\in R_\tau\) while \(d\in R_\tau^c\). So \(d\in R_\tau^c\setminus(\mathsf X\cup\tau)\) lies in another component of
+\(B_{\mathsf X}\setminus\tau\), and \(\{d,v\}\in\sep_{B_{\mathsf X}}(\tau)\), clean. <span class="qed">∎</span></p>
+<p class="note">When \(|\Theta|=1\) no \(M\)-free separator is non-reaching, since \(\Theta'\) would be empty, against (3).</p></div>
+
+<h4 id="s1-5-2">(b) The closed-piece lemma, step (0)</h4>
+
+<p>In the setting of the three-separator lemma (main text, <a href="pion-completeness-A.html#thm-tri">thm-tri</a>), let \(V\ne R_\tau\) be a \(\tau\)-piece (for \(\sigma\) read \(\mathsf Y\), \(\sigma\)), i.e. a component of
+\(C_N\setminus(\mathsf X\cup\tau)\) other than the one containing \(\intr W\). Then \(V\subseteq A'\setminus\mathsf X\), \(V\) is an arc, and the legs \(b^-,b^+\) just outside its two ends are
+distinct and lie in \(\mathsf X\cup\tau\): they are distinct because the complement of \(V\) contains \(\mathsf X\), which has at least three legs, so is not a single leg. The legs of
+\(G_V\) outside \(\Theta\) are even \(\tau\)-legs, so by admissibility they exist only if \(\tau=\{t\}\) is an even singleton. In that case \(t\) lies in the interior of \(B_{\mathsf X}\),
+so \(t\notin\{x_0-1,x_1+1\}\), and the two \(\tau\)-pieces are the arcs \([x_1+1,t-1]\) and \([t+1,x_0-1]\), both non-empty and both adjacent to \(t\); hence \(t\in\{b^-,b^+\}\), and
+\(t\in G_V\) because \(G_V\) contains every even \(\tau\)-leg adjacent to a leg of \(V\).</p>
+
+<h4 id="s1-5-3">(c) Members of the list are non-degenerate: the diamond anchors</h4>
+
+<p>In the proof that every member of \(\cG_N\) is non-degenerate (main text, <a href="pion-completeness-A.html#prop-cl2">prop-cl2</a>, part (a)), a chord \(P=(a,b)\) with leg arc
+\(I=[a,b-1]\) is shown not to vanish on \(L_{S_G}\) by a witness of type (w1) (a pair of \(I'\times(I^c)'\) outside \(S_G\), where \(I'\), \((I^c)'\) are the legs of the non-end parity) or
+(w2) (two pairs \(t_0,t_1\notin S_G\) with \(\mathrm{rep}_I(t_0)=0\ne\varrho(t_0)\), where \(\mathrm{rep}_I\) is the main text's representation \(\mathrm{rep}_L\) of \(X_P\) for the side \(L=I\), read as a coefficient vector on pairs, which forces the multiple of the relation to be 0, and \(\mathrm{rep}_I(t_1)\ne0\)). For an odd-chord diamond
+\(S_{\{u,v\}}\) with \(u\) of parity \(a+1\) and \(v\) of parity \(a\): if \(u\in I\) or \(v\in I^c\), a pair through \(u\) (resp. \(v\)) is a (w1) witness; otherwise a (w1) pair inside one arc
+exists unless \(\{u,v\}=\{a-1,b-1\}\) (the anchor) or \(\{u,v\}=\{b,a\}\) (the anchor shifted by one). For these two the (w2) pairs are:</p>
+<ul>
+<li>anchor \(\{u,v\}=\{a-1,b-1\}\): \(t_0:=\{v,j\}\) with \(j\in I^c\) of parity \(a\), not adjacent to \(v\), and \(t_1:=\{u,a+1\}\);</li>
+<li>shifted anchor \(\{u,v\}=\{b,a\}\): \(t_0:=\{v,j\}\) with \(j\in I^c\) of parity \(a\), and \(t_1:=\{b,b-2\}\).</li>
+</ul>
+<p>All four pairs have a leg in \(\{u,v\}\), so none of them is in \(S_{\{u,v\}}\) (whose pairs avoid \(u\) and \(v\)). The choice of \(\mathrm{rep}_I\) matters: for the representation built on the other side of \(P\) the pair \(t_0\) has coefficient 1 and these witnesses do not apply.</p>
+</section>
+
+<section id="s2">
+<h2>S2. Proof of the T-separated zero theorem</h2>
+
+<p><em>Status.</em> This is the proof of the companion note of this project, restated in the notation of the main text. The note's proof was reviewed once,
+blind, by a model instance of the same family (claude-opus-5-5), with independent code; the three statements the note marks as added in drafting were
+re-derived by the reviewer of that draft. The note's latest version has not been reviewed as a draft; its sections containing everything below are unchanged
+from the reviewed version. The theorem is also machine-checked in Lean, for every even \(N\ge4\) and every admissible \(T\): Theorem S2.5 (every quartic
+diagram vanishes), Theorem S2.10 (the quartic rules give the NLSM) and Theorem S2.1 itself, which the Lean proof of the main theorem uses. The Lean statement
+of S2.1 is pointwise (\(\NLSM_N=0\) at every point of \(\cK_T\) at which no odd chord vanishes); its equivalence with the vanishing of the rational function
+is also proved in Lean. The Lean proofs follow the project's formalisation blueprint, not the text below. Details and caveats: §<a href="#s3">S3</a> and the main
+paper's Methods and provenance.</p>
+
+<div class="thm" id="s2-t-main"><p><span class="thmhead">Theorem S2.1 (T-separated zeros; main text <a href="pion-completeness-A.html#thm-tsplit">thm-tsplit</a>).</span>
+Let \(N\ge4\) be even and \(T\) a set of at least two legs of one parity. Then \(\NLSM_N\equiv0\) on the T-separated locus
+\(\cK_T=\{X: c_{a,b}=0\ \text{whenever}\ a,b\ \text{lie in different arcs of}\ T\}\).</p></div>
+<p>Since \(\cA_N=(-1)^{N/2-1}\NLSM_N\), the statement is the same for \(\cA_N\). If \(T\) has at least two legs, all of one parity, consecutive legs of \(T\) differ by
+an even number, so there are exactly \(|T|\) arcs, each non-empty and of odd length; legs in different arcs are never adjacent, so every condition is a mesh
+variable. For three legs this is the split kinematics of [CEU]; for two legs \(T=\{a,b\}\) it is the causal diamond anchored at the same-parity chord
+\(X_{a+1,b+1}\), and \(T=\{i-1,i+1\}\) gives the single-leg locus of leg \(i\); for a whole parity class it is \(\{c_{e,e'}=0\}\) or \(\{c_{o,o'}=0\}\).</p>
+
+<h3 id="s2-1">S2.1 Quartic diagrams</h3>
+<p>For dual points \(u_1\lt u_2\lt u_3\lt u_4\) in cyclic order let \(B(u,v):=\{u,\dots,v-1\}\) (cyclically). Summing the mesh variables over two blocks telescopes
+(the <em>block formula</em>):
+\[ \sum_{a\in B(u_1,u_2),\ b\in B(u_3,u_4)}c_{a,b}=X_{u_1u_3}+X_{u_2u_4}-X_{u_2u_3}-X_{u_4u_1}, \]
+with edges read as 0; no pair in the sum is adjacent. A <em>quadrangulation</em> \(\Gamma\) of the \(N\)-gon on the dual points has \((N-2)/2\) quads and \((N-4)/2\) diagonals;
+it is dual to a planar quartic tree (quads ↔ vertices, diagonals ↔ propagators, edges ↔ external legs). A quad with corners \(u_1\lt u_2\lt u_3\lt u_4\) has four sides
+\((u_k,u_{k+1})\); the side \((u,v)\) carries the block \(B(u,v)\), and the four blocks of a quad partition the legs. Every sub-polygon cut off by a diagonal has an even
+number of vertices, so every block is odd, every diagonal is an odd chord, and consecutive corners of a quad have opposite parity.</p>
+<p><em>Polarity.</em> For \(\pi\in\{0,1\}\), a side \((u,v)\) of a quad is a <em>+ slot</em> if \(u\equiv\pi\), otherwise a <em>− slot</em>. Corners alternate in parity, so every quad has
+exactly two + slots, and they are opposite sides. (i) The side of leg \(a\) (the edge \((a,a+1)\)) is a + slot iff \(a\equiv\pi\). (ii) Every diagonal \((u,v)\) is a + slot in
+exactly one of its two quads: it is the side \((u,v)\) of one and \((v,u)\) of the other, and \(u-v\) is odd. (This is the only slot labelling that the quartic rules of
+[CHZ, eq. (4)] allow; here the rules only define a rational function.)</p>
+<p><em>Vertex factor and diagram sum.</em> At a quad \(q\) with + blocks \(B_+\), \(B_+'\) put
+\[ n^\pi_q:=\sum_{a\in B_+,\ b\in B_+'}c_{a,b}=X_{u_1u_3}+X_{u_2u_4}-(\text{the two }X\text{ of the − sides of }q), \]
+and \(\mathrm{Q}^\pi_N:=\sum_\Gamma\prod_{q\in\Gamma}n^\pi_q\big/\prod_{C\in\mathrm{diag}(\Gamma)}X_C\). At \(N=4\) there is one quad, whose − sides are edges, so
+\(\mathrm Q^\pi_4=X_{1,3}+X_{2,4}=\cA_4\) for both \(\pi\).</p>
+
+<h3 id="s2-2">S2.2 Every diagram vanishes on \(\cK_T\)</h3>
+<p>Fix \(T\) and take \(\pi_T:=\) the parity opposite to \(T\) (so the legs of \(T\) sit in − slots). Fix \(\Gamma\). A side of a quad is <em>live</em> if its block contains a leg of
+\(T\); a quad is <em>good</em> if both its − sides are live and neither + side is.</p>
+
+<div class="thm" id="s2-l-good"><p><span class="thmhead">Lemma S2.2 (a good quad exists).</span> Every quadrangulation has a good quad.</p></div>
+<div class="proof"><p><span class="proofhead">Proof (descent walk).</span> Pick \(t_0\in T\) and let \(q_0\) be the quad with the edge of \(t_0\) as a side; that side is a − slot and
+live. Invariant: the current quad \(q\) has a live − side \(e\) (the entry), and some other side of \(q\) is also live. At \(q_0\) this holds because the other three blocks
+contain every leg except \(t_0\), and \(|T|\ge2\). Step: if no + side of \(q\) is live, the other live side is the second − side, and \(q\) is good. Otherwise pick a live + side
+\(D\). \(D\) is not an edge (a + edge carries a leg of parity \(\pi_T\), not in \(T\)), so it is a diagonal; let \(q'\) be the quad on its other side. In \(q'\), \(D\) is a − slot, and it
+is live: seen from \(q'\) its block is the union of the blocks of the other three sides of \(q\), which contains the entry block of \(q\). The other three sides of \(q'\)
+partition the block of \(D\) as seen from \(q\), which meets \(T\), so one of them is live. The invariant holds at \(q'\). Each step moves into the block of the exit side as seen
+from \(q\), and the next exit block is a proper subset of it, so the walk terminates. <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s2-l-factor"><p><span class="thmhead">Lemma S2.3 (the good vertex factor vanishes).</span> If \(q\) is good with + blocks
+\(B_1\), \(B_3\), every pair \((a,b)\in B_1\times B_3\) lies in \(S_T\); hence \(n^{\pi_T}_q\) vanishes on \(\cK_T\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> \(B_1\) and \(B_3\) contain no leg of \(T\), so each is a run of consecutive legs inside a single arc. The − blocks
+\(B_2\), \(B_4\) each contain a leg of \(T\). Going round the circle from \(B_1\) to \(B_3\) in either direction passes through \(B_2\) or \(B_4\), so \(a\in B_1\) and \(b\in B_3\) lie in different
+arcs; they are non-adjacent by the block formula. <span class="qed">∎</span></p>
+<p class="note">No boundary case needs separate treatment (\(|T|=2\), single-leg loci, \(|T|=N/2\) with single-leg blocks, arcs of length 1, blocks wrapping past leg \(N\)): the argument
+uses only whether a block meets \(T\).</p></div>
+
+<div class="thm" id="s2-l-nondeg"><p><span class="thmhead">Lemma S2.4 (no planar variable vanishes on \(\cK_T\)).</span> For every chord \(C\), \(X_C\not\equiv0\)
+on \(\cK_T\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> Let \(C\) have block \(B\), \(2\le|B|\le N-2\), and complement \(B^c\). It suffices to find \(a,b\in B\), \(c,d\in B^c\) such that
+none of the pairs \(ab\), \(cd\), \(ac\), \(bd\) is in \(S_T\): then put \(p_a=k\), \(p_d=-k\), \(p_b=l\), \(p_c=-l\) with \(k^2=l^2=0\ne2k\cdot l\) (complex momenta) and all other momenta 0;
+every \(s_{xy}\) vanishes except those of \(ab,cd,ac,bd\), so the point lies in \(\cK_T\), and \(X_C=(k+l)^2\ne0\). If \(B\) and \(B^c\) both contain legs of \(T\), say \(t\in B\), \(t'\in
+B^c\), take \(a=t\), \(d=t'\) and any other \(b\in B\), \(c\in B^c\): each of the four pairs involves \(t\) or \(t'\), and pairs with a leg in \(T\) are never in \(S_T\). If \(B\) contains no
+leg of \(T\), it lies in one arc \(A\); write \(B=\{i,\dots,j-1\}\) and take \(a=i\), \(b=j-1\), \(c=i-1\), \(d=j\): \(ac\) and \(bd\) are adjacent, \(ab\) lies in \(A\), and \(cd\) either
+involves a leg of \(T\) or lies in \(A\). If \(B^c\) contains no leg of \(T\), exchange \(B\) and \(B^c\) (\(X_C\) is symmetric). <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s2-t-diag"><p><span class="thmhead">Theorem S2.5 (every diagram vanishes).</span> With the legs of \(T\) in − slots
+(\(\pi=\pi_T\)), every term \(\prod_qn^{\pi_T}_q/\prod_CX_C\) of \(\mathrm Q^{\pi_T}_N\) restricts to 0 on \(\cK_T\), and so does \(\mathrm Q^{\pi_T}_N\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> \(\cK_T\) is a linear subspace, hence irreducible. The denominator of a term is a product of \(X\)'s, none vanishing
+identically on \(\cK_T\) (Lemma S2.4); the numerator contains the factor of a good quad (Lemma S2.2), which vanishes on \(\cK_T\) (Lemma S2.3). <span class="qed">∎</span></p>
+<p class="note">With the opposite polarity most diagrams do not vanish individually (24 of 24 (\(T\), diagram) pairs at \(N=6\) are non-zero), although the sum does, by
+Theorem S2.1.</p></div>
+
+<h3 id="s2-3">S2.3 The diagram sum is the NLSM amplitude</h3>
+<div class="thm" id="s2-l-struct"><p><span class="thmhead">Lemma S2.6 (structure and factorisation).</span> (i) \(\mathrm Q^\pi_N\) is homogeneous of degree 1, with
+simple poles only at odd chords (\((N-2)/2\) linear numerators over \((N-4)/2\) distinct odd chords). (ii) For an odd chord \(C=(i,j)\),
+\(\Res_C\mathrm Q^\pi_N:=(X_C\mathrm Q^\pi_N)|_{X_C=0}=\mathrm Q^{\pi_L}_L\,\mathrm Q^{\pi_R}_R\), where \(L\) is the sub-polygon with vertices \(i,\dots,j\) and \(R\) the one with
+vertices \(j,\dots,N,1,\dots,i\), each relabelled from 1 in the listed order with \(X_C\) as an edge, and \(\pi_L\equiv\pi-(i-1)\), \(\pi_R\equiv\pi-(j-1)\) (mod 2).</p></div>
+<div class="proof"><p><span class="proofhead">Proof of (ii).</span> Write \(\mathrm Q=G/X_C+H\), \(G\) collecting the quadrangulations containing \(C\); no denominator of \(G\) or \(H\)
+contains \(X_C\), so \(\Res_C\mathrm Q=G|_{X_C=0}\). The quadrangulations containing \(C\) correspond to pairs \((\Gamma_L,\Gamma_R)\). A quad keeps its corners, so its factor is the same
+expression with \(X_C\) read as an edge of the sub-polygon; \(X_C\) enters \(n_q\) only when \(C\) is a − side of \(q\), and is 0 in both pictures. The + rule transports: a side \((u,v)\)
+of \(L\) is + iff \(u\equiv\pi\) iff \(u-i+1\equiv\pi_L\); the side \((j,i)\) is + in \(\Gamma\) iff \(j\equiv\pi\), and in \(L\) it is the edge \(j-i+1\), + iff \(j-i+1\equiv\pi_L\). The same
+holds for \(R\), since \(N\) is even. <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s2-l-nlsm"><p><span class="thmhead">Lemma S2.7 (the NLSM side).</span> Write \(A^{\phi^3}_N(X+\delta v_0)=\sum_ja_j\delta^{-j}\) at large
+\(\delta\). (a) \(a_j=0\) for \(j\lt N-2\). (b) \(\Res_C\cA_N=\cA_L\cA_R\) on every odd chord (with \(L,R\) as above). (c) \(\cA_N\equiv0\) on every single-leg locus \(\cK_{i-1,i+1}\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> Each \(a_j\) is homogeneous of degree \(j-(N-3)\). An odd chord is not shifted and enters only as \(1/X_C\), so
+\(A^{\phi^3}(X+\delta v_0)=A_LA_R/X_C+(\text{terms free of }X_C)\); on each side \(v_0\) restricts to \(\pm\) that side's own \(v_0\) (both sub-polygons are even), so
+\(\Res_Ca_j=\sum_{i+i'=j}a^L_ia^R_{i'}\). (a) Induction on \(N\); at \(N=4\), \(1/(X_{1,3}-\delta)+1/(X_{2,4}+\delta)\) gives \(a_1=0\), \(a_2=-X_{1,3}-X_{2,4}\). For \(N\ge6\) and
+\(j\lt N-2\) every term of the residue has a factor below its own leading order, so it vanishes; so \(a_j\) is a polynomial (Lemma S2.8) of degree \(j-(N-3)\), hence 0 for
+\(j\lt N-3\) and a constant for \(j=N-3\); that constant vanishes on the single-leg locus of leg 1 by the Tr\((\phi^3)\) row zero (Lemma S1.1.2), since that locus is cut out by mesh
+variables, which \(v_0\) preserves. (b) The residue formula at \(j=N-2\) with (a) on both sides; the signs agree, \((-1)^{L/2-1+R/2-1}=(-1)^{N/2-1}\) as \(L+R=N+2\). (c)
+\(A^{\phi^3}(X+\delta v_0)\) vanishes on each single-leg locus for every \(\delta\) (Lemma S1.1.2 and the invariance of the locus under \(v_0\)). <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s2-l-poly"><p><span class="thmhead">Lemma S2.8.</span> If \(J\) is rational with a square-free denominator dividing \(\prod_{C\ \mathrm{odd}}X_C\) and
+\((X_CJ)|_{X_C=0}=0\) for every odd \(C\), then \(J\) is a polynomial.</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> Write \(J=P/Q\); restricting \(X_CJ\) to \(X_C=0\) gives \(P|/(Q/X_C)|\) with a denominator not identically 0, so
+\(X_C\mid P\) for each \(C\), and \(Q\mid P\). <span class="qed">∎</span></p></div>
+
+<div class="thm" id="s2-l-rows"><p><span class="thmhead">Lemma S2.9 (three row zeros kill a linear form).</span> Let \(N\ge6\). A linear form vanishing on the
+single-leg loci of legs 1, 3, 5 is 0, and so is one vanishing on those of legs 2, 4, 6.</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> A linear form vanishing on the common zero set of some linear forms lies in their span, so the form is
+\(\sum_{A_1}\alpha c=\sum_{A_3}\beta c=\sum_{A_5}\gamma c\), \(A_i\) the mesh variables \(c_{i,j}\) of row \(i\). The only relation among mesh variables (the one relation of the main
+text) has weight on \(c_{2,4}\), which lies in none of \(A_1,A_3,A_5\); so the variables of \(A_1\cup A_3\cup A_5\) are linearly independent, the three expansions agree coefficient
+by coefficient, and the form is supported on \(A_1\cap A_3\cap A_5\). The pairwise intersections are \(A_1\cap A_3=\{c_{1,3}\}\), \(A_1\cap A_5=\{c_{1,5}\}\),
+\(A_3\cap A_5=\{c_{3,5}\}\), and none of these variables lies in the third row, so \(A_1\cap A_3\cap A_5=\emptyset\). For rows 2, 4, 6 use \(c_{1,3}\) and \(A_2\cap A_4\cap A_6=\emptyset\).
+<span class="qed">∎</span></p>
+<p class="note">Two rows of one parity do not suffice: \(c_{1,3}\) vanishes on the single-leg loci of legs 1 and 3. Three rows are what an induction at a single polarity needs,
+since Theorem S2.5 makes only the rows \(i\equiv\pi\) manifest.</p></div>
+
+<div class="thm" id="s2-t-quartic"><p><span class="thmhead">Theorem S2.10 (the quartic rules give the NLSM).</span> For both \(\pi\) and every even \(N\ge4\),
+\(\mathrm Q^\pi_N=\cA_N\).</p></div>
+<div class="proof"><p><span class="proofhead">Proof.</span> Induction on \(N\); \(N=4\) is in S2.1. For \(N\ge6\) let \(D:=\mathrm Q^\pi_N-\cA_N\). On every odd chord,
+\(\Res_CD=\mathrm Q_L\mathrm Q_R-\cA_L\cA_R=0\) by Lemmas S2.6(ii), S2.7(b) and induction at both polarities (\(\pi_L\), \(\pi_R\) take both values). Both terms have square-free
+denominators over odd chords (Lemma S2.6(i); for \(\cA\), the expansion in the proof of Lemma S2.7, where each triangulation contributes each unshifted odd chord at most once),
+so \(D\) is a polynomial (Lemma S2.8), homogeneous of degree 1: a linear form. For the three rows \(i\equiv\pi\), \(T=\{i-1,i+1\}\) has parity \(1-\pi\), so Theorem S2.5 gives
+\(\mathrm Q^\pi_N\equiv0\) on the single-leg locus of \(i\), and Lemma S2.7(c) gives \(\cA_N\equiv0\) there; no pole vanishes identically there (Lemma S2.4). Hence \(D\) vanishes on the
+single-leg loci of legs 1, 3, 5 (\(\pi=1\)) or 2, 4, 6 (\(\pi=0\)), and \(D=0\) by Lemma S2.9. <span class="qed">∎</span></p></div>
+
+<div class="proof"><p><span class="proofhead">Proof of Theorem S2.1.</span> By Theorem S2.10 at \(\pi=\pi_T\), \(\cA_N=\mathrm Q^{\pi_T}_N\), which restricts to 0 on \(\cK_T\)
+by Theorem S2.5. <span class="qed">∎</span></p>
+<p class="note">Inputs: the Tr\((\phi^3)\) row zero (Lemma S1.1.2; also [ACDFH, §3.1.2, §3.2] and [BBKOPT, eq. (15)]), entering only through Lemma S2.7, and the one
+relation. The identification of \(\cA_N\) with the amplitude of the NLSM Lagrangian is [AF, §2–§3] and is not used. The note also gives a second proof through the
+Lovelace–Shapiro amplitude, part of which is written only in outline; it is not used here.</p></div>
+</section>
+
+<section id="s3">
+<h2>S3. Ingredient ledger</h2>
+
+<p>For each ingredient: where its proof is written out, how the underlying claim was reviewed, and where the text comes from. Terms used:</p>
+<ul>
+<li><em>Once, same family:</em> one blind review by another instance of the same model (claude-opus-5-5): the reviewer saw the question and the definitions,
+wrote its expectations, re-derived the claims a verdict rests on on paper or in its own code (never by running the author's scripts), then read the author's
+work.</li>
+<li><em>Cross-family:</em> the author or the reviewer is recorded as claude-fable-5-1. <strong>Caveat for every cross-family entry:</strong> these model identities
+are as reported by each agent from its own system prompt; they were not checked against the served-model record. The project found earlier that agents
+dispatched as “Fable” had in fact been served by claude-opus-5-5 while reporting “Fable”, and that a self-report cannot settle which model served a
+request. Until the transcripts' served-model field is checked for these runs, a cross-family entry should be read as “blind, independent-code review whose
+cross-family independence is unverified”. [reviewed internally; record available on request]</li>
+<li><em>Restated:</em> the proof text follows a restatement made for the project's formalisation blueprint from the reviewed claim; the restatement itself
+was not reviewed unless a targeted review is named.</li>
+<li><em>One-line steps:</em> the draft sources mark some short steps written by the drafting agent “(one line)”; these were checked only in the same-family
+reviews of the drafts. The main text and this supplement do not mark them individually. [reviewed internally; record available on request]</li>
+</ul>
+
+<div class="tablewrap"><table>
+<thead><tr><th>ingredient</th><th>proof written out in</th><th>review of the underlying claim</th><th>source of the text</th></tr></thead>
+<tbody>
+<tr><td>\(\delta\)-order and pole factorisation of \(\NLSM_N\)</td><td>S2, Lemma S2.7 (a), (b); main text sketches a second proof</td><td>once, same family, for
+each of two proofs [reviewed internally; record available on request]</td><td>companion note, restated</td></tr>
+<tr><td>Grouping identity</td><td>S1, Lemma S1.2.1</td><td>(b) once, same family [reviewed internally; record available on request]; (a) is the induction a review asked for, restated in the blueprint
+and <strong>not separately reviewed</strong> [reviewed internally; record available on request]</td><td>restated</td></tr>
+<tr><td>Tr\((\phi^3)\) row zero (skinny rectangle)</td><td>S1, Lemma S1.1.2</td><td>once, same family [reviewed internally; record available on request]; also [ACDFH §3.1.2, §3.2]; proved in the
+project's Lean base for all \(n\) [reviewed internally; record available on request]</td><td>restated</td></tr>
+<tr><td>Tr\((\phi^3)\) rectangle (causal-diamond) zero, and the step to \(\NLSM\) (used for odd-chord diamonds in <a href="pion-completeness-A.html#prop-cl2">prop-cl2</a>(b))</td>
+<td>rectangle zero not reproduced; step to \(\NLSM\) in main text</td><td>rectangle zero proved in the project's Lean base for all \(n\); the step to \(\NLSM\)
+(“Lemma \(\delta\)”) once, same family [reviewed internally; record available on request], and machine-checked as part of the Lean proof of clause 2</td><td>restated</td></tr>
+<tr><td>T-separated zero theorem (<a href="pion-completeness-A.html#thm-tsplit">thm-tsplit</a>)</td><td>S2</td><td>once, same family, with independent code [reviewed internally; record available on request]; the theorem machine-checked in Lean for every even
+\(N\ge4\) and every \(T\) (Theorems S2.5, S2.10 and S2.1)</td>
+<td>companion note (latest version unreviewed as a draft; the proof sections unchanged from the reviewed version), restated</td></tr>
+<tr><td>One relation; chord formula; flank-set dictionary; transversal form</td><td>main text</td><td>once, same family; the self-contained proof of the transversal
+form confirmed in one targeted review; the main text's derivation of one representation from the form identity is the previous paper writer's, checked in the
+fidelity review's own code [reviewed internally; record available on request]</td>
+<td>restated</td></tr>
+<tr><td>Cayley form</td><td>S1.1 (Theorem S1.1.3)</td><td>once, same family [reviewed internally; record available on request]</td><td>restated from the internal record</td></tr>
+<tr><td>First-order term and its lemmas (face identity, order count, sink/source walk)</td><td>main text</td><td>once, same family [reviewed internally; record available on request]; the proof of part (b) without “generic” is the blueprint writer's rearrangement, <strong>not separately reviewed</strong> [reviewed internally; record available on request]</td><td>restated</td></tr>
+<tr><td>Innermost chord; containment; interval</td><td>main text</td><td>once, same family [reviewed internally; record available on request]</td><td>restated</td></tr>
+<tr><td>Proportionality (<a href="pion-completeness-A.html#lem-prop">lem-prop</a>)</td><td>main text</td><td>once, <strong>cross-family</strong> (author claude-opus-5-5,
+reviewer claude-fable-5-1; caveat above) [reviewed internally; record available on request]</td><td>from the reviewed draft section</td></tr>
+<tr><td>Classification of proportional pairs (off the proof path)</td><td>main text (sketch)</td><td>once, <strong>cross-family</strong> (claim claude-fable-5-1, review
+claude-opus-5-5; caveat above)</td><td>from the reviewed draft section</td></tr>
+<tr><td>Class residue (<a href="pion-completeness-A.html#thm-res">thm-res</a>): chains, collapse identity, strip regions, corners, ear lemma, extreme term, Gram model,
+value on the universal locus, assembly</td><td>S1.2</td><td>once, same family; the collapse identity, the ear lemma and the extreme-term lemma “refereed line by line”;
+review corrections applied in place (scope (H3), rectangle inclusion, reflection, closure) [reviewed internally; record available on request]. The \(\cA\)-form of the sign: a one-line step, reviewed with the draft.</td><td>restated from the internal record; two
+expansions by this supplement's writer (below)</td></tr>
+<tr><td>Genericity and regions (<a href="pion-completeness-A.html#lem-D">lem-D</a>), including the closed-\(I\) case analysis</td><td>S1, Lemma S1.2.9</td><td>once, same
+family; the degenerate-corner correction applied [reviewed internally; record available on request]</td><td>restated from the internal record</td></tr>
+<tr><td>Children (<a href="pion-completeness-A.html#prop-child">prop-child</a>)</td><td>S1.3</td><td>once, same family; the proof of part (1) was supplied in that review
+and has only that review [reviewed internally; record available on request]</td><td>restated from the internal record</td></tr>
+<tr><td>(Tri) (<a href="pion-completeness-A.html#thm-tri">thm-tri</a>): closed-piece lemma, the two-family lemma, reach lemma, facts (Z0)–(Z3)</td><td>main text; step (0)
+of the closed-piece lemma in S1.5(b)</td><td>once per proof: two proofs sharing the reach lemma, and a third, single-witness-family proof, each reviewed once, same
+family; the reach lemma has a second proof (author claude-fable-5-1, reviewer claude-opus-5-5: <strong>cross-family</strong>, caveat above); (Z0)–(Z3) confirmed in
+one targeted same-family review of their assembly, from lemmas written by claude-fable-5-1 and reviewed by claude-opus-5-5 [reviewed internally; record available on request]</td><td>from the reviewed draft section</td></tr>
+<tr><td>(NoSpread) from (Tri)</td><td>main text; the shortening lemma in full in S1.5(a)</td><td>once, <strong>cross-family</strong> (author claude-opus-5-5, reviewer
+claude-fable-5-1; caveat above); its inputs (run chords, sub-arcs, W-avoidance, shortening lemma) once, same family [reviewed internally; record available on request]</td><td>from the reviewed draft section; inputs restated</td></tr>
+<tr><td>Side lemma, no odd singleton, thin runs, absorption, lift</td><td>S1.4</td><td>once, same family [reviewed internally; record available on request]</td><td>restated from the internal record</td></tr>
+<tr><td>(Bot) descent</td><td>S1.4 (last proof)</td><td>the assembly into one descent is the blueprint writer's; every step is a reviewed step; the assembly was confirmed in
+one targeted same-family review, whose reviewer reconstructed the descent but <strong>did not record the reconstruction separately</strong> [reviewed internally; record available on request]</td><td>restated</td></tr>
+<tr><td>Members of the list (<a href="pion-completeness-A.html#prop-cl2">prop-cl2</a>): non-degenerate, zero, linearly closed</td><td>main text; diamond anchors in
+S1.5(c)</td><td>once, same family; the non-degeneracy case analysis “refereed line by line” [reviewed internally; record available on request]</td><td>restated from the internal record</td></tr>
+<tr><td>Antichain; clause 2 from clause 1</td><td>main text</td><td>clause 2 step once, <strong>cross-family</strong> (author claude-opus-5-5, reviewer claude-fable-5-1;
+caveat above); antichain once, same family [reviewed internally; record available on request]</td><td>from the reviewed draft section</td></tr>
+<tr><td>Main theorem (<a href="pion-completeness-A.html#thm-main">thm-main</a>): the chain as a whole</td><td>main text</td><td>a first version of the chain was rebuilt end
+to end by one audit (itself reviewed); three later simplifications (proportionality, (NoSpread), clause 2) were each reviewed, but the simplified chain has
+<strong>not been re-audited end to end</strong> [reviewed internally; record available on request]; the theorem (both clauses and the characterisation)
+machine-checked in Lean for every even \(N\ge6\), with a proof that follows the formalisation blueprint rather than the main text</td><td>—</td></tr>
+</tbody></table></div>
+
+<p><strong>This supplement.</strong> Written by claude-opus-5-5 (as reported in its system prompt) from the sources named per row; it has not been reviewed.
+It adds no mathematics, but some restored steps are written more explicitly than their sources, and these expansions are unreviewed: the per-side check in
+Step 1 of Theorem S1.2.10 (the source gives one parenthetical); the leg count at the witness in Lemma S1.2.6(c); the translation of the blockers (A)–(D) into
+inequalities in Lemma S1.2.9(d); the coverage argument and the “only if” half of the equivalence in Lemma S1.4.1; and the reason \(b^-\ne b^+\) in S1.5(b).
+[reviewed internally; record available on request]</p>
+<p><strong>Machine checking.</strong> The main theorem is machine-checked in Lean&nbsp;4 with Mathlib for every even \(N\ge6\) (<code>pi_clause1</code>,
+<code>pi_clause2</code>, <code>pi_minimal_iff</code> in the accompanying <code>lean/</code> directory), with no <code>sorry</code> and only Lean's three standard
+axioms. The check covers every row of the ledger above that the theorem depends on, including the T-separated zero theorem (S2.1, with S2.5 and S2.10) and the
+Tr\((\phi^3)\) rectangle zero. The Lean statements read “vanishes on the locus” pointwise, at every rational point of the locus at which no odd chord vanishes;
+their equivalence with the vanishing of the rational function is also proved in Lean. The Lean proofs were produced by AI prover agents and accepted by the
+project's acceptance checker on 28 September 2026; the check was reproduced afterwards from the files in <code>lean/</code>. What the machine check does not
+settle: whether the Lean definitions match those of the main text (reviewed within the project by model instances, not by a person), and whether the written
+proofs in this supplement are correct as written, since the Lean proofs follow the formalisation blueprint, not this text. The review columns above are
+therefore unchanged.</p>
+</section>
+
+<section id="s4">
+<h2>S4. Verification record</h2>
+
+<p>Every link of the proof has a written proof for every even \(N\), and the theorem is machine-checked in Lean for every even \(N\ge6\) (§<a href="#s3">S3</a>).
+The computations below were run before or alongside the proofs, as checks. None of them is a step of the proof, and none covers all \(N\). They matter in two ways: they could have refuted a false lemma at small \(N\), and several of them tested each
+lemma's exact hypotheses (by showing that the statement fails when a hypothesis is dropped).</p>
+<p><strong>Methods, in one line each.</strong></p>
+<ul>
+<li><em>Exact arithmetic:</em> rational numbers, no rounding; an equality or a non-zero found this way is exact at the point or on the space tested.</li>
+<li><em>Modular arithmetic:</em> the rational functions are evaluated with all numbers reduced modulo a large prime \(p\) (usually \(2^{61}-1\)) at random points. A
+non-zero value proves the function is not identically zero; a zero value is a probabilistic statement, with false-positive probability at most \(k\,d/p\) for \(k\)
+points and degree \(d\) (and only if the numerator is not divisible by \(p\), which is why rigorous zero claims add a second random prime).</li>
+<li><em>Independent code:</em> the checker was written by the reviewer from the definitions, not taken from the author.</li>
+<li><em>Exhaustive:</em> every configuration at the stated \(N\); <em>dihedral orbit:</em> a class of configurations up to rotation and reflection of the \(N\)-gon.</li>
+<li><em>SAT solver:</em> a program that decides whether a finite system of true/false constraints has a solution; “UNSAT” means it found none.</li>
+<li><em>LRAT certificate:</em> a step-by-step record of an UNSAT answer that a small independent checking program verifies line by line. A “strict” checker is one
+that rejects the known malformed records that some checkers accept. Without a checked certificate, an UNSAT answer rests on the solver's correctness.</li>
+<li><em>MONA:</em> a decision procedure for a logic of finite sets of positions on a line (WS1S); it answers “valid” or “not valid” for a sentence that covers all
+\(N\) at once, but produces no certificate, so a “valid” rests on the correctness of one program.</li>
+</ul>
+
+<div class="tablewrap"><table>
+<thead><tr><th>statement</th><th>what was computed, and how</th><th>size</th><th>what it shows</th><th>what it does not show</th></tr></thead>
+<tbody>
+<tr><td>Clause 1 of the main theorem, directly</td><td>all maximal candidate sets enumerated by a SAT solver, with LRAT certificates that the enumeration is complete; the
+amplitude evaluated non-zero on each</td><td>\(N\le12\); \(N=14\) by a separate route</td><td>completeness at those \(N\), independently of the proof</td><td>any \(N\ge16\). At
+\(N=14\) the second, independent certificate was checked only by a checker known to accept malformed empty-clause steps; its strict re-check is not reviewed</td></tr>
+<tr><td>Clause 2</td><td>all \(2^{20}\) sets of pairs at \(N=8\); the independent-proof residue lemma on every pair at \(N=8,10,12\); antichain and “drop one pair gives a
+candidate set” for every drop-one set, two independent codes</td><td>797 maximal candidate sets (66 orbits) at \(N=8\); drop-one sets 36 / 208 / 820 / 2&nbsp;688 /
+7&nbsp;952 at \(N=6,\dots,14\)</td><td>minimality at those \(N\)</td><td>larger \(N\)</td></tr>
+<tr><td>(Tri), exhaustively</td><td>every reaching–reaching separator pair, independent code</td><td>\(N\le20\); 3&nbsp;922&nbsp;787 pairs at \(N=20\)</td><td>the statement at
+those \(N\)</td><td>larger \(N\) (the written proof covers them)</td></tr>
+<tr><td>(Tri) by the one rule of the main text</td><td>the reviewer's checker built from the text of the proof, applying its rule to every configuration</td><td>every
+configuration \(N=10\)–18 (390&nbsp;735 at \(N=18\)); all 654&nbsp;684 singleton-separator configurations and a 1/40 sample at \(N=20\); 0 failures</td><td>the proof's case
+split produces a witness in every tested case</td><td>larger \(N\)</td></tr>
+<tr><td>Reach lemma</td><td>its whole population of configurations, in two further independent codes, under both readings of the reach-set walk</td><td>9 / 169 /
+2&nbsp;364 / 29&nbsp;098 / 331&nbsp;245 configurations at \(N=10\)/12/14/16/18 (counted under the end-blocked reading used in the proof); 0 failures</td><td>the lemma
+at those \(N\), under both readings</td><td>larger \(N\)</td></tr>
+<tr><td>(Tri) and its three lemmas in MONA</td><td>each written as one WS1S sentence over all \(N\)</td><td>(Tri) valid after a three-case split; the single-witness-family
+sentence valid; each of the three lemmas valid</td><td>an independent all-\(N\) confirmation by a different method</td><td>not a proof: one program, no certificate</td></tr>
+<tr><td>Facts (Z0)–(Z3)</td><td>every odd W-avoiding separator pair, “reaching” not imposed, reviewer's code</td><td>470&nbsp;455 configurations, \(N=10\)–18; 0 failures</td>
+<td>the facts at those \(N\); under the other reading of the reach sets, (Z1) fails 3&nbsp;496 times at \(N\le14\), which is why the end-blocked reading is the
+definition</td><td>larger \(N\)</td></tr>
+<tr><td>(Bot)</td><td>SAT search for a counterexample on the residual family (below)</td><td>LRAT-certified at \(N=14\); solver-UNSAT to \(N=18\)–20</td><td>no
+counterexample there</td><td>certified only at \(N=14\)</td></tr>
+<tr><td>Proportionality</td><td>exact rational arithmetic, with \(L_S\) computed as a nullspace (so the chord formula is tested, not assumed), two independent codes</td>
+<td>all 66 orbits of maximal candidate sets at \(N=8\) (315 chord pairs), all 2&nbsp;227 at \(N=10\) (38&nbsp;542), 7&nbsp;391 orbits of the residual family at \(N=12\)
+(1&nbsp;240&nbsp;206); 0 mismatches, 0 negative factors</td><td>the lemma at those \(N\)</td><td>larger \(N\)</td></tr>
+<tr><td>Classification of proportional pairs (off the proof path)</td><td>exact, reviewer's code</td><td>all maximal candidate sets at \(N=8\) (797) and \(N=10\)
+(42&nbsp;385), the \(N=12\) residual family, every tenth candidate set at \(N=8\) (80&nbsp;645); 0 failures</td><td>the classification at those \(N\)</td><td>larger
+\(N\)</td></tr>
+<tr><td>The first-order regime is needed</td><td>random lines, modular arithmetic, two independent codes</td><td>of the 66 (resp. 2&nbsp;227) orbits of maximal candidate sets at \(N=8\) (resp. 10), 43 (resp. 1&nbsp;129) have \(\cP_1=\emptyset\);
+23 (resp. 378) of these are pole-free, amplitude \(=\varepsilon_NE\) on \(L_S\); every orbit with \(\cP_1\ne\emptyset\) has a pole</td><td>that no residue argument alone can cover these sets</td><td>—</td></tr>
+<tr><td>Sign of the residue in the \(\cA\) normalisation</td><td>one code's stored values, re-checked by a reviewer</td><td>292 sets × 2 points at \(N=8\)</td><td>the raw
+identity with \((-1)^d\) and the \(\cA\) identity without it</td><td>not an independent recomputation (the \(\cA\) form is proved in S1.2)</td></tr>
+<tr><td>Class residue and its lemmas</td><td>random points on random lines, two primes, worker and reviewer codes</td><td>1&nbsp;134 classes (9&nbsp;096 checks) by the
+worker; 300 + 4&nbsp;592 checks by the reviewer; value on the universal locus for \(n=4\)–14, every gap</td><td>0 failures on classes satisfying the hypotheses; failures
+exactly when a hypothesis is dropped (a class with no \(\cP_1\) member; the ear lemma without its rectangle conditions, 240 of 240; non-closed \(I\) in Lemma S1.2.9(d),
+298 of 298)</td><td>evidence only</td></tr>
+<tr><td>Children</td><td>combinatorial half on 102&nbsp;222 sides; analytic half on 27&nbsp;092 \(\cP_1\) sides</td><td>—</td><td>the proposition on those sides; off \(\cP_1\) it
+fails (19&nbsp;423 of 39&nbsp;618 sides)</td><td>evidence only</td></tr>
+<tr><td>Chain predicates (innermost chord, top, bottom, children, sizes)</td><td>author's run only</td><td>15&nbsp;828 innermost-chord choices on the \(N=12\) residual
+family; random maximal sets \(N=10\)–18; 0 failures</td><td>consistency of the chain's combinatorial steps there</td><td>not rerun by a reviewer</td></tr>
+<tr id="s4-tri-hyp"><td>(Tri): its hypotheses are needed</td><td>the inclusion of (Tri) tested with one hypothesis dropped, every configuration at the stated \(N\)</td><td>first
+failures at \(N=10\) without W-avoidance and at \(N=14\) without “reaching”</td><td>that neither hypothesis can be dropped from the statement as written</td><td>—</td></tr>
+<tr id="s4-cov"><td>The first-order statement of the main text's outlook (every missing same-parity pair inside a side of a \(\cP_1\) chord of the matching type;
+off the proof path)</td><td>the first-order term evaluated on such (“covered”) candidate sets</td><td>all 505 covered orbits at \(N\le8\); 120 covered sets at \(N=10\)</td><td>the
+first-order term is non-zero in every case computed</td><td>any other \(N\); the statement is open</td></tr>
+<tr id="s4-ex46"><td>Worked example (main text, Example 4.6)</td><td>its two amplitude statements (the pole-free value and the residue) evaluated modulo \(2^{61}-1\)
+on three random lines each; later re-derived by a reviewer in exact arithmetic with independent code (two points each)</td><td>two sets at \(N=8\)</td><td>an illustration of the
+cited theorems on that example</td><td>nothing beyond the example; the first run is the author's only</td></tr>
+<tr id="s4-noncoord"><td>Zeros on linear loci that are not coordinate loci (main text §10.1; off the proof path)</td><td>Tr\((\phi^3)\): exact and random-point
+evaluation on explicit linear subspaces (lines of the five-point numerator, their lifts through the split of [ACDFH], a locus nested in a 2-split); NLSM: the
+\(\delta\)-shifted amplitude on nested loci, exact at random rational points, reviewer's check</td><td>Tr\((\phi^3)\) at five, six and seven points; NLSM: 11 nested
+zeros at eight points</td><td>that such zeros exist for Tr\((\phi^3)\); that for the NLSM some nested loci are zeros and some are not (in the reviewer's check,
+exactly those invariant under the \(\delta\)-shift are)</td><td>no classification; the NLSM question has not been studied systematically</td></tr>
+<tr><td>T-separated zero theorem (S2)</td><td>exact and modular checks, two independent codes</td><td>every diagram and every \(T\) at \(N=4\)–12 (a vanishing vertex factor on
+an exact basis of \(\cK_T\)); the descent walk from every start, \(N\le14\) (1&nbsp;259&nbsp;496 walks at \(N=14\)); the theorem itself with an independent NLSM evaluator,
+every \(T\), \(N\le12\), mod \(p\) (false-positive bound below \(4\cdot10^{-17}\) per \(T\)); controls: dropping one pair, or mixing parities, gives a non-zero
+amplitude</td><td>the theorem at those \(N\)</td><td>larger \(N\) (the written proof covers them; the theorem is also machine-checked in Lean for every even \(N\))</td></tr>
+</tbody></table></div>
+<p>The <em>residual family</em> at \(N=12\) consists of the maximal candidate sets in which every missing ee pair lies inside the even-ended side of some \(\cP_1\) chord and
+every missing oo pair inside the odd-ended side of some \(\cP_1\) chord, and some opposite-parity pair is missing; it has 7&nbsp;391 dihedral orbits. The same definition
+at \(N=14\) is the family on which (Bot) was certified.</p>
+<p><strong>Formal proofs.</strong> Unlike the computations above, the Lean formalisation covers every \(N\): the main theorem for every even \(N\ge6\), the
+T-separated zero theorem (S2) for every even \(N\ge4\), and the Tr\((\phi^3)\) rectangle zero (hence the row zero) for all \(n\); see §<a href="#s3">S3</a>
+and <code>lean/README.md</code> for how to reproduce the check. The companion note's own status section, written earlier, records the Tr\((\phi^3)\) zero only for
+\(n=5,6\); the all-\(n\) proof is later.</p>
+</section>
+
+<section id="s5">
+<h2>S5. Notation and translation table</h2>
+
+<p>Symbols in the order of first use, with the section where each is defined or first used.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>symbol / term</th><th>meaning</th><th>where</th></tr></thead>
+<tbody>
+<tr><td>legs \(1..N\), dual points, \(X_{i,j}\)</td><td>cyclic legs; planar variable \((p_i+\dots+p_{j-1})^2\) of a chord; edges \(=0\)</td><td>main §2</td></tr>
+<tr><td>odd chord; same-parity chord</td><td>chord \((i,j)\) with \(j-i\) odd (both sides odd, \(\ge3\) legs); otherwise</td><td>main §2</td></tr>
+<tr><td>\(c_{a,b}=-s_{ab}\)</td><td>mesh variable of a non-adjacent pair</td><td>main §2</td></tr>
+<tr><td>ee, oo, opposite-parity pair</td><td>parities of the two legs</td><td>main §2</td></tr>
+<tr><td>\(v_0\), \(\delta\)-shift</td><td>\(+1\) on \(X_{e,e}\), \(-1\) on \(X_{o,o}\), 0 on odd chords; \(X\mapsto X+\delta v_0\)</td><td>main §2</td></tr>
+<tr><td>\(\NLSM_N\), \(\cA_N\)</td><td>coefficient of \(\delta^{-(N-2)}\); \(\cA_N=(-1)^{N/2-1}\NLSM_N\)</td><td>main §2</td></tr>
+<tr><td>\(E\)</td><td>parity form \(\sum_{ee}c=\sum_{oo}c\); the one relation</td><td>main §2</td></tr>
+<tr><td>\(\varrho\)</td><td>relation vector \(\mathbf 1_{ee}-\mathbf 1_{oo}\)</td><td>main §5, S1.5(c)</td></tr>
+<tr><td>\(L_S\); non-degenerate; zero</td><td>coordinate locus; no planar variable vanishes on it; \(\NLSM_N|_{L_S}\equiv0\)</td><td>main §2</td></tr>
+<tr><td>arcs of \(G\); \(S_G\)</td><td>maximal runs of legs not in \(G\); pairs across different arcs</td><td>main §2</td></tr>
+<tr><td>T-separated set \(S_T\), locus \(\cK_T\), zero</td><td>\(|T|\ge2\) legs of one parity</td><td>main §2, S2</td></tr>
+<tr><td>odd-chord diamond</td><td>\(S_{\{a,b\}}\), \(a,b\) of different parity, both arcs non-empty</td><td>main §2</td></tr>
+<tr><td>\(\cG_N\)</td><td>T-separated sets and odd-chord diamonds</td><td>main §2</td></tr>
+<tr><td>single-leg locus \(\cK_{a-1,a+1}\)</td><td>\(\{c_{a,b}=0\ \forall b\}\)</td><td>S1.1, S2</td></tr>
+<tr><td>\(\mathcal F_N\) (candidate sets)</td><td>non-degenerate \(S\) containing no member of \(\cG_N\)</td><td>main §4</td></tr>
+<tr><td>\(M\), \(M_e\), \(M_o\), \(M_{\mathrm{mix}}\), \(y_t\), \(\mathbb Y_S\)</td><td>missing set and its parts; \(c_t|_{L_S}\); the space of missing values</td><td>main §4, S1.3</td></tr>
+<tr><td>\(A_P\), \(B_P\)</td><td>odd-ended and even-ended sides of an odd chord</td><td>main §4</td></tr>
+<tr><td>flank sets \(\Phi^A_P\), \(\Phi^B_P\); missing flank set \(h_P\)</td><td>\(S_{\odds(A_P)}\), \(S_{\evens(B_P)}\); \(M\cap(\Phi^A\cup\Phi^B)\)</td><td>main §4</td></tr>
+<tr><td>rectangle \(\square_P\)</td><td>\(\evens(A_P)\times\odds(B_P)\)</td><td>main §4</td></tr>
+<tr><td>\(\ein\), \(\oin\), \(\cP_0\), \(\cP_1\)</td><td>missing ee pairs inside \(B_P\) / oo inside \(A_P\); chord families</td><td>main §4</td></tr>
+<tr><td>flank class; \(K^*\); top, bottom</td><td>odd chords of \(\cP_1\) with equal \(h\); the class of \(P^*\)</td><td>main §7</td></tr>
+<tr><td>admissible separator \(\Theta\); \(\sep_L(\Theta)\); \(M\)-free; \(L\) linked</td><td>separator of a side; separated pairs; no missing separated pair; every admissible separator has one</td><td>main §7</td></tr>
+<tr><td>\(\cS_B\), innermost chord \(P^*\), \(A^*\), \(B^*\)</td><td>\(\cP_1\) chords with \(B\) linked; one with minimal odd-ended side</td><td>main §7</td></tr>
+<tr><td>(H1)–(H4); \(H\); \(d\); \(a_t\), \(b_b\)</td><td>hypotheses of the class residue; pole hyperplane; half the strip length; side amplitudes</td><td>main §7, S1.2</td></tr>
+<tr><td>\(\mathbb T\)</td><td>a triangulation</td><td>S1.2</td></tr>
+<tr><td>sub-polygon, alternating; \(N^{\neg K}_r\)</td><td>polygon on parent dual points; \(\NLSM\) of \(r\) with the chords of \(K\) banned</td><td>S1.2</td></tr>
+<tr><td>strips \(\mathrm{St}(Q,Q')\); strip region \(\Omega(Q,Q')\); \(\varphi(Q,Q')\)</td><td>\(A_Q\setminus A_{Q'}\); the polygon between \(Q\succ Q'\); \(N_\Omega/x\)</td><td>S1.2</td></tr>
+<tr><td>massless form \(c^{\mathrm{ml}}\)</td><td>mesh variable of a sub-polygon with every side set to 0</td><td>S1.2 (Lemma S1.2.5)</td></tr>
+<tr><td>ear-lemma data \(s,U,R,V\); \(\mu^\pm\); \(\mathsf P_Q\); \(G=\mu^-\cup\{s\}\); \(Z'\); (z1)–(z3); (gen)</td><td>an abstract polygon; class-\((\pi+1)\) / class-\(\pi\) strip legs; the polygon between \(s\) and \(Q\)</td><td>S1.2 (Lemma S1.2.6)</td></tr>
+<tr><td>class \(\pi\), \(\pi+1\)</td><td>position parity in a sub-polygon</td><td>S1.2</td></tr>
+<tr><td>universal polygon; \(c_\star\), \(c_\star'\), \(c_\circ\); members \((i,j)\); \(Q_\top\), \(Q_\bot\); \(\hat I\); closed \(I\)</td><td>legs \(s,u_1..u_{2d_1},r,v_1..v_{2d_2}\);
+mesh variables straddling \(s\), \(r\), one relaxed variable; lattice data</td><td>S1.2</td></tr>
+<tr><td>\(\Lambda^I\), \(\Lambda\), \(\Lambda_0\), \(\Lambda''\), \(W\), \(W_q\)</td><td>universal loci and auxiliary spaces (the main text writes \(\Xi\), \(\Xi_q\) for \(W\), \(W_q\))</td><td>S1.2</td></tr>
+<tr><td>\(G\), \(G_{\mathrm{mix}}\); \(R_A\), \(C_A\); \(\mathrm{rows}\), \(\mathrm{cols}\)</td><td>Gram matrix (main text: \(\mathsf G\)); its mixed block; class-\((\pi+1)\) / class-\(\pi\) legs of a side</td><td>S1.2 (Lemma S1.2.8)</td></tr>
+<tr><td>(G), (G′), (G″), (W-ind), (G\(^I\)), (G\(_W\))</td><td>genericity conditions</td><td>S1.2 (Lemma S1.2.9)</td></tr>
+<tr><td>(RF1)–(RF6)</td><td>facts on rational functions</td><td>S1.0</td></tr>
+<tr><td>\(\mathrm{Cay}_N\); \(V_f\), \(U_f\); \(\mathrm{In}_f\), \(\mathrm{Out}_f\); \(Q_U\)</td><td>Cayley sum; Cayley vertex; face leg sets; \((\sum_Up)^2\)</td><td>main §6, S1.1</td></tr>
+<tr><td>child on side \(L\); \(\hat P\); \(\rho_L\), \(\pi_L\); \(S_L\), \(M_L\)</td><td>lower-point polygon of the channel \(X_P\to0\); its new leg; kinematic and pair maps</td><td>main §7, S1.3</td></tr>
+<tr><td>occupied run; spread; run chord \(Q_Z\)</td><td>run of \(A'\setminus\Theta\) holding a missing oo pair; at least two such runs</td><td>main §8</td></tr>
+<tr><td>(NoSpread); (Bot)</td><td>\(P^*\) has no spread \(M\)-free even separator of \(A^*\); \(K^*\) has a member \(b\) with \(A_b\) linked</td><td>main §8</td></tr>
+<tr><td>\(R_\tau\), \(R_\tau^c\); reaching / non-reaching; W-avoiding</td><td>piece of \(B_Q\setminus\tau\) containing \(\intr B'\) and its complement</td><td>main §8, S1.4, S1.5</td></tr>
+<tr><td>runs \(\mathsf X\), \(\mathsf Y\); \(\cC_A\), \(\cC_X\), \(\cC_Y\), \(\cC\)</td><td>the two occupied runs; the three separated-pair sets and their union</td><td>main §8</td></tr>
+<tr><td>o-clean; \(Q_j\), \(Q_j^+\); (s1)–(s6); \(\mathrm H_j\)</td><td>\(\oin(Q)=\oin(P')\); the \(B'\)-keeping sequence; facts and invariant of the side lemma</td><td>S1.4</td></tr>
+<tr><td>shortening lemma; no-odd-singleton; thin runs; absorption; lift</td><td>inputs of (NoSpread) and (Bot); \(Q^+\) is the chord of the thin-runs corollary, \(V'\) the piece in its proof</td><td>main §8, S1.4, S1.5</td></tr>
+<tr><td>(w1), (w2); \(\mathrm{rep}_I\)</td><td>non-degeneracy witnesses; the representation of \(X_P\) for the side \(I=[a,b-1]\)</td><td>main §9, S1.5(c)</td></tr>
+<tr><td>quadrangulation \(\Gamma\); ± slot; \(n^\pi_q\); \(\mathrm Q^\pi_N\); live; good quad</td><td>quartic diagrams and their factors</td><td>S2</td></tr>
+</tbody></table></div>
+<p>Bracketed citations ([ACDFH], [AF], [CEU], [CHZ], …) refer to the reference list of the main paper.</p>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+name = "pion_completeness"
+version = "0.1.0"
+defaultTargets = ["PiBase", "PionCompleteness"]
+
+# No [leanOptions]: the accepted build ran with Lean's default options (lake env lean), so none are set here.
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "85e3a25e006c35636f0e53b0e9296caca2685bc0"   # tag v4.34.0-rc2; all transitive revs pinned in lake-manifest.json
+
+# Imported library files (reviewed earlier phases of the project).
+[[lean_lib]]
+name = "PiBase"
+roots = ["TreeRectangleZero", "ChainSlice", "PionZeros", "PionNLSM"]
+
+# Theorem Π: the accepted merged text as a linear chain of sub-modules C0 … C10 plus the import-only wrapper.
+[[lean_lib]]
+name = "PionCompleteness"
+globs = ["PionCompleteness.*"]

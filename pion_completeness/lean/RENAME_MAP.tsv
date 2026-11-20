@@ -1,0 +1,239 @@
+# Rename map of the port (PROVENANCE.md): old name → new name, one per line, tab-separated.
+# A line renames a namespace (and every name in it) or a single name; the longest match wins;
+# `-` as the new name marks a declaration removed on purpose; `~` a theorem (renamed by the other
+# lines as usual) whose statement is changed on purpose, only by dropping arguments the rest of the
+# statement does not use outside proofs, such as an unused hypothesis (the statement check accepted
+# nothing else); the new statement implies the old one.
+# Used by the statement check up to the toolchain bump to v4.35.0 (PROVENANCE.md, "Toolchain"), and
+# to link names to the claim registry. Since that bump statements may change in place: `~` and `-`
+# record the port up to it; renames are still recorded here.
+old	new
+R12P1	PionCompleteness.TreeRectangleZero
+R12P4A	PionCompleteness.ChainSlice
+R12P3	PionCompleteness.PionZeros
+R12P3C	PionCompleteness.PionNLSM
+PiZ	PionCompleteness.Pi
+R12P4A.eq_coordPt_of_onE	-  # unproved, outside the closure of Π (PROVENANCE.md)
+R12P4A.minimal_zero_iff	-  # unproved, outside the closure of Π (PROVENANCE.md)
+R12P3C.NLSM_ne_zero	-  # unproved, outside the closure of Π (PROVENANCE.md)
+R12P3C.pkRw_decomp	~  # unused `DecidablePred` arguments dropped (PROVENANCE.md)
+PiZ.labZ_legZ	~  # unused `NeZero` argument dropped (PROVENANCE.md)
+PiZ.pkG_avoid	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkG_avoid_locus	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkG_Xpow_dvd	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkR_prodDiv_aux	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkR_prodDiv	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkR_avoid_aux	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkR_avoid	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.pkR_d2_primeFin	~  # unused `DecidableEq` argument dropped (PROVENANCE.md)
+PiZ.can_exists	~  # unused hypothesis `InFpi N S` dropped (PROVENANCE.md)
+PiZ.int_of_bot	~  # unused hypothesis `InFpi N S` dropped (PROVENANCE.md)
+# Helper definitions renamed to lowerCamelCase, Mathlib's convention for definitions (PROVENANCE.md, Names).
+R12P4A.pkD_x	PionCompleteness.ChainSlice.pkDX
+R12P4A.pkD_Y	PionCompleteness.ChainSlice.pkDY
+R12P4A.pkD_y	PionCompleteness.ChainSlice.pkDy
+R12P4A.pkD_T	PionCompleteness.ChainSlice.pkDT
+R12P4A.pkE_eps	PionCompleteness.ChainSlice.pkEEps
+R12P4A.pkE_al	PionCompleteness.ChainSlice.pkEAl
+R12P4A.pkE_bb	PionCompleteness.ChainSlice.pkEBb
+R12P4A.pkE_be	PionCompleteness.ChainSlice.pkEBe
+R12P3C.pkZ_sP	PionCompleteness.PionNLSM.pkZSP
+R12P3C.pkZ_AP	PionCompleteness.PionNLSM.pkZAP
+R12P3C.pkZ_zeroAt	PionCompleteness.PionNLSM.pkZZeroAt
+R12P3C.pkZ_relab	PionCompleteness.PionNLSM.pkZRelab
+R12P3C.pkZ_cross	PionCompleteness.PionNLSM.pkZCross
+R12P3C.pkZ_s_S	PionCompleteness.PionNLSM.pkZSS
+R12P3C.pkZ_s_IsMax	PionCompleteness.PionNLSM.pkZSIsMax
+R12P3C.pkZ_s_In	PionCompleteness.PionNLSM.pkZSIn
+R12P3C.pkZ_s_Out	PionCompleteness.PionNLSM.pkZSOut
+R12P3C.pkZ_s_glue	PionCompleteness.PionNLSM.pkZSGlue
+R12P3C.pkZ_s_F	PionCompleteness.PionNLSM.pkZSF
+R12P3C.pkSp_S	PionCompleteness.PionNLSM.pkSpS
+R12P3C.pkSp_IsMax	PionCompleteness.PionNLSM.pkSpIsMax
+R12P3C.pkSp_In	PionCompleteness.PionNLSM.pkSpIn
+R12P3C.pkSp_Out	PionCompleteness.PionNLSM.pkSpOut
+R12P3C.pkSp_glue	PionCompleteness.PionNLSM.pkSpGlue
+R12P3C.pkSp_F	PionCompleteness.PionNLSM.pkSpF
+R12P3C.pkQ_V	PionCompleteness.PionNLSM.pkQV
+R12P3C.pkQ_lift	PionCompleteness.PionNLSM.pkQLift
+R12P3C.pkQ_unlift	PionCompleteness.PionNLSM.pkQUnlift
+R12P3C.pkQ_Ok	PionCompleteness.PionNLSM.pkQOk
+R12P3.p3b_H	PionCompleteness.PionZeros.p3bH
+R12P3.p3b_IsChild	PionCompleteness.PionZeros.p3bIsChild
+R12P3.p3b_S	PionCompleteness.PionZeros.p3bS
+R12P3.p3bF_od	PionCompleteness.PionZeros.p3bFOd
+R12P3.p3bF_IsQ	PionCompleteness.PionZeros.p3bFIsQ
+R12P3.p3bF_IsQ_dec	PionCompleteness.PionZeros.p3bFIsQDec
+R12P3.p3bF_qs	PionCompleteness.PionZeros.p3bFQs
+R12P3.p3bF_side	PionCompleteness.PionZeros.p3bFSide
+R12P3.p3bF_glue	PionCompleteness.PionZeros.p3bFGlue
+R12P3.p3bF_c	PionCompleteness.PionZeros.p3bFC
+R12P3.p3bF_P	PionCompleteness.PionZeros.p3bFP
+R12P3.p3b_G	PionCompleteness.PionZeros.p3bG
+R12P3.p3b_Xs	PionCompleteness.PionZeros.p3bXs
+R12P3.p3b_e	PionCompleteness.PionZeros.p3bE
+R12P3.p3b_cyc	PionCompleteness.PionZeros.p3bCyc
+PiZ.pkBr_phiP	PionCompleteness.Pi.pkBrPhiP
+PiZ.pkBr_numP	PionCompleteness.Pi.pkBrNumP
+PiZ.pkL_tau	PionCompleteness.Pi.pkLTau
+PiZ.pkL_path	PionCompleteness.Pi.pkLPath
+PiZ.pkL_sA	PionCompleteness.Pi.pkLSA
+PiZ.pkL_sB	PionCompleteness.Pi.pkLSB
+PiZ.pkL_inA	PionCompleteness.Pi.pkLInA
+PiZ.pkL_Psi	PionCompleteness.Pi.pkLPsi
+PiZ.pkL_Cond	PionCompleteness.Pi.pkLCond
+PiZ.pkT_remT	PionCompleteness.Pi.pkTRemT
+PiZ.pkT_remS	PionCompleteness.Pi.pkTRemS
+PiZ.pkT_zoneSet	PionCompleteness.Pi.pkTZoneSet
+PiZ.pkT_ZH	PionCompleteness.Pi.pkTZH
+PiZ.pkCo_refLeg	PionCompleteness.Pi.pkCoRefLeg
+PiZ.pkCo_refPair	PionCompleteness.Pi.pkCoRefPair
+PiZ.pkR_d2_subP	PionCompleteness.Pi.pkRD2SubP
+PiZ.pkR_d2_Dp	PionCompleteness.Pi.pkRD2Dp
+PiZ.pkR_d2_W	PionCompleteness.Pi.pkRD2W
+PiZ.pkR_d2_G	PionCompleteness.Pi.pkRD2G
+PiZ.pkR_w_om	PionCompleteness.Pi.pkRWOm
+PiZ.w_ST135	PionCompleteness.Pi.wST135
+PiZ.w_ST135_24	PionCompleteness.Pi.wST13524
+PiZ.w_ST135_26	PionCompleteness.Pi.wST13526
+PiZ.w_ST135_46	PionCompleteness.Pi.wST13546
+PiZ.w_ST13	PionCompleteness.Pi.wST13
+PiZ.w_ST13_24	PionCompleteness.Pi.wST1324
+PiZ.w_ST13_25	PionCompleteness.Pi.wST1325
+PiZ.w_ST13_26	PionCompleteness.Pi.wST1326
+PiZ.w_D14	PionCompleteness.Pi.wD14
+PiZ.w_D14_25	PionCompleteness.Pi.wD1425
+PiZ.w_D14_26	PionCompleteness.Pi.wD1426
+PiZ.w_D14_35	PionCompleteness.Pi.wD1435
+PiZ.w_D14_36	PionCompleteness.Pi.wD1436
+PiZ.w_empty	PionCompleteness.Pi.wEmpty
+PiZ.w_mixed124	PionCompleteness.Pi.wMixed124
+PiZ.w8_ST135	PionCompleteness.Pi.w8ST135
+PiZ.w8_D14	PionCompleteness.Pi.w8D14
+PiZ.w8_136	PionCompleteness.Pi.w8136
+PiZ.pkCh_CH	PionCompleteness.Pi.pkChCH
+PiZ.pkCh_Cl	PionCompleteness.Pi.pkChCl
+PiZ.pkBr_tau	PionCompleteness.Pi.pkBrTau
+PiZ.pkG_dis	PionCompleteness.Pi.pkGDis
+PiZ.pkG_In	PionCompleteness.Pi.pkGIn
+PiZ.pkG_roots	PionCompleteness.Pi.pkGRoots
+PiZ.pkG_kids	PionCompleteness.Pi.pkGKids
+PiZ.pkG_verts	PionCompleteness.Pi.pkGVerts
+PiZ.pkG_gov	PionCompleteness.Pi.pkGGov
+PiZ.pkG_U	PionCompleteness.Pi.pkGU
+PiZ.pkG_deg	PionCompleteness.Pi.pkGDeg
+PiZ.pkG_ch	PionCompleteness.Pi.pkGCh
+PiZ.pkG_Q	PionCompleteness.Pi.pkGQ
+PiZ.pkG_sgn	PionCompleteness.Pi.pkGSgn
+PiZ.pkG_V	PionCompleteness.Pi.pkGV
+PiZ.pkG_E	PionCompleteness.Pi.pkGE
+PiZ.pkG_See	PionCompleteness.Pi.pkGSee
+PiZ.pkG_Soo	PionCompleteness.Pi.pkGSoo
+PiZ.pkG_cross	PionCompleteness.Pi.pkGCross
+PiZ.pkG_A4	PionCompleteness.Pi.pkGA4
+PiZ.pkG_A5	PionCompleteness.Pi.pkGA5
+PiZ.pkG_same	PionCompleteness.Pi.pkGSame
+PiZ.pkG_side	PionCompleteness.Pi.pkGSide
+PiZ.pkG_W	PionCompleteness.Pi.pkGW
+PiZ.pkG_own	PionCompleteness.Pi.pkGOwn
+PiZ.pkG_F	PionCompleteness.Pi.pkGF
+PiZ.pkG_m	PionCompleteness.Pi.pkGM
+PiZ.pkG_sh	PionCompleteness.Pi.pkGSh
+PiZ.pkG_ct	PionCompleteness.Pi.pkGCt
+PiZ.pkG_shP	PionCompleteness.Pi.pkGShP
+PiZ.pkG_ctP	PionCompleteness.Pi.pkGCtP
+PiZ.pkG_cl	PionCompleteness.Pi.pkGCl
+PiZ.pkG_fib	PionCompleteness.Pi.pkGFib
+PiZ.pkG_glue	PionCompleteness.Pi.pkGGlue
+PiZ.pkG_shI	PionCompleteness.Pi.pkGShI
+PiZ.pkG_clP	PionCompleteness.Pi.pkGClP
+PiZ.pkG_split	PionCompleteness.Pi.pkGSplit
+PiZ.pkG_term	PionCompleteness.Pi.pkGTerm
+PiZ.pkG_num	PionCompleteness.Pi.pkGNum
+PiZ.pkG_crs	PionCompleteness.Pi.pkGCrs
+PiZ.pkG_cay	PionCompleteness.Pi.pkGCay
+PiZ.pkG_meshP	PionCompleteness.Pi.pkGMeshP
+PiZ.pkG_Vp	PionCompleteness.Pi.pkGVp
+PiZ.pkG_CP	PionCompleteness.Pi.pkGCP
+PiZ.pkG_rk	PionCompleteness.Pi.pkGRk
+PiZ.pkG_RowZ	PionCompleteness.Pi.pkGRowZ
+PiZ.pkG_lg	PionCompleteness.Pi.pkGLg
+PiZ.pkG_tP	PionCompleteness.Pi.pkGTP
+PiZ.pkG_Pair	PionCompleteness.Pi.pkGPair
+PiZ.pkG_Base	PionCompleteness.Pi.pkGBase
+PiZ.pkG_rowS	PionCompleteness.Pi.pkGRowS
+PiZ.pkR_Sub	PionCompleteness.Pi.pkRSub
+PiZ.pkR_Lin	PionCompleteness.Pi.pkRLin
+PiZ.pkR_subX	PionCompleteness.Pi.pkRSubX
+PiZ.pkR_len	PionCompleteness.Pi.pkRLen
+PiZ.pkR_blk	PionCompleteness.Pi.pkRBlk
+PiZ.pkR_CycList	PionCompleteness.Pi.pkRCycList
+PiZ.pkR_arcX	PionCompleteness.Pi.pkRArcX
+PiZ.pkR_gramPt	PionCompleteness.Pi.pkRGramPt
+PiZ.pkR_fhPt	PionCompleteness.Pi.pkRFhPt
+PiZ.pkR_cstp	PionCompleteness.Pi.pkRCstp
+PiZ.pkR_head	PionCompleteness.Pi.pkRHead
+PiZ.pkR_mchord	PionCompleteness.Pi.pkRMchord
+PiZ.pkR_minrect	PionCompleteness.Pi.pkRMinrect
+PiZ.pkR_lam	PionCompleteness.Pi.pkRLam
+PiZ.pkR_lev	PionCompleteness.Pi.pkRLev
+PiZ.pkR_dlt	PionCompleteness.Pi.pkRDlt
+PiZ.pkR_chA	PionCompleteness.Pi.pkRChA
+PiZ.pkR_xqF	PionCompleteness.Pi.pkRXqF
+PiZ.pkR_tau	PionCompleteness.Pi.pkRTau
+PiZ.pkR_W	PionCompleteness.Pi.pkRW
+PiZ.pkR_E	PionCompleteness.Pi.pkRE
+PiZ.pkR_w1	PionCompleteness.Pi.pkRW1
+PiZ.pkR_w2	PionCompleteness.Pi.pkRW2
+PiZ.pkR_ivl	PionCompleteness.Pi.pkRIvl
+PiZ.pkR_rk	PionCompleteness.Pi.pkRRk
+PiZ.pkR_closed	PionCompleteness.Pi.pkRClosed
+PiZ.pkR_rgf	PionCompleteness.Pi.pkRRgf
+PiZ.pkR_RG	PionCompleteness.Pi.pkRRG
+PiZ.pkR_b_F	PionCompleteness.Pi.pkRBF
+PiZ.pkR_b_AP	PionCompleteness.Pi.pkRBAP
+PiZ.pkR_b_NP	PionCompleteness.Pi.pkRBNP
+PiZ.pkR_b_pull	PionCompleteness.Pi.pkRBPull
+PiZ.pkR_b_cross	PionCompleteness.Pi.pkRBCross
+PiZ.pkR_b_psi	PionCompleteness.Pi.pkRBPsi
+PiZ.pkR_b_TP	PionCompleteness.Pi.pkRBTP
+PiZ.pkR_b_olo	PionCompleteness.Pi.pkRBOlo
+PiZ.pkR_b_ohi	PionCompleteness.Pi.pkRBOhi
+PiZ.pkR_b_omL	PionCompleteness.Pi.pkRBOmL
+PiZ.pkR_b_OT	PionCompleteness.Pi.pkRBOT
+PiZ.pkR_b_omX	PionCompleteness.Pi.pkRBOmX
+PiZ.pkR_b_omM	PionCompleteness.Pi.pkRBOmM
+PiZ.pkR_b_omD	PionCompleteness.Pi.pkRBOmD
+PiZ.pkR_b_omI	PionCompleteness.Pi.pkRBOmI
+PiZ.pkR_meshP	PionCompleteness.Pi.pkRMeshP
+PiZ.pkR_isMem	PionCompleteness.Pi.pkRIsMem
+PiZ.pkR_r14f	PionCompleteness.Pi.pkRR14f
+PiZ.pkR_Z5c	PionCompleteness.Pi.pkRZ5c
+PiZ.pkR_b_Z5	PionCompleteness.Pi.pkRBZ5
+PiZ.pkR_b_T5	PionCompleteness.Pi.pkRBT5
+PiZ.pkR_b_e1	PionCompleteness.Pi.pkRBE1
+PiZ.pkR_b_C4	PionCompleteness.Pi.pkRBC4
+PiZ.pkR_b_childB'	PionCompleteness.Pi.pkRBChildB'
+PiZ.pkR_b_term	PionCompleteness.Pi.pkRBTerm
+PiZ.pkR_b_trunc	PionCompleteness.Pi.pkRBTrunc
+PiZ.pkR_b_cc	PionCompleteness.Pi.pkRBCc
+PiZ.pkR_omIA	PionCompleteness.Pi.pkROmIA
+PiZ.pkR_omIB	PionCompleteness.Pi.pkROmIB
+PiZ.pkR_d_ResNum	PionCompleteness.Pi.pkRDResNum
+PiZ.pkR_d_Child1	PionCompleteness.Pi.pkRDChild1
+PiZ.pkR_ch_chi	PionCompleteness.Pi.pkRChChi
+PiZ.pkR_ch_L	PionCompleteness.Pi.pkRChL
+PiZ.pkR_ch_E	PionCompleteness.Pi.pkRChE
+PiZ.pkR_ch_pe	PionCompleteness.Pi.pkRChPe
+PiZ.pkR_ch_G	PionCompleteness.Pi.pkRChG
+PiZ.pkR_ch_D	PionCompleteness.Pi.pkRChD
+PiZ.pkR_ch_F	PionCompleteness.Pi.pkRChF
+PiZ.pkR_ch_e	PionCompleteness.Pi.pkRChe
+PiZ.pkR_d2_above	PionCompleteness.Pi.pkRD2Above
+PiZ.pkR_d2_crs	PionCompleteness.Pi.pkRD2Crs
+PiZ.pkR_d2_topT	PionCompleteness.Pi.pkRD2TopT
+PiZ.pkR_d2_below	PionCompleteness.Pi.pkRD2Below
+PiZ.pkR_d2_botT	PionCompleteness.Pi.pkRD2BotT
+PiZ.pkR_d2_AT	PionCompleteness.Pi.pkRD2AT
+PiZ.IsMinimalChord	PionCompleteness.Pi.IsInnermostChord
+PiZ.instDecidableIsMinimalChord	PionCompleteness.Pi.instDecidableIsInnermostChord

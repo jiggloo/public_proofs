@@ -1,0 +1,10 @@
+{
+  "challenge_module": "PionCompletenessChallenge",
+  "solution_module": "PionCompleteness.Paper",
+  "theorem_names": [
+    "PionCompleteness.Paper.NLSM.Zeros.every_coordinate_zero_contains_a_family_member",
+    "PionCompleteness.Paper.NLSM.Zeros.family_members_are_minimal_zeros",
+    "PionCompleteness.Paper.NLSM.Zeros.minimal_coordinate_zeros_are_the_list"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"]
+}

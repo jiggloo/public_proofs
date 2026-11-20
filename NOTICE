@@ -1,5 +1,13 @@
-public_proofs
 Copyright 2026 Henru Wang
 
-This product is licensed under the Apache License, Version 2.0.
-See the LICENSE file for the full license text.
+The code, including each paper's Lean project and the scripts and build files in each paper folder, is licensed
+under the Apache License, Version 2.0. So is the website in docs/, its pages' text included. See the LICENSE file
+for the full license text.
+
+Each paper's text, figures, LaTeX source and data are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0). See LICENSES/CC-BY-4.0.txt for the full license text.
+
+REUSE.toml lists the license of each part of a paper's folder and of the website. Material from others keeps its
+own license: the jheppub class and bibliography style (LaTeX Project Public License), BibTeX from INSPIRE-HEP and
+arXiv (CC0) and from Crossref (bibliographic facts, no rights claimed), and quotations from other works in a paper's
+data files, under their sources' terms (LICENSES/LicenseRef-Quotations.txt).

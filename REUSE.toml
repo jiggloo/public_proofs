@@ -1,0 +1,76 @@
+# Licences of each paper's folder and of the website in docs/ (REUSE 3.3, https://reuse.software/spec-3.3/).
+# The root LICENSE (Apache-2.0) is the repository's one licence file, the one the Palomar registry reads; this file
+# says which parts of each paper folder are under another licence, and annotates the files with no notice of their
+# own. The texts are in LICENSES/.
+# When several tables match a file, the last one in this file applies. `*` matches one path component, so
+# `*/paper/**` is the paper folder of every paper at the top level of the repository.
+version = 1
+
+# The repository's own files at the root, under its licence.
+[[annotations]]
+path = ["NOTICE", "README.md"]
+SPDX-FileCopyrightText = "2026 Henru Wang"
+SPDX-License-Identifier = "Apache-2.0"
+
+# The website served from docs/: all of it, the pages' text included, under the repository's licence.
+# A file copied from elsewhere into docs/ needs its own table below this one.
+[[annotations]]
+path = "docs/**"
+SPDX-FileCopyrightText = "2026 Henru Wang"
+SPDX-License-Identifier = "Apache-2.0"
+
+# The paper: text, figures, LaTeX source and the data beside it (YAML, Markdown).
+[[annotations]]
+path = "*/paper/**"
+SPDX-FileCopyrightText = "2026 Henru Wang"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Code in the paper folder, at any depth: scripts and build files.
+[[annotations]]
+path = [
+    "*/paper/**/*.py",
+    "*/paper/**/*.sh",
+    "*/paper/**/Makefile",
+    "*/paper/**/latexmkrc",
+    "*/paper/**/.latexmkrc",
+    "*/paper/**/.gitignore",
+]
+SPDX-FileCopyrightText = "2026 Henru Wang"
+SPDX-License-Identifier = "Apache-2.0"
+
+# The paper's data files that quote other works (papers and Wikipedia), each quote naming its source. The quotes
+# stay under their sources' terms (LICENSES/LicenseRef-Quotations.txt); the rest of each file is CC BY 4.0.
+[[annotations]]
+path = ["*/paper/notation.yaml", "*/paper/terminology.yaml"]
+SPDX-FileCopyrightText = [
+    "2026 Henru Wang",
+    "The authors of the quoted works and the Wikipedia contributors (each quote names its source)",
+]
+SPDX-License-Identifier = "CC-BY-4.0 AND LicenseRef-Quotations"
+
+# The Lean project: all of it under Apache-2.0, like Mathlib, released unchanged.
+# `override`: the files' text is not read for notices. Every Lean file's copyright header names the same holder and
+# licence (checked by the repository's Lean checks); reading the files misread Lean's symbols as copyright lines.
+# A file copied from elsewhere into a Lean project needs its own table below this one.
+[[annotations]]
+path = "*/lean/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Henru Wang"
+SPDX-License-Identifier = "Apache-2.0"
+
+# BibTeX as fetched from INSPIRE-HEP, whose metadata is under CC0
+# (https://help.inspirehep.net/knowledge-base/terms-of-use); in the outreach paper's also from arXiv (metadata CC0)
+# and Crossref (bibliographic facts, no rights claimed), with a stub for the companion paper and one entry of
+# bibliographic facts typed from the research's record.
+[[annotations]]
+path = "*/paper/refs.bib"
+SPDX-FileCopyrightText = ["INSPIRE-HEP", "arXiv", "Crossref"]
+SPDX-License-Identifier = "CC0-1.0"
+
+# jheppub's class and bibliography style, vendored unchanged: "the LaTeX Project Public License, either version 1.3
+# of this license or (at your option) any later version" (their headers). The copyright lines of the files' own
+# headers apply; this one is a fallback.
+[[annotations]]
+path = "*/paper/vendor/**"
+SPDX-FileCopyrightText = "2013, 2015 SISSA Medialab"
+SPDX-License-Identifier = "LPPL-1.3c+"

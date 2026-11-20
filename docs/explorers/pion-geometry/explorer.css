@@ -1,0 +1,113 @@
+/* The pion geometry explorer. Colours as rgb() (a hash colour can read as an issue reference).
+   Red (--ca): the pion's odd planar variables; blue (--pr): mesh variables; green: a zero. */
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(rgb(255 255 255), rgb(15 18 23));
+  --panel: light-dark(rgb(247 248 250), rgb(22 26 33));
+  --ink: light-dark(rgb(16 19 26), rgb(231 229 223));
+  --mute: light-dark(rgb(91 96 107), rgb(163 167 176));
+  --rule: light-dark(rgb(217 219 224), rgb(44 49 58));
+  --faint: light-dark(rgb(236 238 242), rgb(28 33 42));
+  --pr: light-dark(rgb(11 79 138), rgb(127 182 238));
+  --prf: light-dark(rgb(219 232 245), rgb(22 48 74));
+  --ca: light-dark(rgb(193 18 31), rgb(255 107 107));
+  --caf: light-dark(rgb(251 225 227), rgb(67 25 28));
+  --ok: light-dark(rgb(29 107 58), rgb(127 211 156));
+  --side: 290px;
+  --help: 340px;
+}
+/* Theme 2, for red-green colour blindness (after Okabe and Ito): poles vermilion ("orange"), zeros reddish
+   purple ("purple"), mesh variables blue; darkened in the light scheme so text stays readable. */
+:root[data-palette=cvd] {
+  --ca: light-dark(rgb(213 94 0), rgb(255 146 77));
+  --caf: light-dark(rgb(250 226 208), rgb(72 40 18));
+  --ok: light-dark(rgb(160 70 140), rgb(224 150 210));
+  --pr: light-dark(rgb(0 114 178), rgb(102 182 240));
+  --prf: light-dark(rgb(214 234 247), rgb(16 48 74));
+}
+* { box-sizing: border-box; min-width: 0; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+var, .it { font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+sub { font-size: 0.72em; }
+h1 { font-size: 22px; line-height: 1.15; margin: 0 0 2px; letter-spacing: -0.01em; }
+h2 { font-size: 15px; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--pr); }
+.small { font-size: 13.5px; color: var(--mute); }
+
+.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+.top p { margin: 0; color: var(--mute); font-size: 14px; }
+.top nav { display: flex; gap: 12px; align-items: center; }
+
+button { font: inherit; font-size: 14.5px; min-height: 38px; padding: 6px 12px; border: 1px solid var(--rule);
+  border-radius: 6px; background: var(--bg); color: var(--ink); cursor: pointer; text-align: left; }
+button:hover { border-color: var(--pr); }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, .fig:focus-visible { outline: 2px solid var(--pr); outline-offset: 2px; }
+button[aria-pressed=true] { background: var(--prf); border-color: var(--pr); }
+
+.app { display: grid; grid-template-columns: var(--side) minmax(0, 1fr); gap: 0; align-items: start; }
+body.help-open .app { grid-template-columns: var(--side) minmax(0, 1fr) var(--help); }
+.inputs, .help { padding: 16px; background: var(--panel); }
+.inputs { border-right: 1px solid var(--rule); position: sticky; top: 0; max-height: 100vh; overflow-y: auto; }
+.help { border-left: 1px solid var(--rule); position: sticky; top: 0; max-height: 100vh; overflow-y: auto; display: none; }
+body.help-open .help { display: block; }
+.views { padding: 14px 18px 24px; }
+
+.slider { display: grid; grid-template-columns: 3.2em minmax(0, 1fr) 3em; align-items: center; gap: 8px; margin: 4px 0; }
+.slider label { font-size: 16px; }
+.slider input { width: 100%; accent-color: var(--ca); height: 30px; }
+.slider output { font-variant-numeric: tabular-nums; text-align: right; }
+.note { font-size: 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; margin: 12px 0; min-height: 3em; }
+details { border-top: 1px solid var(--rule); padding: 8px 0; }
+summary { cursor: pointer; font-weight: 600; min-height: 30px; }
+.examples #examples { display: grid; gap: 6px; margin-top: 8px; }
+.help details p, .help li { font-size: 14px; }
+.help ul { padding-left: 18px; margin: 6px 0; }
+
+.outputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 14px; margin-top: 4px; }
+.out-left { border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; }
+.out-left h2 { margin-top: 4px; }
+.out-left h2 + * { margin-top: 0; }
+.formula { font-size: 17px; text-align: center; margin: 0 0 6px; }
+#balance { margin-bottom: 14px; font-size: 14.5px; }
+.bal { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 2em; align-items: baseline; gap: 8px; min-height: 28px; }
+.bal .cz { color: var(--pr); margin-right: 6px; font-size: 16px; }
+.bal .none { color: var(--mute); font-size: 13px; }
+.theme { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 14px; }
+select { font: inherit; font-size: 14.5px; min-height: 36px; padding: 4px 8px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.bal .n { text-align: right; font-variant-numeric: tabular-nums; }
+.ok { color: var(--ok); }
+.warn { color: var(--ca); font-weight: 600; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+figure.panel { margin: 0 0 12px; }
+figcaption { font-size: 13.5px; color: var(--mute); margin-top: 6px; }
+.fig { position: relative; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); }
+.fig > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fig.plot { height: 300px; }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 14px; }
+.pair .fig { height: 420px; }
+.fig.d3 { cursor: grab; touch-action: none; }
+.fig.d3:active { cursor: grabbing; }
+#fig-plane { touch-action: none; cursor: crosshair; }
+.fig.zero { outline: 3px solid var(--ok); outline-offset: 3px; }
+/* keyboard focus stays visible on an outlined view: a ring inside the outline */
+.fig.zero:focus-visible { outline: 3px solid var(--ok); box-shadow: inset 0 0 0 2px var(--pr); }
+svg text { font-size: 13px; fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+svg .it { font-family: Georgia, "Times New Roman", serif; font-style: italic; }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 14px; width: 100%; }
+th, td { border-bottom: 1px solid var(--rule); padding: 6px 8px; text-align: left; vertical-align: top; }
+
+@media (max-width: 1180px) {
+  body.help-open .app { grid-template-columns: var(--side) minmax(0, 1fr); }
+  body.help-open .help { grid-column: 1 / -1; position: static; max-height: none; border-left: 0; border-top: 1px solid var(--rule); }
+}
+@media (max-width: 760px) {
+  .app, body.help-open .app { grid-template-columns: minmax(0, 1fr); }
+  .inputs { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .pair .fig { height: 360px; }
+}

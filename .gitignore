@@ -12,3 +12,23 @@ build/
 *.ilean
 *.trace
 *.hash
+
+# Python caches and environments, left by the tools of the private source when its folders are copied here
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+
+# LaTeX build outputs (of a paper, only the PDF is in this repository)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz

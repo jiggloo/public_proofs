@@ -1,16 +1,54 @@
-import PionCompleteness.C1
+/-
+Copyright (c) 2026 Henru Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Henru Wang
+-/
+module
 
-namespace PiZ
+public import PionCompleteness.C1
 
-open Finset R12P1 R12P4A R12P3 R12P3C
+/-!
+# Theorem Π, part 2: children, the class of a chord, innermost chords and (Even-top′)
 
-/-! [Child](3) helpers: `InST` read through positions, the child's legs as positions, the two directions. -/
+This module continues the chain `C0` → … → `C10`. The cut is by size, not by topic: it runs on from
+`C1` inside section 7 (the interface statements of the combinatorial core and their helpers).
+It holds helpers of the chain argument (prefix `pkCh_`) and two interface statements of section
+7, `can_exists` and `evenTop`. In order:
+* children: for any `S` and one leg set `T` of the child at a time, the child set contains `S_T` iff
+  `S` contains `S_{T↑}` when `P̂ ∉ T` (`pkCh_child_zero_nohat`), and iff the image of `T ∖ {P̂}`, an
+  admissible separator when `T` is a leg set of `𝒢_{k+1}` (`pkCh_hat_adm`), is free when `P̂ ∈ T`
+  (`pkCh_child_zero_hat`); hence, for `S ∈ F^π_N`, the child set of a side is in `F^π_{k+1}` iff the
+  side satisfies `Sep_all` (`pkCh_childGen`); the A- and B-child as side data (`pkCh_CH_head`,
+  `pkCh_CH_tail`) and both cases packaged for a side (`pkCh_child_zero_nohat_side`,
+  `pkCh_child_zero_hat_side`);
+* the class of a chord: the cut dictionary (`pkCh_hit_iff`), the generic side lemma `pkCh_lem5`, and
+  its two uses `pkCh_int_top`, `pkCh_int_bot`;
+* if `𝒫₁ ≠ ∅`, an innermost chord exists (`can_exists`);
+* an innermost chord satisfies (Even-top′) (`evenTop`), from the linear core `pkCh_core` (head
+  `[1, ω]`, section "(Even-top′) through a linear core") after rotating the head to the linear
+  setting;
+* the start of the bottom of the class: the lift `pkCh_lift` and the run-chord lemma `pkCh_L0`; the
+  section continues in `C3`.
+
+The conventions (legs, pairs, odd chords, heads and tails, hit sets) are those of `C0`'s module
+docstring.
+-/
+
+@[expose] public section
+
+namespace PionCompleteness.Pi
+
+open Finset PionCompleteness.TreeRectangleZero PionCompleteness.ChainSlice
+  PionCompleteness.PionZeros PionCompleteness.PionNLSM
+
+/-! Helpers for children: `InST` read through positions, the child's legs as positions, the two
+directions. -/
 
 theorem pkCh_transversal_iff {m : ℕ} {M : Finset (ℕ × ℕ)} :
     Transversal m M ↔ ∀ Z ∈ gFamily m, (Z ∩ M).Nonempty := Iff.rfl
 
 theorem pkCh_mem_gLeg {m : ℕ} {T : Finset ℕ} : T ∈ gLegSets m ↔ T ⊆ Icc 1 m ∧ IsGSet m T := by
-  show T ∈ (Icc 1 m).powerset.filter (IsGSet m) ↔ _
+  change T ∈ (Icc 1 m).powerset.filter (IsGSet m) ↔ _
   rw [mem_filter, mem_powerset]
 
 theorem pkCh_isG_iff {m : ℕ} {T : Finset ℕ} :
@@ -20,14 +58,16 @@ theorem pkCh_adm_iff {m r : ℕ} {T : Finset ℕ} :
     Admissible m r T ↔ T ⊆ Icc 1 m ∧ 2 ≤ T.card ∧ ∀ t ∈ T, t % 2 = r := Iff.rfl
 
 theorem pkCh_mixed_iff {m : ℕ} {T : Finset ℕ} :
-    IsMixedAnchor m T ↔ ∃ a ∈ Icc 1 m, ∃ b ∈ Icc 1 m, T = {a, b} ∧ a + 2 ≤ b ∧ ¬ (a = 1 ∧ b = m) ∧ a % 2 ≠ b % 2 :=
+    IsMixedAnchor m T ↔ ∃ a ∈ Icc 1 m, ∃ b ∈ Icc 1 m, T = {a, b} ∧ a + 2 ≤ b ∧ ¬ (a = 1 ∧ b = m) ∧
+        a % 2 ≠ b % 2 :=
   Iff.rfl
 
 theorem pkCh_fpi_iff {N : ℕ} {S : Finset (ℕ × ℕ)} :
     InFpi N S ↔ S ⊆ diagonals N ∧ Nondeg N S ∧ ¬ ContainsGMember N S := Iff.rfl
 
 /-- A one-parity leg set with at least two legs is a same-parity set. -/
-theorem pkCh_sameParity {m r : ℕ} {T : Finset ℕ} (hT : T ⊆ Icc 1 m) (hc : 2 ≤ T.card) (hp : ∀ t ∈ T, t % 2 = r) :
+theorem pkCh_sameParity {m r : ℕ} {T : Finset ℕ} (hT : T ⊆ Icc 1 m) (hc : 2 ≤ T.card)
+    (hp : ∀ t ∈ T, t % 2 = r) :
     IsGSet m T := by
   obtain ⟨t, ht⟩ := card_pos.1 (show 0 < T.card by omega)
   have h0 := hp t ht
@@ -49,32 +89,40 @@ theorem pkCh_mixed_of {m a b : ℕ} (hd : (min a b, max a b) ∈ diagonals m) (h
   rw [pkCh_mixed_iff]
   rcases le_total a b with hab | hab
   · rw [min_eq_left hab, max_eq_right hab] at h
-    exact ⟨a, mem_Icc.2 ⟨by omega, by omega⟩, b, mem_Icc.2 ⟨by omega, by omega⟩, rfl, h.2.2.1, h.2.2.2, hp⟩
+    exact ⟨a, mem_Icc.2 ⟨by omega, by omega⟩, b, mem_Icc.2 ⟨by omega, by omega⟩, rfl, h.2.2.1,
+        h.2.2.2, hp⟩
   · rw [min_eq_right hab, max_eq_left hab] at h
-    exact ⟨b, mem_Icc.2 ⟨by omega, by omega⟩, a, mem_Icc.2 ⟨by omega, by omega⟩, pair_comm a b, h.2.2.1, h.2.2.2,
-      fun e => hp e.symm⟩
+    exact ⟨b, mem_Icc.2 ⟨by omega, by omega⟩, a, mem_Icc.2 ⟨by omega, by omega⟩, pair_comm a b,
+        h.2.2.1, h.2.2.2,
+        fun e => hp e.symm⟩
 
-/-- Linear "between" against positional "between" (swapped when the start `s` lies in `(min, max]`). -/
-theorem pkCh_btw {N s a b t : ℕ} (hs : s ∈ Icc 1 N) (ha : a ∈ Icc 1 N) (hb : b ∈ Icc 1 N) (ht : t ∈ Icc 1 N)
-    (hta : t ≠ a) (htb : t ≠ b) :
+/-- Linear "between" against positional "between" (swapped when the start `s` lies in
+`(min, max]`). -/
+theorem pkCh_btw {N s a b t : ℕ} (hs : s ∈ Icc 1 N) (ha : a ∈ Icc 1 N) (hb : b ∈ Icc 1 N)
+    (ht : t ∈ Icc 1 N) (hta : t ≠ a) (htb : t ≠ b) :
     ((min a b < s ∧ s ≤ max a b) → ((min a b < t ∧ t < max a b) ↔
-      ¬ (min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧ cycPos N s t < max (cycPos N s a) (cycPos N s b)))) ∧
+      ¬ (min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧ cycPos N s t < max (cycPos N s a)
+          (cycPos N s b)))) ∧
     (¬ (min a b < s ∧ s ≤ max a b) → ((min a b < t ∧ t < max a b) ↔
-      (min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧ cycPos N s t < max (cycPos N s a) (cycPos N s b)))) := by
+      (min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧ cycPos N s t < max (cycPos N s a)
+          (cycPos N s b)))) := by
   rw [mem_Icc] at hs ha hb ht
-  rw [pkCo_cycPos_eq hs.1 hs.2 ha.1 ha.2, pkCo_cycPos_eq hs.1 hs.2 hb.1 hb.2, pkCo_cycPos_eq hs.1 hs.2 ht.1 ht.2]
+  rw [pkCo_cycPos_eq hs.1 hs.2 ha.1 ha.2, pkCo_cycPos_eq hs.1 hs.2 hb.1 hb.2,
+      pkCo_cycPos_eq hs.1 hs.2 ht.1 ht.2]
   refine ⟨fun h => ?_, fun h => ?_⟩ <;> (split_ifs <;> omega)
 
-/-- **`InST` through positions** from any start `s`: different arcs of `C_N ∖ T` = one leg of `T` strictly between the
-positions and one not. -/
-theorem pkCh_inST_pos {N s a b : ℕ} {T : Finset ℕ} (hs : s ∈ Icc 1 N) (hT : T ⊆ Icc 1 N) (ha : a ∈ Icc 1 N)
-    (hb : b ∈ Icc 1 N) :
+/-- **`InST` through positions** from any start `s`: different arcs of `C_N ∖ T` = one leg of `T`
+strictly between the positions and one not. -/
+theorem pkCh_inST_pos {N s a b : ℕ} {T : Finset ℕ} (hs : s ∈ Icc 1 N) (hT : T ⊆ Icc 1 N)
+    (ha : a ∈ Icc 1 N) (hb : b ∈ Icc 1 N) :
     InST T a b ↔ a ∉ T ∧ b ∉ T ∧
-      (∃ t ∈ T, min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧ cycPos N s t < max (cycPos N s a) (cycPos N s b)) ∧
+      (∃ t ∈ T, min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧ cycPos N s t < max (cycPos N s a)
+          (cycPos N s b)) ∧
       (∃ t ∈ T, ¬ (min (cycPos N s a) (cycPos N s b) < cycPos N s t ∧
         cycPos N s t < max (cycPos N s a) (cycPos N s b))) := by
   rw [pkCo_inST_iff]
-  have hout : ∀ t ∈ T, a ∉ T → b ∉ T → ((t < min a b ∨ max a b < t) ↔ ¬ (min a b < t ∧ t < max a b)) := by
+  have hout : ∀ t ∈ T, a ∉ T → b ∉ T →
+      ((t < min a b ∨ max a b < t) ↔ ¬ (min a b < t ∧ t < max a b)) := by
     intro t ht ha' hb'
     have h1 : t ≠ a := fun h => ha' (h ▸ ht)
     have h2 : t ≠ b := fun h => hb' (h ▸ ht)
@@ -91,8 +139,10 @@ theorem pkCh_inST_pos {N s a b : ℕ} {T : Finset ℕ} (hs : s ∈ Icc 1 N) (hT 
     have e1 := pkCh_btw hs ha hb (hT ht) (fun h => ha' (h ▸ ht)) (fun h => hb' (h ▸ ht))
     have e2 := pkCh_btw hs ha hb (hT ht') (fun h => ha' (h ▸ ht')) (fun h => hb' (h ▸ ht'))
     by_cases hc : min a b < s ∧ s ≤ max a b
-    · exact ⟨ha', hb', ⟨t', ht', (e2.1 hc).2 h2⟩, ⟨t, ht, (hout t ht ha' hb').2 (fun h => (e1.1 hc).1 h h1)⟩⟩
-    · exact ⟨ha', hb', ⟨t, ht, (e1.2 hc).2 h1⟩, ⟨t', ht', (hout t' ht' ha' hb').2 (fun h => h2 ((e2.2 hc).1 h))⟩⟩
+    · exact ⟨ha', hb', ⟨t', ht', (e2.1 hc).2 h2⟩,
+        ⟨t, ht, (hout t ht ha' hb').2 (fun h => (e1.1 hc).1 h h1)⟩⟩
+    · exact ⟨ha', hb', ⟨t, ht, (e1.2 hc).2 h1⟩,
+        ⟨t', ht', (hout t' ht' ha' hb').2 (fun h => h2 ((e2.2 hc).1 h))⟩⟩
 
 theorem pkCh_inST_minmax {T : Finset ℕ} {a b : ℕ} : InST T (min a b) (max a b) ↔ InST T a b := by
   rcases le_total a b with h | h
@@ -101,26 +151,31 @@ theorem pkCh_inST_minmax {T : Finset ℕ} {a b : ℕ} : InST T (min a b) (max a 
     exact pkCo_inST_comm
 
 theorem pkCh_minmax_map (f : ℕ → ℕ) (a b : ℕ) :
-    (min (f (min a b)) (f (max a b)), max (f (min a b)) (f (max a b))) = (min (f a) (f b), max (f a) (f b)) := by
+    (min (f (min a b)) (f (max a b)), max (f (min a b)) (f (max a b))) =
+        (min (f a) (f b), max (f a) (f b)) := by
   rcases le_total a b with h | h
   · rw [min_eq_left h, max_eq_right h]
   · rw [min_eq_right h, max_eq_left h, min_comm (f b), max_comm (f b)]
 
-/-- The side data and the child labelling of [Child] (BP App. C §C-2): the side `L = (s, k)`, the child `(k+1)`-gon
-read from the child leg `c` (child position `i` ↔ parent position `i` from `s`, `i < k`), the new leg `hat` at child
-position `k`, and `f` = child leg ↦ parent leg. -/
-def pkCh_CH (N s k c hat : ℕ) (f : ℕ → ℕ) : Prop :=
+/-- The side data and the child labelling of a side: the side `L = (s, k)`, the child `(k+1)`-gon
+read from the child leg `c` (child position `i` ↔ parent position `i` from `s`, `i < k`), the new
+leg `hat` at child position `k`, and `f` = child leg ↦ parent leg. -/
+def pkChCH (N s k c hat : ℕ) (f : ℕ → ℕ) : Prop :=
   s ∈ Icc 1 N ∧ 3 ≤ k ∧ k + 3 ≤ N ∧ k % 2 = 1 ∧ N % 2 = 0 ∧ c ∈ Icc 1 (k + 1) ∧ c % 2 = s % 2 ∧
-    hat ∈ Icc 1 (k + 1) ∧ cycPos (k + 1) c hat = k ∧ ∀ y ∈ Icc 1 (k + 1), y ≠ hat → f y = vtx N (s + cycPos (k + 1) c y)
+    hat ∈ Icc 1 (k + 1) ∧ cycPos (k + 1) c hat = k ∧ ∀ y ∈ Icc 1 (k + 1), y ≠ hat → f y =
+        vtx N (s + cycPos (k + 1) c y)
 
 theorem pkCh_CH_iff {N s k c hat : ℕ} {f : ℕ → ℕ} :
-    pkCh_CH N s k c hat f ↔ s ∈ Icc 1 N ∧ 3 ≤ k ∧ k + 3 ≤ N ∧ k % 2 = 1 ∧ N % 2 = 0 ∧ c ∈ Icc 1 (k + 1) ∧
+    pkChCH N s k c hat f ↔ s ∈ Icc 1 N ∧ 3 ≤ k ∧ k + 3 ≤ N ∧ k % 2 = 1 ∧ N % 2 = 0 ∧
+        c ∈ Icc 1 (k + 1) ∧
       c % 2 = s % 2 ∧ hat ∈ Icc 1 (k + 1) ∧ cycPos (k + 1) c hat = k ∧
       ∀ y ∈ Icc 1 (k + 1), y ≠ hat → f y = vtx N (s + cycPos (k + 1) c y) := Iff.rfl
 
 /-- A child leg other than `hat`: its position, its parent leg, parities. -/
-theorem pkCh_ch_y {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkCh_CH N s k c hat f) {y : ℕ} (hy : y ∈ Icc 1 (k + 1))
-    (hyh : y ≠ hat) : cycPos (k + 1) c y < k ∧ f y ∈ Icc 1 N ∧ cycPos N s (f y) = cycPos (k + 1) c y ∧
+theorem pkCh_ch_y {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) {y : ℕ}
+    (hy : y ∈ Icc 1 (k + 1))
+    (hyh : y ≠ hat) : cycPos (k + 1) c y < k ∧ f y ∈ Icc 1 N ∧ cycPos N s (f y) =
+        cycPos (k + 1) c y ∧
       f y % 2 = y % 2 := by
   obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
   have hlt := pkCo_cycPos_lt (show 1 ≤ k + 1 by omega) c y
@@ -132,11 +187,14 @@ theorem pkCh_ch_y {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkCh_CH N s k c hat
   refine ⟨by omega, mem_Icc.2 (vtx_bounds N _ hN1), pkCo_cycPos_vtx hs (by omega), by omega⟩
 
 /-- A leg of the side `L` is `f` of a child leg with the same position. -/
-theorem pkCh_ch_x {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkCh_CH N s k c hat f) {x : ℕ} (hx : x ∈ Icc 1 N)
-    (hxk : cycPos N s x < k) : ∃ y ∈ Icc 1 (k + 1), y ≠ hat ∧ cycPos (k + 1) c y = cycPos N s x ∧ f y = x := by
+theorem pkCh_ch_x {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) {x : ℕ}
+    (hx : x ∈ Icc 1 N)
+    (hxk : cycPos N s x < k) : ∃ y ∈ Icc 1 (k + 1), y ≠ hat ∧ cycPos (k + 1) c y = cycPos N s x ∧
+        f y = x := by
   obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
   have hy := mem_Icc.2 (vtx_bounds (k + 1) (c + cycPos N s x) (by omega))
-  have hp : cycPos (k + 1) c (vtx (k + 1) (c + cycPos N s x)) = cycPos N s x := pkCo_cycPos_vtx hc (by omega)
+  have hp : cycPos (k + 1) c (vtx (k + 1) (c + cycPos N s x)) = cycPos N s x :=
+      pkCo_cycPos_vtx hc (by omega)
   have hyh : vtx (k + 1) (c + cycPos N s x) ≠ hat := fun h => by
     rw [h, hhp] at hp
     omega
@@ -144,25 +202,30 @@ theorem pkCh_ch_x {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkCh_CH N s k c hat
   rw [hf _ hy hyh, hp]
   exact pkCo_vtx_cycPos hs hx
 
-theorem pkCh_ch_hat {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkCh_CH N s k c hat f) : hat % 2 = (s + 1) % 2 := by
+theorem pkCh_ch_hat {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) :
+    hat % 2 = (s + 1) % 2 := by
   obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
   have := pkCo_cycPos_mod_two (show (k + 1) % 2 = 0 by omega) hc hhat
   omega
 
-theorem pkCh_cpi_nn {N s k hat : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {j l : ℕ} (hj : j ≠ hat) (hl : l ≠ hat) :
+theorem pkCh_cpi_nn {N s k hat : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {j l : ℕ} (hj : j ≠ hat)
+    (hl : l ≠ hat) :
     ChildPairIn N S s k hat f j l ↔ (min (f j) (f l), max (f j) (f l)) ∈ S := by
   unfold ChildPairIn
-  rw [if_neg hj, if_neg hl]
+  rw [ite_eq_right hj, ite_eq_right hl]
 
 theorem pkCh_cpi_l {N s k hat : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {j l : ℕ} (hj : j = hat) :
-    ChildPairIn N S s k hat f j l ↔ ∀ w ∈ Icc 1 N, w ∉ cycArc N s k → (min (f l) w, max (f l) w) ∈ S := by
+    ChildPairIn N S s k hat f j l ↔ ∀ w ∈ Icc 1 N, w ∉ cycArc N s k →
+        (min (f l) w, max (f l) w) ∈ S := by
   unfold ChildPairIn
-  rw [if_pos hj]
+  rw [ite_eq_left hj]
 
-theorem pkCh_cpi_r {N s k hat : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {j l : ℕ} (hj : j ≠ hat) (hl : l = hat) :
-    ChildPairIn N S s k hat f j l ↔ ∀ w ∈ Icc 1 N, w ∉ cycArc N s k → (min (f j) w, max (f j) w) ∈ S := by
+theorem pkCh_cpi_r {N s k hat : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {j l : ℕ} (hj : j ≠ hat)
+    (hl : l = hat) :
+    ChildPairIn N S s k hat f j l ↔ ∀ w ∈ Icc 1 N, w ∉ cycArc N s k →
+        (min (f j) w, max (f j) w) ∈ S := by
   unfold ChildPairIn
-  rw [if_neg hj, if_pos hl]
+  rw [ite_eq_right hj, ite_eq_left hl]
 
 theorem pkCh_mem_childMiss {N s k hat m : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {σ : ℕ × ℕ} :
     σ ∈ missing m ((diagonals m).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2)) ↔
@@ -175,105 +238,426 @@ theorem pkCh_mem_childMiss {N s k hat m : ℕ} {S : Finset (ℕ × ℕ)} {f : �
     exact ⟨h1, fun h => h2 h.2⟩
 
 
-theorem pkCh_cgm_iff {N : ℕ} {S : Finset (ℕ × ℕ)} : ContainsGMember N S ↔ ∃ Z ∈ gFamily N, Z ⊆ S := Iff.rfl
+theorem pkCh_cgm_iff {N : ℕ} {S : Finset (ℕ × ℕ)} :
+    ContainsGMember N S ↔ ∃ Z ∈ gFamily N, Z ⊆ S := Iff.rfl
 
-/-- [Child](3) "⇒" (BP App. C §C-2 (3)(b)): a failing trace `Θ` of `L` gives the child leg set `Θ ∪ {P̂}` of `𝒢_m`
-whose `S_T` misses the child's missing set. No hypothesis on `S`. -/
-theorem pkCh_child_nf {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
-    (hT : Transversal (k + 1) (missing (k + 1) ((diagonals (k + 1)).filter
-      (fun σ => ChildPairIn N S s k hat f σ.1 σ.2)))) :
-    NoFreeSep N S s k ((s + 1) % 2) := by
-  obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
-  have hhq := pkCh_ch_hat H
-  have hm2 : (k + 1) % 2 = 0 := by omega
-  rw [pkCh_noFree_iff]
-  intro Θ hΘ hdis
-  obtain ⟨hΘsub, hΘc⟩ := pkCo_mem_admSeps.1 hΘ
-  have hθ : ∀ θ ∈ Θ, θ ∈ Icc 1 N ∧ 1 ≤ cycPos N s θ ∧ cycPos N s θ + 2 ≤ k :=
-    fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
-  have hg : ∀ θ ∈ Θ, vtx (k + 1) (c + cycPos N s θ) ∈ Icc 1 (k + 1) ∧
-      cycPos (k + 1) c (vtx (k + 1) (c + cycPos N s θ)) = cycPos N s θ ∧
-      vtx (k + 1) (c + cycPos N s θ) % 2 = θ % 2 := by
-    intro θ h
-    obtain ⟨h1, h2, h3⟩ := hθ θ h
-    have := pkCo_vtx_mod_two (show 1 ≤ k + 1 by omega) hm2 (c + cycPos N s θ)
-    have := pkCo_cycPos_mod_two hE hs h1
-    exact ⟨mem_Icc.2 (vtx_bounds _ _ (by omega)), pkCo_cycPos_vtx hc (by omega), by omega⟩
-  obtain ⟨T, hTdef⟩ : ∃ T : Finset ℕ, T = Θ.image (fun θ => vtx (k + 1) (c + cycPos N s θ)) ∪ {hat} := ⟨_, rfl⟩
-  have hTmem : ∀ t, t ∈ T ↔ (∃ θ ∈ Θ, vtx (k + 1) (c + cycPos N s θ) = t) ∨ t = hat := by
-    intro t
-    rw [hTdef, mem_union, mem_image, mem_singleton]
-  have hTsub : T ⊆ Icc 1 (k + 1) := by
-    intro t ht
-    rcases (hTmem t).1 ht with ⟨θ, h, rfl⟩ | h
-    · exact (hg θ h).1
-    · rw [h]
-      exact hhat
-  have hΘne : Θ.Nonempty := card_pos.1 (by omega)
-  have hTG : IsGSet (k + 1) T := by
-    by_cases hq : ∀ θ ∈ Θ, θ % 2 = (s + 1) % 2
-    · obtain ⟨θ₀, h0⟩ := hΘne
-      have hne : vtx (k + 1) (c + cycPos N s θ₀) ≠ hat := fun h => by
-        have e := (hg θ₀ h0).2.1
-        rw [h, hhp] at e
-        have := (hθ θ₀ h0).2.2
-        omega
-      have h2 := one_lt_card.2 ⟨_, (hTmem _).2 (Or.inl ⟨θ₀, h0, rfl⟩), hat, (hTmem hat).2 (Or.inr rfl), hne⟩
-      refine pkCh_sameParity hTsub (by omega) (r := (s + 1) % 2) ?_
-      intro t ht
-      rcases (hTmem t).1 ht with ⟨θ, h, rfl⟩ | h
-      · rw [(hg θ h).2.2]
-        exact hq θ h
-      · rw [h]
-        exact hhq
-    · have hc1 : Θ.card = 1 := by
-        rcases hΘc with h | ⟨-, h⟩
-        · exact h
-        · exact absurd h hq
-      obtain ⟨x, rfl⟩ := card_eq_one.1 hc1
-      have hxq : x % 2 ≠ (s + 1) % 2 := fun h => hq fun θ hθ => by
-        rw [mem_singleton.1 hθ]
-        exact h
-      have hTx : T = {vtx (k + 1) (c + cycPos N s x), hat} := by
-        rw [hTdef, image_singleton, ← insert_eq]
-      obtain ⟨hgx, hpx, hrx⟩ := hg x (mem_singleton_self x)
-      obtain ⟨-, hx1, hx2⟩ := hθ x (mem_singleton_self x)
-      rw [hTx]
-      refine pkCh_mixed_of (pkCh_diag_pos hc hgx hhat ?_ ?_) (by rw [hrx, hhq]; exact hxq)
-      · rw [hpx, hhp]
-        omega
-      · rw [hpx, hhp]
-        omega
-  have hZ : sepPairs (k + 1) T ∈ gFamily (k + 1) := mem_image.2 ⟨T, pkCh_mem_gLeg.2 ⟨hTsub, hTG⟩, rfl⟩
-  obtain ⟨⟨y1, y2⟩, hσ⟩ := (pkCh_transversal_iff.1 hT) _ hZ
-  obtain ⟨hσ1, hσ2⟩ := mem_inter.1 hσ
-  obtain ⟨hy1, hy2, hy12, hin⟩ := (pkCo_mem_sepPairs hTsub).1 hσ1
-  obtain ⟨-, hnc⟩ := pkCh_mem_childMiss.1 hσ2
-  dsimp only at hy1 hy2 hy12 hin hnc
-  obtain ⟨hy1T, hy2T, ⟨t, htT, hbt⟩, -⟩ := (pkCh_inST_pos hc hTsub hy1 hy2).1 hin
-  have hy1h : y1 ≠ hat := fun h => hy1T ((hTmem y1).2 (Or.inr h))
-  have hy2h : y2 ≠ hat := fun h => hy2T ((hTmem y2).2 (Or.inr h))
-  obtain ⟨hp1, hx1, hq1, -⟩ := pkCh_ch_y H hy1 hy1h
-  obtain ⟨hp2, hx2, hq2, -⟩ := pkCh_ch_y H hy2 hy2h
-  rw [pkCh_cpi_nn hy1h hy2h] at hnc
-  have hx1Θ : f y1 ∉ Θ := fun h => hy1T ((hTmem y1).2 (Or.inl ⟨f y1, h, by rw [hq1]; exact pkCo_vtx_cycPos hc hy1⟩))
-  have hx2Θ : f y2 ∉ Θ := fun h => hy2T ((hTmem y2).2 (Or.inl ⟨f y2, h, by rw [hq2]; exact pkCo_vtx_cycPos hc hy2⟩))
-  rcases (hTmem t).1 htT with ⟨θ, hθΘ, rfl⟩ | h
-  · have e := (hg θ hθΘ).2.1
-    rw [e] at hbt
-    have hτ := pkCh_sepIn_of hs (show k + 1 ≤ N by omega) hx1 hx2 (by omega) (by omega) hx1Θ hx2Θ hθΘ
-      (by omega) (by omega)
-    exact disjoint_left.1 hdis hτ (pkCh_mem_missing.2 ⟨(pkCo_mem_sepIn.1 hτ).1, hnc⟩)
-  · rw [h, hhp] at hbt
+/-! The members of a child's list inside the child set, one leg set `T` at a time and with no
+hypothesis on `S`: arcs, pairs and kinds of leg sets read through the child's numbering, then the
+two cases `P̂ ∉ T` (`pkCh_child_zero_nohat`) and `P̂ ∈ T` (`pkCh_child_zero_hat`, with the bijection
+`pkCh_hat_adm`, `pkCh_adm_hat` between such `T` and the admissible separators). -/
+
+/-- A child leg other than `P̂` lies in `T` iff its parent leg lies in the image of `T ∖ {P̂}`. -/
+theorem pkCh_mem_image_erase {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) {y : ℕ} (hy : y ∈ Icc 1 (k + 1)) (hyh : y ≠ hat) :
+    f y ∈ (T.erase hat).image f ↔ y ∈ T := by
+  obtain ⟨-, -, -, -, -, hc, -⟩ := pkCh_CH_iff.1 H
+  constructor
+  · intro h
+    obtain ⟨t, ht, e⟩ := mem_image.1 h
+    obtain ⟨hth, htT⟩ := mem_erase.1 ht
+    have hpt := (pkCh_ch_y H (hTsub htT) hth).2.2.1
+    have hpy := (pkCh_ch_y H hy hyh).2.2.1
+    have e' : t = y := pkCo_cycPos_inj hc (hTsub htT) hy (by rw [← hpt, ← hpy, e])
+    exact e' ▸ htT
+  · intro h
+    exact mem_image_of_mem f (mem_erase.2 ⟨hyh, h⟩)
+
+/-- The parent legs of a set of child legs without `P̂` are legs of the `N`-gon. -/
+theorem pkCh_image_sub {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) {T : Finset ℕ}
+    (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) : T.image f ⊆ Icc 1 N := fun x hx => by
+  obtain ⟨t, ht, rfl⟩ := mem_image.1 hx
+  exact (pkCh_ch_y H (hTsub ht) (fun e => hh (e ▸ ht))).2.1
+
+/-- If neither of two numbers is `c`, neither is their minimum or their maximum. -/
+theorem pkCh_minmax_ne {a b c : ℕ} (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c ∧ max a b ≠ c :=
+  ⟨by rcases min_choice a b with e | e <;> rw [e] <;> assumption,
+    by rcases max_choice a b with e | e <;> rw [e] <;> assumption⟩
+
+/-- A set `S_T` not inside a set `C` of pairs meets the missing set of `C`. -/
+theorem pkCh_inter_missing_of_not_subset {m : ℕ} {T : Finset ℕ} {C : Finset (ℕ × ℕ)}
+    (h : ¬ sepPairs m T ⊆ C) : (sepPairs m T ∩ missing m C).Nonempty := by
+  obtain ⟨σ, hσ, hσn⟩ := not_subset.1 h
+  exact ⟨σ, mem_inter.2 ⟨hσ, pkCh_mem_missing.2 ⟨(mem_filter.1 hσ).1, hσn⟩⟩⟩
+
+/-- Two sets of child legs that agree on `P̂` and have the same image without it are equal. -/
+theorem pkCh_eq_of_image_erase {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {T T' : Finset ℕ} (hT : T ⊆ Icc 1 (k + 1)) (hT' : T' ⊆ Icc 1 (k + 1))
+    (hh : hat ∈ T ↔ hat ∈ T') (e : (T.erase hat).image f = (T'.erase hat).image f) : T = T' := by
+  ext y
+  by_cases hyh : y = hat
+  · rw [hyh]
+    exact hh
+  · by_cases hy : y ∈ Icc 1 (k + 1)
+    · rw [← pkCh_mem_image_erase H hT hy hyh, ← pkCh_mem_image_erase H hT' hy hyh, e]
+    · exact ⟨fun h => absurd (hT h) hy, fun h => absurd (hT' h) hy⟩
+
+/-- The child leg of a leg of the side: `vtx (k + 1) (c + cycPos N s x)`, with its position and
+its parent leg. -/
+theorem pkCh_ch_inv {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) {x : ℕ}
+    (hx : x ∈ Icc 1 N) (hxk : cycPos N s x < k) :
+    vtx (k + 1) (c + cycPos N s x) ∈ Icc 1 (k + 1) ∧ vtx (k + 1) (c + cycPos N s x) ≠ hat ∧
+      cycPos (k + 1) c (vtx (k + 1) (c + cycPos N s x)) = cycPos N s x ∧
+      f (vtx (k + 1) (c + cycPos N s x)) = x := by
+  obtain ⟨y, hy, hyh, hq, hfy⟩ := pkCh_ch_x H hx hxk
+  obtain ⟨-, -, -, -, -, hc, -⟩ := pkCh_CH_iff.1 H
+  have e : vtx (k + 1) (c + cycPos N s x) = y := by
+    rw [← hq]
+    exact pkCo_vtx_cycPos hc hy
+  rw [e]
+  exact ⟨hy, hyh, hq, hfy⟩
+
+/-- **Arcs through the child's numbering**, two legs other than `P̂`, for `T` without `P̂`: they
+lie in different arcs of `T` in the child iff their parent legs lie in different arcs of the
+image of `T` in the `N`-gon. -/
+theorem pkCh_inST_lift {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) {y1 y2 : ℕ}
+    (hy1 : y1 ∈ Icc 1 (k + 1)) (hy2 : y2 ∈ Icc 1 (k + 1)) (h1 : y1 ≠ hat) (h2 : y2 ≠ hat) :
+    InST T y1 y2 ↔ InST (T.image f) (f y1) (f y2) := by
+  obtain ⟨hs, -, -, -, -, hc, -⟩ := pkCh_CH_iff.1 H
+  have hTh : ∀ t ∈ T, t ≠ hat := fun t ht e => hh (e ▸ ht)
+  have hGsub := pkCh_image_sub H hTsub hh
+  have hpt : ∀ t ∈ T, cycPos N s (f t) = cycPos (k + 1) c t := fun t ht =>
+    (pkCh_ch_y H (hTsub ht) (hTh t ht)).2.2.1
+  obtain ⟨-, hf1, hq1, -⟩ := pkCh_ch_y H hy1 h1
+  obtain ⟨-, hf2, hq2, -⟩ := pkCh_ch_y H hy2 h2
+  have hm1 := pkCh_mem_image_erase H hTsub hy1 h1
+  have hm2 := pkCh_mem_image_erase H hTsub hy2 h2
+  rw [erase_eq_of_notMem hh] at hm1 hm2
+  rw [pkCh_inST_pos hc hTsub hy1 hy2, pkCh_inST_pos hs hGsub hf1 hf2, hq1, hq2, hm1, hm2,
+    exists_mem_image, exists_mem_image]
+  constructor
+  · rintro ⟨a, b, ⟨t, ht, h⟩, ⟨t', ht', h'⟩⟩
+    exact ⟨a, b, ⟨t, ht, by rw [hpt t ht]; exact h⟩, ⟨t', ht', by rw [hpt t' ht']; exact h'⟩⟩
+  · rintro ⟨a, b, ⟨t, ht, h⟩, ⟨t', ht', h'⟩⟩
+    exact ⟨a, b, ⟨t, ht, by rw [← hpt t ht]; exact h⟩, ⟨t', ht', by rw [← hpt t' ht']; exact h'⟩⟩
+
+/-- **Arcs through the child's numbering**, one leg `P̂`, for `T` without `P̂`: a child leg `y`
+and `P̂` lie in different arcs of `T` iff the parent leg of `y` and a given leg `w` outside the side
+lie in different arcs of the image of `T`. -/
+theorem pkCh_inST_lift_hat {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) {y w : ℕ}
+    (hy : y ∈ Icc 1 (k + 1)) (hyh : y ≠ hat) (hw : w ∈ Icc 1 N) (hwk : k ≤ cycPos N s w) :
+    InST T y hat ↔ InST (T.image f) (f y) w := by
+  obtain ⟨hs, hk3, hkN, -, -, hc, -, hhat, hhp, -⟩ := pkCh_CH_iff.1 H
+  have hTh : ∀ t ∈ T, t ≠ hat := fun t ht e => hh (e ▸ ht)
+  have hGsub := pkCh_image_sub H hTsub hh
+  have hpt : ∀ t ∈ T, cycPos N s (f t) = cycPos (k + 1) c t ∧ cycPos (k + 1) c t < k :=
+    fun t ht => ⟨(pkCh_ch_y H (hTsub ht) (hTh t ht)).2.2.1, (pkCh_ch_y H (hTsub ht) (hTh t ht)).1⟩
+  obtain ⟨hpy, hfy, hqy, -⟩ := pkCh_ch_y H hy hyh
+  have hm := pkCh_mem_image_erase H hTsub hy hyh
+  rw [erase_eq_of_notMem hh] at hm
+  have hwN := pkCo_cycPos_lt (show 1 ≤ N by omega) s w
+  have hwG : w ∉ T.image f := fun h => by
+    obtain ⟨t, ht, rfl⟩ := mem_image.1 h
+    have := hpt t ht
     omega
+  rw [pkCh_inST_pos hc hTsub hy hhat, pkCh_inST_pos hs hGsub hfy hw, hqy, hhp, hm,
+    exists_mem_image, exists_mem_image]
+  constructor
+  · rintro ⟨hyT, -, ⟨t, ht, h⟩, ⟨t', ht', h'⟩⟩
+    have e := hpt t ht
+    have e' := hpt t' ht'
+    refine ⟨hyT, hwG, ⟨t, ht, ?_⟩, ⟨t', ht', ?_⟩⟩
+    · rw [e.1]
+      omega
+    · rw [e'.1]
+      omega
+  · rintro ⟨hyT, -, ⟨t, ht, h⟩, ⟨t', ht', h'⟩⟩
+    have e := hpt t ht
+    have e' := hpt t' ht'
+    rw [e.1] at h
+    rw [e'.1] at h'
+    exact ⟨hyT, hh, ⟨t, ht, by omega⟩, ⟨t', ht', by omega⟩⟩
 
-/-- [Child](3) "⇐", `P̂ ∈ T` (BP App. C §C-2 (3)(b)): `T ∖ {P̂}` is an admissible trace of `L`; a missing runcut pair
-lifts to a missing child pair in `S_T`. -/
-theorem pkCh_tr_hat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
-    (hNF : NoFreeSep N S s k ((s + 1) % 2)) {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hTG : IsGSet (k + 1) T)
-    (hh : hat ∈ T) :
-    (sepPairs (k + 1) T ∩ missing (k + 1) ((diagonals (k + 1)).filter
-      (fun σ => ChildPairIn N S s k hat f σ.1 σ.2))).Nonempty := by
+/-- Two child legs other than `P̂` form a pair of the child iff their parent legs form a pair of
+the `N`-gon (non-adjacency through positions). -/
+theorem pkCh_diag_lift {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) {y1 y2 : ℕ}
+    (hy1 : y1 ∈ Icc 1 (k + 1)) (hy2 : y2 ∈ Icc 1 (k + 1)) (h1 : y1 ≠ hat) (h2 : y2 ≠ hat) :
+    (min y1 y2, max y1 y2) ∈ diagonals (k + 1) ↔
+      (min (f y1) (f y2), max (f y1) (f y2)) ∈ diagonals N := by
+  obtain ⟨hs, hk3, hkN, -, -, hc, -⟩ := pkCh_CH_iff.1 H
+  obtain ⟨hp1, hf1, hq1, -⟩ := pkCh_ch_y H hy1 h1
+  obtain ⟨hp2, hf2, hq2, -⟩ := pkCh_ch_y H hy2 h2
+  constructor
+  · intro hd
+    have := pkCh_pos_of_diag hc hy1 hy2 hd
+    exact pkCh_diag_pos hs hf1 hf2 (by rw [hq1, hq2]; omega) (by rw [hq1, hq2]; omega)
+  · intro hd
+    have := pkCh_pos_of_diag hs hf1 hf2 hd
+    rw [hq1, hq2] at this
+    exact pkCh_diag_pos hc hy1 hy2 (by omega) (by omega)
+
+/-- **The kind of a leg set through the child's numbering**: for a set `T` of child legs without
+`P̂`, `T` is a leg set of `𝒢_{k+1}` (two non-adjacent legs of opposite parity, or at least two legs
+of one parity) iff its image in the `N`-gon is one of `𝒢_N`. -/
+theorem pkCh_isG_lift {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) :
+    IsGSet (k + 1) T ↔ IsGSet N (T.image f) := by
+  obtain ⟨-, -, -, -, -, hc, -⟩ := pkCh_CH_iff.1 H
+  have hTh : ∀ t ∈ T, t ≠ hat := fun t ht e => hh (e ▸ ht)
+  have hGsub := pkCh_image_sub H hTsub hh
+  have hinj : Set.InjOn f T := fun a ha b hb e => by
+    have e1 := (pkCh_ch_y H (hTsub ha) (hTh a ha)).2.2.1
+    have e2 := (pkCh_ch_y H (hTsub hb) (hTh b hb)).2.2.1
+    exact pkCo_cycPos_inj hc (hTsub ha) (hTsub hb) (by rw [← e1, ← e2, e])
+  have hcard : (T.image f).card = T.card := card_image_of_injOn hinj
+  have hpar : ∀ t ∈ T, f t % 2 = t % 2 := fun t ht => (pkCh_ch_y H (hTsub ht) (hTh t ht)).2.2.2
+  have hsame : ∀ r, Admissible (k + 1) r T ↔ Admissible N r (T.image f) := by
+    intro r
+    rw [pkCh_adm_iff, pkCh_adm_iff, hcard]
+    constructor
+    · rintro ⟨-, h2, hp⟩
+      refine ⟨hGsub, h2, fun x hx => ?_⟩
+      obtain ⟨t, ht, rfl⟩ := mem_image.1 hx
+      rw [hpar t ht]
+      exact hp t ht
+    · rintro ⟨-, h2, hp⟩
+      refine ⟨hTsub, h2, fun t ht => ?_⟩
+      rw [← hpar t ht]
+      exact hp _ (mem_image_of_mem f ht)
+  have hpair : ∀ {m : ℕ} {U : Finset ℕ}, IsMixedAnchor m U ↔ ∃ a b, U = {a, b} ∧
+      (min a b, max a b) ∈ diagonals m ∧ a % 2 ≠ b % 2 := by
+    intro m U
+    constructor
+    · intro hM
+      obtain ⟨a, ha, b, hb, hab, h1, h2, h3⟩ := pkCh_mixed_iff.1 hM
+      refine ⟨a, b, hab, ?_, h3⟩
+      rw [min_eq_left (by omega), max_eq_right (by omega), mem_diagonals]
+      exact ⟨(mem_Icc.1 ha).1, (mem_Icc.1 hb).2, h1, h2⟩
+    · rintro ⟨a, b, rfl, hd, hp⟩
+      have hG := pkCh_mixed_of hd hp
+      rcases pkCh_isG_iff.1 hG with hA | hM
+      · exfalso
+        have hab : a ≠ b := fun e => by rw [e] at hp; exact hp rfl
+        rcases hA with hA | hA <;>
+        · obtain ⟨-, -, hq⟩ := pkCh_adm_iff.1 hA
+          exact hp (by
+            rw [hq a (mem_insert_self a {b}), hq b (mem_insert_of_mem (mem_singleton_self b))])
+      · exact hM
+  rw [pkCh_isG_iff, pkCh_isG_iff, hsame 0, hsame 1, hpair, hpair]
+  apply or_congr Iff.rfl
+  constructor
+  · rintro ⟨a, b, hab, hd, hp⟩
+    have ha : a ∈ T := by rw [hab]; exact mem_insert_self a {b}
+    have hb : b ∈ T := by rw [hab]; exact mem_insert_of_mem (mem_singleton_self b)
+    refine ⟨f a, f b, by rw [hab, image_insert, image_singleton], ?_, ?_⟩
+    · exact (pkCh_diag_lift H (hTsub ha) (hTsub hb) (hTh a ha) (hTh b hb)).1 hd
+    · rw [hpar a ha, hpar b hb]
+      exact hp
+  · rintro ⟨x, y, hxy, hd, hp⟩
+    have hx : x ∈ T.image f := by rw [hxy]; exact mem_insert_self x {y}
+    have hy : y ∈ T.image f := by rw [hxy]; exact mem_insert_of_mem (mem_singleton_self y)
+    obtain ⟨a, ha, rfl⟩ := mem_image.1 hx
+    obtain ⟨b, hb, rfl⟩ := mem_image.1 hy
+    have hne : f a ≠ f b := fun e => by rw [e] at hp; exact hp rfl
+    have hab : a ≠ b := fun e => hne (by rw [e])
+    have hT2 : T = {a, b} := by
+      symm
+      apply eq_of_subset_of_card_le
+      · intro z hz
+        rw [mem_insert, mem_singleton] at hz
+        rcases hz with rfl | rfl
+        · exact ha
+        · exact hb
+      · rw [← hcard, hxy, card_pair hne, card_pair hab]
+    refine ⟨a, b, hT2, ?_, ?_⟩
+    · exact (pkCh_diag_lift H (hTsub ha) (hTsub hb) (hTh a ha) (hTh b hb)).2 hd
+    · rw [← hpar a ha, ← hpar b hb]
+      exact hp
+
+theorem pkCh_mem_sepPairs_minmax {N : ℕ} {G : Finset ℕ} (hG : G ⊆ Icc 1 N) {a b : ℕ}
+    (ha : a ∈ Icc 1 N) (hb : b ∈ Icc 1 N) (hne : a ≠ b) (h : InST G a b) :
+    (min a b, max a b) ∈ sepPairs N G := by
+  have ha' := mem_Icc.1 ha
+  have hb' := mem_Icc.1 hb
+  exact (pkCo_mem_sepPairs hG).2 ⟨mem_Icc.2 ⟨by omega, by omega⟩, mem_Icc.2 ⟨by omega, by omega⟩,
+    by omega, pkCh_inST_minmax.2 h⟩
+
+/-- A child pair of a leg `y` and `P̂`, sorted: in the child set iff `{y, w} ∈ S` for every leg `w`
+outside the side. -/
+theorem pkCh_cpi_hat {N s k hat : ℕ} {S : Finset (ℕ × ℕ)} {f : ℕ → ℕ} {y : ℕ} (hyh : y ≠ hat) :
+    ChildPairIn N S s k hat f (min y hat) (max y hat) ↔ ∀ w ∈ Icc 1 N, w ∉ cycArc N s k →
+        (min (f y) w, max (f y) w) ∈ S := by
+  rcases le_total y hat with h | h
+  · rw [min_eq_left h, max_eq_right h]
+    exact pkCh_cpi_r hyh rfl
+  · rw [min_eq_right h, max_eq_left h]
+    exact pkCh_cpi_l rfl
+
+/-- **The zeros of a child away from the new leg** (a generic side): for a set `T` of child legs
+without `P̂`, the child set contains `S_T` of the child iff `S` contains `S_{T↑}` of the `N`-gon,
+`T↑` the image of `T`. No hypothesis on `S`. -/
+theorem pkCh_child_zero_nohat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)}
+    (H : pkChCH N s k c hat f) {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) :
+    sepPairs (k + 1) T ⊆ (diagonals (k + 1)).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2) ↔
+      sepPairs N (T.image f) ⊆ S := by
+  obtain ⟨hs, hk3, hkN, -, -, hc, -, hhat, hhp, -⟩ := pkCh_CH_iff.1 H
+  have hTh : ∀ t ∈ T, t ≠ hat := fun t ht e => hh (e ▸ ht)
+  have hGsub := pkCh_image_sub H hTsub hh
+  have hGpos : ∀ x ∈ T.image f, cycPos N s x < k := fun x hx => by
+    obtain ⟨t, ht, rfl⟩ := mem_image.1 hx
+    obtain ⟨hp, -, hq, -⟩ := pkCh_ch_y H (hTsub ht) (hTh t ht)
+    omega
+  have hkN' : k ≤ N := by omega
+  have hout : ∀ w ∈ Icc 1 N, w ∉ cycArc N s k → k ≤ cycPos N s w := fun w hw hwa => by
+    by_contra h
+    exact hwa ((pkCo_mem_cycArc_pos hs hkN').2 ⟨hw, by omega⟩)
+  -- A pair of `S_{T↑}` with one leg in the side: its child pair with `P̂`.
+  have hmix : sepPairs (k + 1) T ⊆ (diagonals (k + 1)).filter
+      (fun σ => ChildPairIn N S s k hat f σ.1 σ.2) → ∀ x w : ℕ, x ∈ Icc 1 N → w ∈ Icc 1 N →
+        cycPos N s x < k → k ≤ cycPos N s w → InST (T.image f) x w → (min x w, max x w) ∈ S := by
+    intro hsub x w hx hw hxk hwk hin
+    obtain ⟨y, hy, hyh, -, hfy⟩ := pkCh_ch_x H hx hxk
+    have hin' : InST T y hat :=
+      (pkCh_inST_lift_hat H hTsub hh hy hyh hw hwk).2 (by rw [hfy]; exact hin)
+    have hσ := hsub (pkCh_mem_sepPairs_minmax hTsub hy hhat hyh hin')
+    have hw' : w ∉ cycArc N s k := fun h => by
+      have := ((pkCo_mem_cycArc_pos hs hkN').1 h).2
+      omega
+    have := (pkCh_cpi_hat hyh).1 (mem_filter.1 hσ).2 w hw hw'
+    rw [hfy] at this
+    exact this
+  constructor
+  · intro hsub p hp
+    obtain ⟨hx1, hx2, hlt, hin⟩ := (pkCo_mem_sepPairs hGsub).1 hp
+    have hpe : p = (min p.1 p.2, max p.1 p.2) := by
+      rw [min_eq_left hlt.le, max_eq_right hlt.le]
+    by_cases h1 : cycPos N s p.1 < k
+    · by_cases h2 : cycPos N s p.2 < k
+      · obtain ⟨y1, hy1, hy1h, -, hf1⟩ := pkCh_ch_x H hx1 h1
+        obtain ⟨y2, hy2, hy2h, -, hf2⟩ := pkCh_ch_x H hx2 h2
+        have hin' : InST T y1 y2 :=
+          (pkCh_inST_lift H hTsub hh hy1 hy2 hy1h hy2h).2 (by rw [hf1, hf2]; exact hin)
+        have hne : y1 ≠ y2 := fun e => by
+          rw [e] at hf1
+          rw [hf1] at hf2
+          omega
+        have hσ := hsub (pkCh_mem_sepPairs_minmax hTsub hy1 hy2 hne hin')
+        obtain ⟨hmin, hmax⟩ := pkCh_minmax_ne hy1h hy2h
+        have := (mem_filter.1 hσ).2
+        rw [pkCh_cpi_nn hmin hmax, pkCh_minmax_map f y1 y2, hf1, hf2] at this
+        rw [hpe]
+        exact this
+      · rw [hpe]
+        exact hmix hsub p.1 p.2 hx1 hx2 h1 (by omega) hin
+    · by_cases h2 : cycPos N s p.2 < k
+      · rw [hpe, min_comm, max_comm]
+        exact hmix hsub p.2 p.1 hx2 hx1 h2 (by omega) (pkCo_inST_comm.1 hin)
+      · exfalso
+        obtain ⟨-, -, ⟨t, ht, hb⟩, -⟩ := (pkCh_inST_pos hs hGsub hx1 hx2).1 hin
+        have := hGpos t ht
+        omega
+  · intro hsub σ hσ
+    obtain ⟨hj, hl, hjl, hin⟩ := (pkCo_mem_sepPairs hTsub).1 hσ
+    refine mem_filter.2 ⟨pkCo_diag_of_inST hTsub hj hl hjl hin, ?_⟩
+    -- the image pair of a child leg and a leg outside the side
+    have hpair : ∀ y, y ∈ Icc 1 (k + 1) → y ≠ hat → InST T y hat → ∀ w ∈ Icc 1 N,
+        w ∉ cycArc N s k → (min (f y) w, max (f y) w) ∈ S := by
+      intro y hy hyh hin' w hw hwa
+      have hwk := hout w hw hwa
+      obtain ⟨hpy, hfy, hqy, -⟩ := pkCh_ch_y H hy hyh
+      refine hsub (pkCh_mem_sepPairs_minmax hGsub hfy hw (fun e => by rw [e] at hqy; omega) ?_)
+      exact (pkCh_inST_lift_hat H hTsub hh hy hyh hw hwk).1 hin'
+    by_cases hjh : σ.1 = hat
+    · have hlh : σ.2 ≠ hat := fun e => by omega
+      rw [pkCh_cpi_l hjh]
+      rw [hjh] at hin
+      exact hpair σ.2 hl hlh (pkCo_inST_comm.1 hin)
+    · by_cases hlh : σ.2 = hat
+      · rw [pkCh_cpi_r hjh hlh]
+        rw [hlh] at hin
+        exact hpair σ.1 hj hjh hin
+      · rw [pkCh_cpi_nn hjh hlh]
+        obtain ⟨-, hf1, hq1, -⟩ := pkCh_ch_y H hj hjh
+        obtain ⟨-, hf2, hq2, -⟩ := pkCh_ch_y H hl hlh
+        have hne : f σ.1 ≠ f σ.2 := fun e => by
+          have := pkCo_cycPos_inj hc hj hl (by rw [← hq1, ← hq2, e])
+          omega
+        exact hsub (pkCh_mem_sepPairs_minmax hGsub hf1 hf2 hne
+          ((pkCh_inST_lift H hTsub hh hj hl hjh hlh).1 hin))
+
+/-- Every set of legs of the side is the image of exactly one set of child legs without `P̂`
+(existence; uniqueness is `pkCh_eq_of_image_erase`). -/
+theorem pkCh_nohat_onto {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {G : Finset ℕ} (hG : G ⊆ cycArc N s k) :
+    ∃ T ⊆ Icc 1 (k + 1), hat ∉ T ∧ T.image f = G := by
+  obtain ⟨hs, hk3, hkN, -⟩ := pkCh_CH_iff.1 H
+  have hx : ∀ x ∈ G, x ∈ Icc 1 N ∧ cycPos N s x < k := fun x h =>
+    (pkCo_mem_cycArc_pos hs (by omega)).1 (hG h)
+  refine ⟨G.image (fun x => vtx (k + 1) (c + cycPos N s x)), fun y hy => ?_, fun hy => ?_, ?_⟩
+  · obtain ⟨x, h, rfl⟩ := mem_image.1 hy
+    exact (pkCh_ch_inv H (hx x h).1 (hx x h).2).1
+  · obtain ⟨x, h, e⟩ := mem_image.1 hy
+    exact (pkCh_ch_inv H (hx x h).1 (hx x h).2).2.1 e
+  · rw [image_image]
+    conv_rhs => rw [← image_id (s := G)]
+    exact image_congr fun x h => (pkCh_ch_inv H (hx x h).1 (hx x h).2).2.2.2
+
+/-- **The zeros of a child at the new leg** (a generic side): for a set `T` of child legs with
+`P̂`, the child set contains `S_T` of the child iff `Θ`, the image of `T ∖ {P̂}`, is free:
+`sep_L(Θ)` has no missing pair. No hypothesis on `S`. -/
+theorem pkCh_child_zero_hat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)}
+    (H : pkChCH N s k c hat f) {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∈ T) :
+    sepPairs (k + 1) T ⊆ (diagonals (k + 1)).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2) ↔
+      Disjoint (sepIn N s k ((T.erase hat).image f)) (missing N S) := by
+  obtain ⟨hs, hk3, hkN, -, -, hc, -, hhat, hhp, -⟩ := pkCh_CH_iff.1 H
+  have hkN' : k ≤ N := by omega
+  constructor
+  · intro hsub
+    rw [disjoint_left]
+    intro τ hτ hτM
+    obtain ⟨hd, hx1a, hx2a, hx1Θ, hx2Θ, θ, hθΘ, hb1, hb2⟩ := pkCo_mem_sepIn.1 hτ
+    obtain ⟨-, hτS⟩ := pkCh_mem_missing.1 hτM
+    have hd' := mem_diagonals.1 hd
+    obtain ⟨hx1, hp1⟩ := (pkCo_mem_cycArc_pos hs hkN').1 hx1a
+    obtain ⟨hx2, hp2⟩ := (pkCo_mem_cycArc_pos hs hkN').1 hx2a
+    obtain ⟨y1, hy1, hy1h, hq1, hf1⟩ := pkCh_ch_x H hx1 hp1
+    obtain ⟨y2, hy2, hy2h, hq2, hf2⟩ := pkCh_ch_x H hx2 hp2
+    obtain ⟨y0, hy0, rfl⟩ := mem_image.1 hθΘ
+    obtain ⟨hy0h, hy0T⟩ := mem_erase.1 hy0
+    have hq0 := (pkCh_ch_y H (hTsub hy0T) hy0h).2.2.1
+    have hy1T : y1 ∉ T := fun h =>
+      hx1Θ (by rw [← hf1]; exact (pkCh_mem_image_erase H hTsub hy1 hy1h).2 h)
+    have hy2T : y2 ∉ T := fun h =>
+      hx2Θ (by rw [← hf2]; exact (pkCh_mem_image_erase H hTsub hy2 hy2h).2 h)
+    have hin : InST T y1 y2 := (pkCh_inST_pos hc hTsub hy1 hy2).2
+      ⟨hy1T, hy2T, ⟨y0, hy0T, by omega⟩, ⟨hat, hh, by omega⟩⟩
+    have hne : y1 ≠ y2 := fun e => by
+      rw [e] at hq1
+      omega
+    have hσ := hsub (pkCh_mem_sepPairs_minmax hTsub hy1 hy2 hne hin)
+    obtain ⟨hmin, hmax⟩ := pkCh_minmax_ne hy1h hy2h
+    have := (mem_filter.1 hσ).2
+    rw [pkCh_cpi_nn hmin hmax, pkCh_minmax_map f y1 y2, hf1, hf2, min_eq_left (by omega),
+      max_eq_right (by omega)] at this
+    exact hτS this
+  · intro hdis σ hσ
+    obtain ⟨hy1, hy2, hy12, hin⟩ := (pkCo_mem_sepPairs hTsub).1 hσ
+    refine mem_filter.2 ⟨pkCo_diag_of_inST hTsub hy1 hy2 hy12 hin, ?_⟩
+    obtain ⟨hy1T, hy2T, ⟨t, htT, hbt⟩, -⟩ := (pkCh_inST_pos hc hTsub hy1 hy2).1 hin
+    have hy1h : σ.1 ≠ hat := fun e => hy1T (e ▸ hh)
+    have hy2h : σ.2 ≠ hat := fun e => hy2T (e ▸ hh)
+    obtain ⟨hp1, hx1, hq1, -⟩ := pkCh_ch_y H hy1 hy1h
+    obtain ⟨hp2, hx2, hq2, -⟩ := pkCh_ch_y H hy2 hy2h
+    rw [pkCh_cpi_nn hy1h hy2h]
+    have hth : t ≠ hat := fun e => by
+      rw [e, hhp] at hbt
+      omega
+    have hx1Θ : f σ.1 ∉ (T.erase hat).image f := fun h =>
+      hy1T ((pkCh_mem_image_erase H hTsub hy1 hy1h).1 h)
+    have hx2Θ : f σ.2 ∉ (T.erase hat).image f := fun h =>
+      hy2T ((pkCh_mem_image_erase H hTsub hy2 hy2h).1 h)
+    have hqt := (pkCh_ch_y H (hTsub htT) hth).2.2.1
+    have hτ := pkCh_sepIn_of hs (show k + 1 ≤ N by omega) hx1 hx2 (by omega) (by omega) hx1Θ hx2Θ
+      (mem_image_of_mem f (mem_erase.2 ⟨hth, htT⟩)) (by omega) (by omega)
+    by_contra hn
+    exact disjoint_left.1 hdis hτ (pkCh_mem_missing.2 ⟨(pkCo_mem_sepIn.1 hτ).1, hn⟩)
+
+/-- A leg set of `𝒢_{k+1}` with `P̂`: the image of `T ∖ {P̂}` is an admissible separator of the
+side (one interior leg, or at least two of the parity `(s + 1) % 2`). -/
+theorem pkCh_hat_adm {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f)
+    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hTG : IsGSet (k + 1) T) (hh : hat ∈ T) :
+    (T.erase hat).image f ∈ admSeps N s k ((s + 1) % 2) := by
   obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
   have hhq := pkCh_ch_hat H
   have hm2 : (k + 1) % 2 = 0 := by omega
@@ -324,69 +708,133 @@ theorem pkCh_tr_hat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × �
       · have he : T.erase hat = {a} := by
           rw [hab, e, pair_comm, erase_insert (fun h => by rw [mem_singleton] at h; omega)]
         exact ⟨by rw [he]; exact singleton_nonempty a, Or.inr ⟨a, he⟩⟩
-  have hΘ : (T.erase hat).image f ∈ admSeps N s k ((s + 1) % 2) := by
-    rw [pkCo_mem_admSeps]
-    refine ⟨fun θ hθ => ?_, ?_⟩
-    · obtain ⟨y, hy, rfl⟩ := mem_image.1 hθ
-      obtain ⟨hyh, hyT⟩ := mem_erase.1 hy
-      obtain ⟨-, hfy, hq, -⟩ := pkCh_ch_y H (hTsub hyT) hyh
-      have := hint y hyT hyh
-      exact (pkCo_mem_intArc hs (by omega)).2 ⟨hfy, by omega, by omega⟩
-    · rcases hshape.2 with hp | ⟨y, he⟩
-      · have hne := hshape.1.image f
-        have := card_pos.2 hne
-        rcases Nat.lt_or_ge ((T.erase hat).image f).card 2 with h | h
-        · left
-          omega
-        · right
-          refine ⟨h, fun θ hθ => ?_⟩
-          obtain ⟨y, hy, rfl⟩ := mem_image.1 hθ
-          obtain ⟨hyh, hyT⟩ := mem_erase.1 hy
-          rw [(pkCh_ch_y H (hTsub hyT) hyh).2.2.2, hp y hyT, hhq]
+  rw [pkCo_mem_admSeps]
+  refine ⟨fun θ hθ => ?_, ?_⟩
+  · obtain ⟨y, hy, rfl⟩ := mem_image.1 hθ
+    obtain ⟨hyh, hyT⟩ := mem_erase.1 hy
+    obtain ⟨-, hfy, hq, -⟩ := pkCh_ch_y H (hTsub hyT) hyh
+    have := hint y hyT hyh
+    exact (pkCo_mem_intArc hs (by omega)).2 ⟨hfy, by omega, by omega⟩
+  · rcases hshape.2 with hp | ⟨y, he⟩
+    · have hne := hshape.1.image f
+      have := card_pos.2 hne
+      rcases Nat.lt_or_ge ((T.erase hat).image f).card 2 with h | h
       · left
-        rw [he, image_singleton, card_singleton]
-  obtain ⟨⟨x1, x2⟩, hτ1, hτ2⟩ := not_disjoint_iff.1 (pkCh_noFree_iff.1 hNF _ hΘ)
-  obtain ⟨hd, hx1a, hx2a, hx1Θ, hx2Θ, θ, hθΘ, hb1, hb2⟩ := pkCo_mem_sepIn.1 hτ1
-  obtain ⟨-, hτS⟩ := pkCh_mem_missing.1 hτ2
-  dsimp only at hd hx1a hx2a hx1Θ hx2Θ hb1 hb2
-  have hd' := mem_diagonals.1 hd
-  dsimp only at hd'
-  obtain ⟨hx1, hp1⟩ := (pkCo_mem_cycArc_pos hs (by omega)).1 hx1a
-  obtain ⟨hx2, hp2⟩ := (pkCo_mem_cycArc_pos hs (by omega)).1 hx2a
-  obtain ⟨y1, hy1, hy1h, hq1, hf1⟩ := pkCh_ch_x H hx1 hp1
-  obtain ⟨y2, hy2, hy2h, hq2, hf2⟩ := pkCh_ch_x H hx2 hp2
-  obtain ⟨y0, hy0, rfl⟩ := mem_image.1 hθΘ
-  obtain ⟨hy0h, hy0T⟩ := mem_erase.1 hy0
-  have hq0 := (pkCh_ch_y H (hTsub hy0T) hy0h).2.2.1
-  have hy1T : y1 ∉ T := fun h => hx1Θ (by rw [← hf1]; exact mem_image_of_mem f (mem_erase.2 ⟨hy1h, h⟩))
-  have hy2T : y2 ∉ T := fun h => hx2Θ (by rw [← hf2]; exact mem_image_of_mem f (mem_erase.2 ⟨hy2h, h⟩))
-  have hin : InST T y1 y2 := (pkCh_inST_pos hc hTsub hy1 hy2).2
-    ⟨hy1T, hy2T, ⟨y0, hy0T, by omega⟩, ⟨hat, hh, by omega⟩⟩
-  have hne : y1 ≠ y2 := fun h => by
-    rw [h] at hq1
-    omega
-  have hy1' := mem_Icc.1 hy1
-  have hy2' := mem_Icc.1 hy2
-  have hmin : min y1 y2 ≠ hat := by
-    rcases min_choice y1 y2 with e | e <;> rw [e]
-    · exact hy1h
-    · exact hy2h
-  have hmax : max y1 y2 ≠ hat := by
-    rcases max_choice y1 y2 with e | e <;> rw [e]
-    · exact hy1h
-    · exact hy2h
-  have hin' := pkCh_inST_minmax.2 hin
-  have hI1 : min y1 y2 ∈ Icc 1 (k + 1) := mem_Icc.2 ⟨by omega, by omega⟩
-  have hI2 : max y1 y2 ∈ Icc 1 (k + 1) := mem_Icc.2 ⟨by omega, by omega⟩
-  have hlt : min y1 y2 < max y1 y2 := by omega
-  refine ⟨(min y1 y2, max y1 y2), mem_inter.2 ⟨(pkCo_mem_sepPairs hTsub).2 ⟨hI1, hI2, hlt, hin'⟩,
-    pkCh_mem_childMiss.2 ⟨pkCo_diag_of_inST hTsub hI1 hI2 hlt hin', ?_⟩⟩⟩
-  show ¬ ChildPairIn N S s k hat f (min y1 y2) (max y1 y2)
-  rw [pkCh_cpi_nn hmin hmax, pkCh_minmax_map f y1 y2, hf1, hf2, min_eq_left (by omega), max_eq_right (by omega)]
-  exact hτS
+        omega
+      · right
+        refine ⟨h, fun θ hθ => ?_⟩
+        obtain ⟨y, hy, rfl⟩ := mem_image.1 hθ
+        obtain ⟨hyh, hyT⟩ := mem_erase.1 hy
+        rw [(pkCh_ch_y H (hTsub hyT) hyh).2.2.2, hp y hyT, hhq]
+    · left
+      rw [he, image_singleton, card_singleton]
 
-/-- [Child](3) "⇐", `P̂ ∉ T`, a separated pair with one leg in `L` and one outside: the child pair `{x, P̂}`. -/
-theorem pkCh_tr_mixed {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
+/-- Every admissible separator `Θ` of the side is the image of `T ∖ {P̂}` for a leg set `T` of
+`𝒢_{k+1}` with `P̂` (`T = Θ ∪ {P̂}` in child legs; unique by `pkCh_eq_of_image_erase`). -/
+theorem pkCh_adm_hat {N s k c hat : ℕ} {f : ℕ → ℕ} (H : pkChCH N s k c hat f) {Θ : Finset ℕ}
+    (hΘ : Θ ∈ admSeps N s k ((s + 1) % 2)) :
+    ∃ T ⊆ Icc 1 (k + 1), IsGSet (k + 1) T ∧ hat ∈ T ∧ (T.erase hat).image f = Θ := by
+  obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
+  have hhq := pkCh_ch_hat H
+  have hm2 : (k + 1) % 2 = 0 := by omega
+  obtain ⟨hΘsub, hΘc⟩ := pkCo_mem_admSeps.1 hΘ
+  have hθ : ∀ θ ∈ Θ, θ ∈ Icc 1 N ∧ 1 ≤ cycPos N s θ ∧ cycPos N s θ + 2 ≤ k :=
+    fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
+  have hg : ∀ θ ∈ Θ, vtx (k + 1) (c + cycPos N s θ) ∈ Icc 1 (k + 1) ∧
+      vtx (k + 1) (c + cycPos N s θ) ≠ hat ∧
+      cycPos (k + 1) c (vtx (k + 1) (c + cycPos N s θ)) = cycPos N s θ ∧
+      f (vtx (k + 1) (c + cycPos N s θ)) = θ := fun θ h =>
+    pkCh_ch_inv H (hθ θ h).1 (by have := (hθ θ h).2.2; omega)
+  have hgp : ∀ θ ∈ Θ, vtx (k + 1) (c + cycPos N s θ) % 2 = θ % 2 := by
+    intro θ h
+    have := pkCo_vtx_mod_two (show 1 ≤ k + 1 by omega) hm2 (c + cycPos N s θ)
+    have := pkCo_cycPos_mod_two hE hs (hθ θ h).1
+    omega
+  obtain ⟨T, hTdef⟩ : ∃ T : Finset ℕ, T =
+      Θ.image (fun θ => vtx (k + 1) (c + cycPos N s θ)) ∪ {hat} := ⟨_, rfl⟩
+  have hTmem : ∀ t, t ∈ T ↔ (∃ θ ∈ Θ, vtx (k + 1) (c + cycPos N s θ) = t) ∨ t = hat := by
+    intro t
+    rw [hTdef, mem_union, mem_image, mem_singleton]
+  have hTsub : T ⊆ Icc 1 (k + 1) := by
+    intro t ht
+    rcases (hTmem t).1 ht with ⟨θ, h, rfl⟩ | h
+    · exact (hg θ h).1
+    · rw [h]
+      exact hhat
+  have hΘne : Θ.Nonempty := card_pos.1 (by omega)
+  have hTG : IsGSet (k + 1) T := by
+    by_cases hq : ∀ θ ∈ Θ, θ % 2 = (s + 1) % 2
+    · obtain ⟨θ₀, h0⟩ := hΘne
+      have h2 := one_lt_card.2 ⟨_, (hTmem _).2 (Or.inl ⟨θ₀, h0, rfl⟩), hat,
+          (hTmem hat).2 (Or.inr rfl), (hg θ₀ h0).2.1⟩
+      refine pkCh_sameParity hTsub (by omega) (r := (s + 1) % 2) ?_
+      intro t ht
+      rcases (hTmem t).1 ht with ⟨θ, h, rfl⟩ | h
+      · rw [hgp θ h]
+        exact hq θ h
+      · rw [h]
+        exact hhq
+    · have hc1 : Θ.card = 1 := by
+        rcases hΘc with h | ⟨-, h⟩
+        · exact h
+        · exact absurd h hq
+      obtain ⟨x, rfl⟩ := card_eq_one.1 hc1
+      have hxq : x % 2 ≠ (s + 1) % 2 := fun h => hq fun θ hθ => by
+        rw [mem_singleton.1 hθ]
+        exact h
+      have hTx : T = {vtx (k + 1) (c + cycPos N s x), hat} := by
+        rw [hTdef, image_singleton, ← insert_eq]
+      obtain ⟨hgx, -, hpx, -⟩ := hg x (mem_singleton_self x)
+      obtain ⟨-, hx1, hx2⟩ := hθ x (mem_singleton_self x)
+      rw [hTx]
+      refine pkCh_mixed_of (pkCh_diag_pos hc hgx hhat ?_ ?_)
+        (by rw [hgp x (mem_singleton_self x), hhq]; exact hxq)
+      · rw [hpx, hhp]
+        omega
+      · rw [hpx, hhp]
+        omega
+  refine ⟨T, hTsub, hTG, (hTmem hat).2 (Or.inr rfl), ?_⟩
+  ext x
+  rw [mem_image]
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    obtain ⟨hyh, hyT⟩ := mem_erase.1 hy
+    rcases (hTmem y).1 hyT with ⟨θ, h, rfl⟩ | h
+    · rw [(hg θ h).2.2.2]
+      exact h
+    · exact absurd h hyh
+  · intro hx
+    exact ⟨_, mem_erase.2 ⟨(hg x hx).2.1, (hTmem _).2 (Or.inl ⟨x, hx, rfl⟩)⟩, (hg x hx).2.2.2⟩
+
+/-- **Children, "⇒"**: a free separator `Θ` of `L` gives the child leg set `Θ ∪ {P̂}` of `𝒢_m`
+(`pkCh_adm_hat`) whose `S_T` lies in the child set (`pkCh_child_zero_hat`), so misses the child's
+missing set. No hypothesis on `S`. -/
+theorem pkCh_child_nf {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
+    (hT : Transversal (k + 1) (missing (k + 1) ((diagonals (k + 1)).filter
+      (fun σ => ChildPairIn N S s k hat f σ.1 σ.2)))) :
+    NoFreeSep N S s k ((s + 1) % 2) := by
+  rw [pkCh_noFree_iff]
+  intro Θ hΘ hdis
+  obtain ⟨T, hTsub, hTG, hh, rfl⟩ := pkCh_adm_hat H hΘ
+  have hsub := (pkCh_child_zero_hat H hTsub hh).2 hdis
+  obtain ⟨σ, hσ⟩ :=
+    (pkCh_transversal_iff.1 hT) _ (mem_image.2 ⟨T, pkCh_mem_gLeg.2 ⟨hTsub, hTG⟩, rfl⟩)
+  obtain ⟨h1, h2⟩ := mem_inter.1 hσ
+  exact (pkCh_mem_childMiss.1 h2).2 (mem_filter.1 (hsub h1)).2
+
+/-- **Children, "⇐"**, `P̂ ∈ T`: the image of `T ∖ {P̂}` is an admissible separator of `L`
+(`pkCh_hat_adm`), not free, so `S_T` is not in the child set (`pkCh_child_zero_hat`). -/
+theorem pkCh_tr_hat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
+    (hNF : NoFreeSep N S s k ((s + 1) % 2)) {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1))
+    (hTG : IsGSet (k + 1) T) (hh : hat ∈ T) :
+    (sepPairs (k + 1) T ∩ missing (k + 1) ((diagonals (k + 1)).filter
+      (fun σ => ChildPairIn N S s k hat f σ.1 σ.2))).Nonempty := by
+  have hnd := pkCh_noFree_iff.1 hNF _ (pkCh_hat_adm H hTsub hTG hh)
+  exact pkCh_inter_missing_of_not_subset fun h => hnd ((pkCh_child_zero_hat H hTsub hh).1 h)
+
+/-- **Children, "⇐"**, `P̂ ∉ T`, a separated pair with one leg in `L` and one outside: the child
+pair `{x, P̂}`. -/
+theorem pkCh_tr_mixed {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
     {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) {xa xb : ℕ} (hxa : xa ∈ Icc 1 N)
     (hxb : xb ∈ Icc 1 N) (hia : cycPos N s xa < k) (hib : k ≤ cycPos N s xb) (hxaT : xa ∉ T.image f)
     (hτS : (min xa xb, max xa xb) ∉ S) {yt yt' : ℕ} (hyt : yt ∈ T) (hyt' : yt' ∈ T)
@@ -411,7 +859,7 @@ theorem pkCh_tr_mixed {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × 
     omega
   refine ⟨(min ya hat, max ya hat), mem_inter.2 ⟨(pkCo_mem_sepPairs hTsub).2 ⟨hI1, hI2, hlt, hin'⟩,
     pkCh_mem_childMiss.2 ⟨pkCo_diag_of_inST hTsub hI1 hI2 hlt hin', ?_⟩⟩⟩
-  show ¬ ChildPairIn N S s k hat f (min ya hat) (max ya hat)
+  change ¬ ChildPairIn N S s k hat f (min ya hat) (max ya hat)
   rcases le_total ya hat with hle | hle
   · rw [min_eq_left hle, max_eq_right hle, pkCh_cpi_r hyah rfl]
     intro hall
@@ -424,11 +872,12 @@ theorem pkCh_tr_mixed {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × 
     rw [hfa] at this
     exact hτS this
 
-/-- [Child](3) "⇐", `P̂ ∉ T`, a separated pair with both legs in `L`. -/
-theorem pkCh_tr_in {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
-    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hh : hat ∉ T) {x1 x2 : ℕ} (hx1 : x1 ∈ Icc 1 N)
+/-- **Children, "⇐"**, `P̂ ∉ T`, a separated pair with both legs in `L`. -/
+theorem pkCh_tr_in {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
+    {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (_hh : hat ∉ T) {x1 x2 : ℕ} (hx1 : x1 ∈ Icc 1 N)
     (hx2 : x2 ∈ Icc 1 N) (hi1 : cycPos N s x1 < k) (hi2 : cycPos N s x2 < k) (hx1T : x1 ∉ T.image f)
-    (hx2T : x2 ∉ T.image f) (hτS : (min x1 x2, max x1 x2) ∉ S) {yt yt' : ℕ} (hyt : yt ∈ T) (hyt' : yt' ∈ T)
+    (hx2T : x2 ∉ T.image f) (hτS : (min x1 x2, max x1 x2) ∉ S) {yt yt' : ℕ} (hyt : yt ∈ T)
+    (hyt' : yt' ∈ T)
     (hbt : min (cycPos N s x1) (cycPos N s x2) < cycPos (k + 1) c yt ∧
       cycPos (k + 1) c yt < max (cycPos N s x1) (cycPos N s x2))
     (hnbt : ¬ (min (cycPos N s x1) (cycPos N s x2) < cycPos (k + 1) c yt' ∧
@@ -441,7 +890,8 @@ theorem pkCh_tr_in {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ
   have hy1T : y1 ∉ T := fun h => hx1T (by rw [← hf1]; exact mem_image_of_mem f h)
   have hy2T : y2 ∉ T := fun h => hx2T (by rw [← hf2]; exact mem_image_of_mem f h)
   rw [← hq1, ← hq2] at hbt hnbt
-  have hin : InST T y1 y2 := (pkCh_inST_pos hc hTsub hy1 hy2).2 ⟨hy1T, hy2T, ⟨yt, hyt, hbt⟩, ⟨yt', hyt', hnbt⟩⟩
+  have hin : InST T y1 y2 :=
+      (pkCh_inST_pos hc hTsub hy1 hy2).2 ⟨hy1T, hy2T, ⟨yt, hyt, hbt⟩, ⟨yt', hyt', hnbt⟩⟩
   have hne : y1 ≠ y2 := fun h => by
     rw [h] at hbt
     omega
@@ -461,91 +911,25 @@ theorem pkCh_tr_in {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ
   have hlt : min y1 y2 < max y1 y2 := by omega
   refine ⟨(min y1 y2, max y1 y2), mem_inter.2 ⟨(pkCo_mem_sepPairs hTsub).2 ⟨hI1, hI2, hlt, hin'⟩,
     pkCh_mem_childMiss.2 ⟨pkCo_diag_of_inST hTsub hI1 hI2 hlt hin', ?_⟩⟩⟩
-  show ¬ ChildPairIn N S s k hat f (min y1 y2) (max y1 y2)
+  change ¬ ChildPairIn N S s k hat f (min y1 y2) (max y1 y2)
   rw [pkCh_cpi_nn hmin hmax, pkCh_minmax_map f y1 y2, hf1, hf2]
   exact hτS
 
-/-- [Child](3) "⇐", `P̂ ∉ T` (BP App. C §C-2 (3)(a)): `T ⊆ L` is a member of `𝒢_N`, which `S ∈ F^π` does not contain;
-its missing pair maps to a missing child pair in `S_T`. -/
-theorem pkCh_tr_nohat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
+/-- **Children, "⇐"**, `P̂ ∉ T`: the image of `T` is a leg set of `𝒢_N` (`pkCh_isG_lift`), whose
+`S_{T↑}` a set `S` containing no member of `𝒢_N` does not contain; so `S_T` is not in the child set
+(`pkCh_child_zero_nohat`). -/
+theorem pkCh_tr_nohat {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
     (hG : ¬ ContainsGMember N S) {T : Finset ℕ} (hTsub : T ⊆ Icc 1 (k + 1)) (hTG : IsGSet (k + 1) T)
     (hh : hat ∉ T) :
     (sepPairs (k + 1) T ∩ missing (k + 1) ((diagonals (k + 1)).filter
       (fun σ => ChildPairIn N S s k hat f σ.1 σ.2))).Nonempty := by
-  obtain ⟨hs, hk3, hkN, hk1, hE, hc, hcs, hhat, hhp, hf⟩ := pkCh_CH_iff.1 H
-  have hyT : ∀ y ∈ T, y ≠ hat := fun y hy h => hh (h ▸ hy)
-  have hT'sub : T.image f ⊆ Icc 1 N := fun t ht => by
-    obtain ⟨y, hy, rfl⟩ := mem_image.1 ht
-    exact (pkCh_ch_y H (hTsub hy) (hyT y hy)).2.1
-  have hT'G : IsGSet N (T.image f) := by
-    rcases pkCh_isG_iff.1 hTG with hA | hM
-    · have hA' : ∃ r, Admissible (k + 1) r T := by
-        rcases hA with h | h
-        · exact ⟨0, h⟩
-        · exact ⟨1, h⟩
-      obtain ⟨r, hr⟩ := hA'
-      obtain ⟨-, hc2, hp⟩ := pkCh_adm_iff.1 hr
-      obtain ⟨y1, hy1, y2, hy2, hne⟩ := one_lt_card.1 (show 1 < T.card by omega)
-      have hfne : f y1 ≠ f y2 := fun h => hne (pkCo_cycPos_inj hc (hTsub hy1) (hTsub hy2) (by
-        have e1 := (pkCh_ch_y H (hTsub hy1) (hyT y1 hy1)).2.2.1
-        have e2 := (pkCh_ch_y H (hTsub hy2) (hyT y2 hy2)).2.2.1
-        rw [h] at e1
-        omega))
-      have h2 := one_lt_card.2 ⟨f y1, mem_image_of_mem f hy1, f y2, mem_image_of_mem f hy2, hfne⟩
-      refine pkCh_sameParity hT'sub (by omega) (r := r) ?_
-      intro t ht
-      obtain ⟨y, hy, rfl⟩ := mem_image.1 ht
-      rw [(pkCh_ch_y H (hTsub hy) (hyT y hy)).2.2.2]
-      exact hp y hy
-    · obtain ⟨a, ha, b, hb, hab, h1, h2, h3⟩ := pkCh_mixed_iff.1 hM
-      have haT : a ∈ T := by
-        rw [hab]
-        exact mem_insert_self a {b}
-      have hbT : b ∈ T := by
-        rw [hab]
-        exact mem_insert_of_mem (mem_singleton_self b)
-      obtain ⟨hpa, hfa, hqa, hra⟩ := pkCh_ch_y H ha (hyT a haT)
-      obtain ⟨hpb, hfb, hqb, hrb⟩ := pkCh_ch_y H hb (hyT b hbT)
-      have hdab : (min a b, max a b) ∈ diagonals (k + 1) := by
-        rw [min_eq_left (by omega), max_eq_right (by omega), mem_diagonals]
-        exact ⟨(mem_Icc.1 ha).1, (mem_Icc.1 hb).2, h1, h2⟩
-      have hpos := pkCh_pos_of_diag hc ha hb hdab
-      have hd := pkCh_diag_pos hs hfa hfb (by rw [hqa, hqb]; omega) (by rw [hqa, hqb]; omega)
-      rw [hab, image_insert, image_singleton]
-      exact pkCh_mixed_of hd (by rw [hra, hrb]; exact h3)
-  have hnot : ¬ sepPairs N (T.image f) ⊆ S := fun hsub =>
-    hG (pkCh_cgm_iff.2 ⟨_, mem_image.2 ⟨T.image f, pkCh_mem_gLeg.2 ⟨hT'sub, hT'G⟩, rfl⟩, hsub⟩)
-  obtain ⟨⟨x1, x2⟩, hτ, hτS⟩ := not_subset.1 hnot
-  obtain ⟨hx1, hx2, hx12, hin⟩ := (pkCo_mem_sepPairs hT'sub).1 hτ
-  dsimp only at hx1 hx2 hx12 hin
-  obtain ⟨hx1T, hx2T, ⟨t, htT, hbt⟩, ⟨t', ht'T, hnbt⟩⟩ := (pkCh_inST_pos hs hT'sub hx1 hx2).1 hin
-  obtain ⟨yt, hyt, rfl⟩ := mem_image.1 htT
-  obtain ⟨yt', hyt', rfl⟩ := mem_image.1 ht'T
-  obtain ⟨hpt, hft, hqt, -⟩ := pkCh_ch_y H (hTsub hyt) (hyT yt hyt)
-  obtain ⟨hpt', hft', hqt', -⟩ := pkCh_ch_y H (hTsub hyt') (hyT yt' hyt')
-  rw [hqt] at hbt
-  rw [hqt'] at hnbt
-  have hS12 : (min x1 x2, max x1 x2) ∉ S := by
-    rw [min_eq_left hx12.le, max_eq_right hx12.le]
-    exact hτS
-  have hS21 : (min x2 x1, max x2 x1) ∉ S := by
-    rw [min_eq_right hx12.le, max_eq_left hx12.le]
-    exact hτS
-  by_cases h1 : cycPos N s x1 < k
-  · by_cases h2 : cycPos N s x2 < k
-    · exact pkCh_tr_in H hTsub hh hx1 hx2 h1 h2 hx1T hx2T hS12 hyt hyt' hbt hnbt
-    · have hneq : cycPos (k + 1) c yt' ≠ cycPos N s x1 := fun h => hx1T (by
-        rw [← pkCo_cycPos_inj hs hft' hx1 (by rw [hqt']; exact h)]
-        exact mem_image_of_mem f hyt')
-      exact pkCh_tr_mixed H hTsub hh hx1 hx2 h1 (by omega) hx1T hS12 hyt hyt' (by omega) (by omega)
-  · by_cases h2 : cycPos N s x2 < k
-    · have hneq : cycPos (k + 1) c yt' ≠ cycPos N s x2 := fun h => hx2T (by
-        rw [← pkCo_cycPos_inj hs hft' hx2 (by rw [hqt']; exact h)]
-        exact mem_image_of_mem f hyt')
-      exact pkCh_tr_mixed H hTsub hh hx2 hx1 h2 (by omega) hx2T hS21 hyt hyt' (by omega) (by omega)
-    · omega
+  have hGsub := pkCh_image_sub H hTsub hh
+  have hnot : ¬ sepPairs N (T.image f) ⊆ S := fun hsub => hG (pkCh_cgm_iff.2
+    ⟨_, mem_image.2 ⟨T.image f, pkCh_mem_gLeg.2 ⟨hGsub, (pkCh_isG_lift H hTsub hh).1 hTG⟩, rfl⟩,
+      hsub⟩)
+  exact pkCh_inter_missing_of_not_subset fun h => hnot ((pkCh_child_zero_nohat H hTsub hh).1 h)
 
-theorem pkCh_child_tr {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
+theorem pkCh_child_tr {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
     (hG : ¬ ContainsGMember N S) (hNF : NoFreeSep N S s k ((s + 1) % 2)) :
     Transversal (k + 1) (missing (k + 1) ((diagonals (k + 1)).filter
       (fun σ => ChildPairIn N S s k hat f σ.1 σ.2))) := by
@@ -557,9 +941,9 @@ theorem pkCh_child_tr {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × 
   · exact pkCh_tr_hat H hNF hTsub hTG hh
   · exact pkCh_tr_nohat H hG hTsub hTG hh
 
-/-- **[Child](3), generic side** (R2-Z182 Theorem 1; BP App. C §C-2): for `S ∈ F^π_N` the child set of the side is in
-`F^π_{k+1}` iff the side satisfies `Sep_all` with hub parity `(s + 1) % 2`. -/
-theorem pkCh_childGen {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkCh_CH N s k c hat f)
+/-- **Children of a generic side**: for `S ∈ F^π_N` the child set of the side is in `F^π_{k+1}` iff
+the side satisfies `Sep_all` with hub parity `(s + 1) % 2`. -/
+theorem pkCh_childGen {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × ℕ)} (H : pkChCH N s k c hat f)
     (hF : InFpi N S) :
     InFpi (k + 1) ((diagonals (k + 1)).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2)) ↔
       NoFreeSep N S s k ((s + 1) % 2) := by
@@ -568,8 +952,91 @@ theorem pkCh_childGen {N s k c hat : ℕ} {f : ℕ → ℕ} {S : Finset (ℕ × 
   rw [fpi_iff (by omega) (Nat.even_iff.2 (by omega)) (filter_subset _ _)]
   exact ⟨pkCh_child_nf H, pkCh_child_tr H hG⟩
 
+/-- The A-child's labelling as side data: the side `A_P = (headStart P, headLen N P)`, child leg
+`j` the leg `headStart P + j − 1`, the new leg `headLen N P + 1`. -/
+theorem pkCh_CH_head {N : ℕ} (hE : N % 2 = 0) {P : ℕ × ℕ} (hPo : P ∈ oddDiagonals N) :
+    pkChCH N (headStart P) (headLen N P) 1 (headLen N P + 1)
+      (fun j => vtx N (headStart P + j - 1)) := by
+  obtain ⟨-, -, -, -, -, hhs, hhs2, hhl1, hhl3, hhlN⟩ := pkCh_sides hE hPo
+  refine pkCh_CH_iff.2 ⟨hhs, hhl3, hhlN, hhl1, hE, mem_Icc.2 ⟨le_refl 1, by omega⟩, by omega,
+    mem_Icc.2 ⟨by omega, le_refl _⟩, ?_, ?_⟩
+  · rw [pkCo_cycPos_eq (le_refl 1) (by omega) (by omega) (le_refl _), ite_eq_left (by omega)]
+    omega
+  · intro y hy hyh
+    have hy' := mem_Icc.1 hy
+    change vtx N (headStart P + y - 1) = vtx N (headStart P + cycPos (headLen N P + 1) 1 y)
+    rw [pkCo_cycPos_eq (le_refl 1) (by omega) hy'.1 hy'.2, ite_eq_left hy'.1,
+      show headStart P + y - 1 = headStart P + (y - 1) by omega]
 
-/-! [Int] helpers: neighbours through positions, the cut dictionary, Lemma 5′ (one generic side form). -/
+/-- The B-child's labelling (numbered from the new leg) as side data: the side
+`B_P = (tailStart P, tailLen N P)`, child leg `j ≥ 2` the leg `tailStart P + j − 2`, the new leg
+`1`. -/
+theorem pkCh_CH_tail {N : ℕ} (hE : N % 2 = 0) {P : ℕ × ℕ} (hPo : P ∈ oddDiagonals N) :
+    pkChCH N (tailStart P) (tailLen N P) 2 1 (fun j => vtx N (tailStart P + j - 2)) := by
+  obtain ⟨hts, hts2, htl1, htl3, htlN, -⟩ := pkCh_sides hE hPo
+  refine pkCh_CH_iff.2 ⟨hts, htl3, htlN, htl1, hE, mem_Icc.2 ⟨by omega, by omega⟩, by omega,
+    mem_Icc.2 ⟨le_refl 1, by omega⟩, ?_, ?_⟩
+  · rw [pkCo_cycPos_eq (by omega) (by omega) (le_refl 1) (by omega), ite_eq_right (by omega)]
+    omega
+  · intro y hy hyh
+    have hy' := mem_Icc.1 hy
+    change vtx N (tailStart P + y - 2) = vtx N (tailStart P + cycPos (tailLen N P + 1) 2 y)
+    rw [pkCo_cycPos_eq (by omega) (by omega) hy'.1 hy'.2, ite_eq_left (show 2 ≤ y by omega),
+      show tailStart P + y - 2 = tailStart P + (y - 2) by omega]
+
+/-- **The members of a child's list without the new leg, on a generic side**: for `T` without `P̂`,
+its image lies in the side, the kinds agree, and the containments agree; every set of legs of the
+side is the image of exactly one such `T`. -/
+theorem pkCh_child_zero_nohat_side {N s k c hat : ℕ} {f : ℕ → ℕ} (S : Finset (ℕ × ℕ))
+    (H : pkChCH N s k c hat f) :
+    (∀ T ⊆ Icc 1 (k + 1), hat ∉ T → T.image f ⊆ cycArc N s k ∧
+      (IsGSet (k + 1) T ↔ IsGSet N (T.image f)) ∧
+      (sepPairs (k + 1) T ⊆
+          (diagonals (k + 1)).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2) ↔
+        sepPairs N (T.image f) ⊆ S)) ∧
+    ∀ G ⊆ cycArc N s k, ∃! T, T ⊆ Icc 1 (k + 1) ∧ hat ∉ T ∧ T.image f = G := by
+  obtain ⟨hs, hk3, hkN, -⟩ := pkCh_CH_iff.1 H
+  refine ⟨fun T hTsub hh => ⟨fun x hx => ?_, pkCh_isG_lift H hTsub hh,
+    pkCh_child_zero_nohat H hTsub hh⟩, fun G hG => ?_⟩
+  · obtain ⟨t, ht, rfl⟩ := mem_image.1 hx
+    obtain ⟨hp, hft, hq, -⟩ := pkCh_ch_y H (hTsub ht) (fun e => hh (e ▸ ht))
+    exact (pkCo_mem_cycArc_pos hs (by omega)).2 ⟨hft, by omega⟩
+  · obtain ⟨T, hTsub, hh, he⟩ := pkCh_nohat_onto H hG
+    refine ⟨T, ⟨hTsub, hh, he⟩, fun T' hT' => ?_⟩
+    refine pkCh_eq_of_image_erase H hT'.1 hTsub (iff_of_false hT'.2.1 hh) ?_
+    rw [erase_eq_of_notMem hh, erase_eq_of_notMem hT'.2.1, he, hT'.2.2]
+
+/-- **The members of a child's list with the new leg, on a generic side**: for a leg set `T` of
+`𝒢_{k+1}` with `P̂`, the image of `T ∖ {P̂}` is an admissible separator and the child set contains
+`S_T` iff it is free; every admissible separator arises from exactly one such `T`; hence the side is
+linked iff the child set contains no `S_T` with `P̂ ∈ T`. -/
+theorem pkCh_child_zero_hat_side {N s k c hat : ℕ} {f : ℕ → ℕ} (S : Finset (ℕ × ℕ))
+    (H : pkChCH N s k c hat f) :
+    (∀ T ⊆ Icc 1 (k + 1), IsGSet (k + 1) T → hat ∈ T →
+      (T.erase hat).image f ∈ admSeps N s k ((s + 1) % 2) ∧
+      (sepPairs (k + 1) T ⊆
+          (diagonals (k + 1)).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2) ↔
+        Disjoint (sepIn N s k ((T.erase hat).image f)) (missing N S))) ∧
+    (∀ Θ ∈ admSeps N s k ((s + 1) % 2), ∃! T, T ⊆ Icc 1 (k + 1) ∧ IsGSet (k + 1) T ∧ hat ∈ T ∧
+      (T.erase hat).image f = Θ) ∧
+    (NoFreeSep N S s k ((s + 1) % 2) ↔ ∀ T ⊆ Icc 1 (k + 1), IsGSet (k + 1) T → hat ∈ T →
+      ¬ sepPairs (k + 1) T ⊆
+        (diagonals (k + 1)).filter (fun σ => ChildPairIn N S s k hat f σ.1 σ.2)) := by
+  refine ⟨fun T hTsub hTG hh => ⟨pkCh_hat_adm H hTsub hTG hh, pkCh_child_zero_hat H hTsub hh⟩,
+    fun Θ hΘ => ?_, ⟨fun hNF T hTsub hTG hh hsub => ?_, fun h => ?_⟩⟩
+  · obtain ⟨T, hTsub, hTG, hh, he⟩ := pkCh_adm_hat H hΘ
+    exact ⟨T, ⟨hTsub, hTG, hh, he⟩, fun T' hT' =>
+      pkCh_eq_of_image_erase H hT'.1 hTsub (iff_of_true hT'.2.2.1 hh) (by rw [he, hT'.2.2.2])⟩
+  · exact pkCh_noFree_iff.1 hNF _ (pkCh_hat_adm H hTsub hTG hh)
+      ((pkCh_child_zero_hat H hTsub hh).1 hsub)
+  · rw [pkCh_noFree_iff]
+    intro Θ hΘ hdis
+    obtain ⟨T, hTsub, hTG, hh, rfl⟩ := pkCh_adm_hat H hΘ
+    exact h T hTsub hTG hh ((pkCh_child_zero_hat H hTsub hh).2 hdis)
+
+
+/-! Helpers for the class of a chord: neighbours through positions, the cut dictionary, and the
+generic side lemma `pkCh_lem5` (one form for both sides). -/
 
 theorem pkCh_pos_next {N s x : ℕ} (hs : s ∈ Icc 1 N) (hx : x ∈ Icc 1 N) (h : cycPos N s x + 1 < N) :
     cycPos N s (vtx N (x + 1)) = cycPos N s x + 1 := by
@@ -577,7 +1044,8 @@ theorem pkCh_pos_next {N s x : ℕ} (hs : s ∈ Icc 1 N) (hx : x ∈ Icc 1 N) (h
   have hv := vtx_bounds N (x + 1) hN
   rw [mem_Icc] at hs hx
   rw [pkCo_cycPos_eq hs.1 hs.2 hx.1 hx.2] at h
-  rw [pkCo_cycPos_eq hs.1 hs.2 hv.1 hv.2, pkCo_cycPos_eq hs.1 hs.2 hx.1 hx.2, pkCo_vtx_eq hx.1 hx.2 hN]
+  rw [pkCo_cycPos_eq hs.1 hs.2 hv.1 hv.2, pkCo_cycPos_eq hs.1 hs.2 hx.1 hx.2,
+      pkCo_vtx_eq hx.1 hx.2 hN]
   split_ifs at h ⊢ <;> omega
 
 theorem pkCh_pos_prev {N s x : ℕ} (hs : s ∈ Icc 1 N) (hx : x ∈ Icc 1 N) (h : 1 ≤ cycPos N s x) :
@@ -586,15 +1054,19 @@ theorem pkCh_pos_prev {N s x : ℕ} (hs : s ∈ Icc 1 N) (hx : x ∈ Icc 1 N) (h
   have hv := vtx_bounds N (x + (N - 1)) hN
   rw [mem_Icc] at hs hx
   rw [pkCo_cycPos_eq hs.1 hs.2 hx.1 hx.2] at h
-  rw [pkCo_cycPos_eq hs.1 hs.2 hv.1 hv.2, pkCo_cycPos_eq hs.1 hs.2 hx.1 hx.2, pkCo_vtx_eq hx.1 hx.2 (by omega)]
+  rw [pkCo_cycPos_eq hs.1 hs.2 hv.1 hv.2, pkCo_cycPos_eq hs.1 hs.2 hx.1 hx.2,
+      pkCo_vtx_eq hx.1 hx.2 (by omega)]
   split_ifs at h ⊢ <;> omega
 
-/-- All legs outside an arc `Y ∋ u, v` lie on one side of `{u, v}`, read through positions from any start. -/
+/-- All legs outside an arc `Y ∋ u, v` lie on one side of `{u, v}`, read through positions from any
+start. -/
 theorem pkCh_out_side {N s sY kY u v θ t : ℕ} (hs : s ∈ Icc 1 N) (hsY : sY ∈ Icc 1 N) (hkY : kY ≤ N)
-    (hu : u ∈ cycArc N sY kY) (hv : v ∈ cycArc N sY kY) (hθI : θ ∈ Icc 1 N) (hθ : θ ∉ cycArc N sY kY)
-    (htI : t ∈ Icc 1 N) (ht : t ∉ cycArc N sY kY)
-    (hb : min (cycPos N s u) (cycPos N s v) < cycPos N s θ ∧ cycPos N s θ < max (cycPos N s u) (cycPos N s v)) :
-    min (cycPos N s u) (cycPos N s v) < cycPos N s t ∧ cycPos N s t < max (cycPos N s u) (cycPos N s v) := by
+    (hu : u ∈ cycArc N sY kY) (hv : v ∈ cycArc N sY kY) (hθI : θ ∈ Icc 1 N)
+    (hθ : θ ∉ cycArc N sY kY) (htI : t ∈ Icc 1 N) (ht : t ∉ cycArc N sY kY)
+    (hb : min (cycPos N s u) (cycPos N s v) < cycPos N s θ ∧ cycPos N s θ < max (cycPos N s u)
+        (cycPos N s v)) :
+    min (cycPos N s u) (cycPos N s v) < cycPos N s t ∧ cycPos N s t < max (cycPos N s u)
+        (cycPos N s v) := by
   obtain ⟨huI, hup⟩ := (pkCo_mem_cycArc_pos hsY hkY).1 hu
   obtain ⟨hvI, hvp⟩ := (pkCo_mem_cycArc_pos hsY hkY).1 hv
   have hθp : kY ≤ cycPos N sY θ := by
@@ -624,10 +1096,11 @@ theorem pkCh_out_side {N s sY kY u v θ t : ℕ} (hs : s ∈ Icc 1 N) (hsY : sY 
       exact nY2 ((e2.2 cY).1 ((e4.1 cs).2 h))
     · exact absurd ((e3.2 cs).2 hb) (fun h => nY1 ((e1.2 cY).1 h))
 
-/-- **Lemma 5′, generic side form** [BP App. D §3a; R2-Z189 C1] (both the main form and its mirror): `L = (sL, kL)` a
-side of a chord with `Sep_all(L)`, `X = (sX, kX)` / `Y = (sY, kY)` the two sides of a `𝒫₀` chord (`X`'s ends have the hub
-parity of `L`), the `minrect` of the second chord clean between `X` and `Y`, the missing pairs of `L`'s end parity inside
-`L` lying inside `Y`, and `X` meeting the complement of `L`: then `X` misses `L`. -/
+/-- **Generic side lemma** (both the main form and its mirror): `L = (sL, kL)` a side of a chord
+with `Sep_all(L)`, `X = (sX, kX)` / `Y = (sY, kY)` the two sides of a `𝒫₀` chord (`X`'s ends have
+the hub parity of `L`), the `minrect` of the second chord clean between `X` and `Y`, the missing
+pairs of `L`'s end parity inside `L` lying inside `Y`, and `X` meeting the complement of `L`: then
+`X` misses `L`. -/
 theorem pkCh_lem5 {N sL kL sX kX sY kY : ℕ} {S : Finset (ℕ × ℕ)} (hE : N % 2 = 0)
     (hsL : sL ∈ Icc 1 N) (hkL1 : kL % 2 = 1) (hkL3 : 3 ≤ kL) (hkLN : kL + 3 ≤ N)
     (hsX : sX ∈ Icc 1 N) (hsXp : sX % 2 = (sL + 1) % 2) (hkX1 : kX % 2 = 1) (hkXN : kX ≤ N)
@@ -699,7 +1172,8 @@ theorem pkCh_lem5 {N sL kL sX kX sY kY : ℕ} {S : Finset (ℕ × ℕ)} (hE : N 
     have hvY : v ∈ cycArc N sY kY := by
       by_contra h
       exact hv' ((hXY v hvI).2 h)
-    have hb := pkCh_out_side hsL hsY hkYN huY hvY hθI ((hXY θ hθI).1 hθX) htI ((hXY t htI).1 htX) ⟨hb1, hb2⟩
+    have hb := pkCh_out_side hsL hsY hkYN huY hvY hθI ((hXY θ hθI).1 hθX) htI ((hXY t htI).1
+        htX) ⟨hb1, hb2⟩
     have htp : kL ≤ cycPos N sL t := by
       by_contra h
       exact htL ((pkCo_mem_cycArc_pos hsL hkLN').2 ⟨htI, by omega⟩)
@@ -732,11 +1206,13 @@ theorem pkCh_lem5 {N sL kL sX kX sY kY : ℕ} {S : Finset (ℕ × ℕ)} (hE : N 
       exact this hτ2
     · exact (hXY v hvI).1 hvX (hin u v hτ2 (by omega) hvp2 huL hvL).2
 
-/-- Cut dictionary, separated case: a leg of an arc of the other parity than the arc's ends is cut off by the legs of
-the end parity (its two neighbours) from every non-adjacent leg outside that set. -/
-theorem pkCh_cut_sep {N s k : ℕ} {G : Finset ℕ} (hE : N % 2 = 0) (hs : s ∈ Icc 1 N) (hk1 : k % 2 = 1)
-    (hkN : k + 1 ≤ N) (hG : ∀ t, t ∈ G ↔ t ∈ cycArc N s k ∧ t % 2 = s % 2) (hGsub : G ⊆ Icc 1 N)
-    {x w : ℕ} (hx : x ∈ cycArc N s k) (hxp : x % 2 ≠ s % 2) (hw : w ∈ Icc 1 N) (hwG : w ∉ G)
+/-- Cut dictionary, separated case: a leg of an arc of the other parity than the arc's ends is cut
+off by the legs of the end parity (its two neighbours) from every non-adjacent leg outside that
+set. -/
+theorem pkCh_cut_sep {N s k : ℕ} {G : Finset ℕ} (hE : N % 2 = 0) (hs : s ∈ Icc 1 N)
+    (hk1 : k % 2 = 1) (hkN : k + 1 ≤ N) (hG : ∀ t, t ∈ G ↔ t ∈ cycArc N s k ∧ t % 2 = s % 2)
+    (hGsub : G ⊆ Icc 1 N) {x w : ℕ} (hx : x ∈ cycArc N s k) (hxp : x % 2 ≠ s % 2) (hw : w ∈ Icc 1 N)
+    (hwG : w ∉ G)
     (hd : (min x w, max x w) ∈ diagonals N) : InST G x w := by
   have hN1 : 1 ≤ N := by omega
   obtain ⟨hxI, hpx⟩ := (pkCo_mem_cycArc_pos hs (by omega)).1 hx
@@ -750,17 +1226,21 @@ theorem pkCh_cut_sep {N s k : ℕ} {G : Finset ℕ} (hE : N % 2 = 0) (hs : s ∈
   have hp := pkCh_pos_prev hs hxI h1
   have hn2 := pkCo_vtx_mod_two hN1 hE (x + 1)
   have hp2 := pkCo_vtx_mod_two hN1 hE (x + (N - 1))
-  have hnG : vtx N (x + 1) ∈ G := (hG _).2 ⟨(pkCo_mem_cycArc_pos hs (by omega)).2 ⟨hnI, by omega⟩, by omega⟩
-  have hpG : vtx N (x + (N - 1)) ∈ G := (hG _).2 ⟨(pkCo_mem_cycArc_pos hs (by omega)).2 ⟨hpI, by omega⟩, by omega⟩
+  have hnG : vtx N (x + 1) ∈ G :=
+      (hG _).2 ⟨(pkCo_mem_cycArc_pos hs (by omega)).2 ⟨hnI, by omega⟩, by omega⟩
+  have hpG : vtx N (x + (N - 1)) ∈ G :=
+      (hG _).2 ⟨(pkCo_mem_cycArc_pos hs (by omega)).2 ⟨hpI, by omega⟩, by omega⟩
   have hxG : x ∉ G := fun h => hxp ((hG x).1 h).2
   rw [pkCh_inST_pos hs hGsub hxI hw]
   rcases Nat.lt_or_ge (cycPos N s x) (cycPos N s w) with hlt | hge
   · exact ⟨hxG, hwG, ⟨_, hnG, by omega⟩, ⟨_, hpG, by omega⟩⟩
   · exact ⟨hxG, hwG, ⟨_, hpG, by omega⟩, ⟨_, hnG, by omega⟩⟩
 
-/-- Cut dictionary, unseparated case: two legs outside an arc are not separated by legs of the arc. -/
-theorem pkCh_cut_nosep {N s k : ℕ} {G : Finset ℕ} (hs : s ∈ Icc 1 N) (hkN : k ≤ N) (hGL : G ⊆ cycArc N s k)
-    (hGsub : G ⊆ Icc 1 N) {x w : ℕ} (hx : x ∈ Icc 1 N) (hw : w ∈ Icc 1 N) (hxL : x ∉ cycArc N s k)
+/-- Cut dictionary, unseparated case: two legs outside an arc are not separated by legs of the
+arc. -/
+theorem pkCh_cut_nosep {N s k : ℕ} {G : Finset ℕ} (hs : s ∈ Icc 1 N) (hkN : k ≤ N)
+    (hGL : G ⊆ cycArc N s k) (hGsub : G ⊆ Icc 1 N) {x w : ℕ} (hx : x ∈ Icc 1 N) (hw : w ∈ Icc 1 N)
+    (hxL : x ∉ cycArc N s k)
     (hwL : w ∉ cycArc N s k) : ¬ InST G x w := by
   rw [pkCh_inST_pos hs hGsub hx hw]
   rintro ⟨-, -, ⟨t, ht, h1, h2⟩, -⟩
@@ -775,21 +1255,24 @@ theorem pkCh_cut_nosep {N s k : ℕ} {G : Finset ℕ} (hs : s ∈ Icc 1 N) (hkN 
 
 theorem pkCh_mem_hitSet {N : ℕ} {S : Finset (ℕ × ℕ)} {P p : ℕ × ℕ} :
     p ∈ hitSet N S P ↔ p ∈ missing N S ∧ (p ∈ oddSideSplit N P ∨ p ∈ evenSideSplit N P) := by
-  show p ∈ missing N S ∩ (oddSideSplit N P ∪ evenSideSplit N P) ↔ _
+  change p ∈ missing N S ∩ (oddSideSplit N P ∪ evenSideSplit N P) ↔ _
   rw [mem_inter, mem_union]
 
 theorem pkCh_mem_hitClass {N : ℕ} {S : Finset (ℕ × ℕ)} {P Q : ℕ × ℕ} :
     Q ∈ hitClass N S P ↔ Q ∈ poleChords N S ∧ hitSet N S Q = hitSet N S P := by
-  show Q ∈ (poleChords N S).filter (fun Q => hitSet N S Q = hitSet N S P) ↔ _
+  change Q ∈ (poleChords N S).filter (fun Q => hitSet N S Q = hitSet N S P) ↔ _
   rw [mem_filter]
 
-/-- Head and tail arcs of a mixed chord, and the parity legs of each. -/
+/-- Head and tail arcs of an odd chord, and the parity legs of each. -/
 theorem pkCh_arcs {N : ℕ} (hN : 4 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} (hP : P ∈ oddDiagonals N) :
     (∀ x, x ∈ oddSide N P ↔ x ∈ cycArc N (headStart P) (headLen N P)) ∧
     (∀ x, x ∈ evenSide N P ↔ x ∈ cycArc N (tailStart P) (tailLen N P)) ∧
-    (∀ x ∈ Icc 1 N, x ∈ cycArc N (headStart P) (headLen N P) ↔ x ∉ cycArc N (tailStart P) (tailLen N P)) ∧
-    (∀ t, t ∈ odds (oddSide N P) ↔ t ∈ cycArc N (headStart P) (headLen N P) ∧ t % 2 = headStart P % 2) ∧
-    (∀ t, t ∈ evens (evenSide N P) ↔ t ∈ cycArc N (tailStart P) (tailLen N P) ∧ t % 2 = tailStart P % 2) ∧
+    (∀ x ∈ Icc 1 N, x ∈ cycArc N (headStart P) (headLen N P) ↔ x ∉ cycArc N (tailStart P)
+        (tailLen N P)) ∧
+    (∀ t, t ∈ odds (oddSide N P) ↔ t ∈ cycArc N (headStart P) (headLen N P) ∧ t % 2 =
+        headStart P % 2) ∧
+    (∀ t, t ∈ evens (evenSide N P) ↔ t ∈ cycArc N (tailStart P) (tailLen N P) ∧ t % 2 =
+        tailStart P % 2) ∧
     odds (oddSide N P) ⊆ Icc 1 N ∧ evens (evenSide N P) ⊆ Icc 1 N := by
   obtain ⟨-, hs2, -, -, -, -, hh2, -⟩ := pkCh_sides hE hP
   obtain ⟨eA, eB⟩ := sides_eq_cycArc hN (Nat.even_iff.2 hE) hP
@@ -799,9 +1282,10 @@ theorem pkCh_arcs {N : ℕ} (hN : 4 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} (hP
     pkCo_cycArc_sub (by omega) h
   have hB : ∀ x, x ∈ evenSide N P ↔ x ∈ Icc 1 N ∧ x ∉ oddSide N P := by
     intro x
-    show x ∈ Icc 1 N \ oddSide N P ↔ _
+    change x ∈ Icc 1 N \ oddSide N P ↔ _
     rw [mem_sdiff]
-  refine ⟨fun x => by rw [eA], fun x => by rw [eB], fun x hx => ?_, fun t => ?_, fun t => ?_, ?_, ?_⟩
+  refine ⟨fun x => by rw [eA], fun x => by rw [eB], fun x hx => ?_, fun t => ?_,
+      fun t => ?_, ?_, ?_⟩
   · rw [← eA, ← eB, hB]
     exact ⟨fun h h' => h'.2 h, fun h => by
       by_contra h'
@@ -815,8 +1299,8 @@ theorem pkCh_arcs {N : ℕ} (hN : 4 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} (hP
     rw [pkCh_mem_evens, eB] at ht
     exact hsubB t ht.1
 
-/-- Cut dictionary for a missing pair `(u, v)` of one parity: it is in the hit set of `P` iff it is not inside the side
-whose ends have that parity (tail for ee, head for oo) [BP App. D §0 D2; R2-Z182 C1]. -/
+/-- Cut dictionary for a missing pair `(u, v)` of one parity: it is in the hit set of `P` iff it is
+not inside the side whose ends have that parity (tail for ee, head for oo). -/
 theorem pkCh_hit_iff {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P : ℕ × ℕ}
     (hP : P ∈ oddDiagonals N) {u v : ℕ} (hm : (u, v) ∈ missing N S) (huv : u % 2 = v % 2) :
     (u % 2 = 0 → ((u, v) ∈ hitSet N S P ↔ ¬ (u ∈ evenSide N P ∧ v ∈ evenSide N P))) ∧
@@ -843,7 +1327,8 @@ theorem pkCh_hit_iff {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
   · rw [pkCh_mem_hitSet]
     constructor
     · rintro ⟨-, hA | hB⟩ ⟨huB, hvB⟩
-      · refine pkCh_cut_nosep (G := odds (oddSide N P)) (by exact hhs) (by omega) (fun t ht => ((mOA t).1 ht).1)
+      · refine pkCh_cut_nosep (G := odds (oddSide N P)) (by exact hhs) (by omega)
+          (fun t ht => ((mOA t).1 ht).1)
           sOA huI hvI (fun h => ?_) (fun h => ?_) (sepA' _ sOA hA)
         · exact (mAB u huI).1 h ((mB u).1 huB)
         · exact (mAB v hvI).1 h ((mB v).1 hvB)
@@ -866,7 +1351,8 @@ theorem pkCh_hit_iff {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
     constructor
     · rintro ⟨-, hA | hB⟩ ⟨huA, hvA⟩
       · exact ((sepA' _ sOA hA).1) (pkCh_mem_odds.2 ⟨huA, h1⟩)
-      · refine pkCh_cut_nosep (G := evens (evenSide N P)) (by exact hts) (by omega) (fun t ht => ((mEB t).1 ht).1)
+      · refine pkCh_cut_nosep (G := evens (evenSide N P)) (by exact hts) (by omega)
+          (fun t ht => ((mEB t).1 ht).1)
           sEB huI hvI (fun h => ?_) (fun h => ?_) (sepA' _ sEB hB)
         · exact (mAB u huI).1 ((mA u).1 huA) h
         · exact (mAB v hvI).1 ((mA v).1 hvA) h
@@ -885,9 +1371,11 @@ theorem pkCh_hit_iff {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
         exact pkCh_cut_sep hE hts htl1 (by omega) mEB sEB huB (by omega) hvI
           (fun h => by have := ((mEB v).1 h).2; omega) hdd
 
-/-- [Int](a): every class member's head lies in the head of a `𝒮_B` chord (Lemma 5′, main form). -/
+/-- **Class heads, upper bound**: every class member's head lies in the head of a `𝒮_B` chord
+(`pkCh_lem5`, main form). -/
 theorem pkCh_int_top {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P Q : ℕ × ℕ}
-    (hP : P ∈ poleChords N S) (hPB : NoFreeSep N S (tailStart P) (tailLen N P) 1) (hQ : Q ∈ poleChords N S)
+    (hP : P ∈ poleChords N S) (hPB : NoFreeSep N S (tailStart P) (tailLen N P) 1)
+    (hQ : Q ∈ poleChords N S)
     (hh : hitSet N S Q = hitSet N S P) : oddSide N Q ⊆ oddSide N P := by
   obtain ⟨hPo, -, -, ⟨⟨f1, f2⟩, hf⟩⟩ := pkCh_mem_pole.1 hP
   obtain ⟨hQo, hQr, -, -⟩ := pkCh_mem_pole.1 hQ
@@ -904,12 +1392,15 @@ theorem pkCh_int_top {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
     by_contra h
     exact hfnP (((pkCh_hit_iff hN hE hQo hfm (by omega)).2 hfp1).2 h)
   have hfI : f1 ∈ Icc 1 N := pkCo_cycArc_sub (by omega) ((mA f1).1 hf1)
-  have key := pkCh_lem5 (S := S) hE hts htl1 htl3 htlN qhs (by omega) qhl1 (by omega) qts (by omega) qAB
+  have key := pkCh_lem5 (S :=
+      S) hE hts htl1 htl3 htlN qhs (by omega) qhl1 (by omega) qts (by omega) qAB
     (by rw [show (tailStart P + 1) % 2 = 1 by omega]; exact hPB)
     (fun e he y hy he2 hy2 => fun hm => disjoint_left.1 hQr (pkCh_mem_minRect.2 ⟨e,
-      pkCh_mem_evens.2 ⟨(qA e).2 he, by omega⟩, y, pkCh_mem_odds.2 ⟨(qB y).2 hy, by omega⟩, rfl⟩) hm)
+      pkCh_mem_evens.2 ⟨(qA e).2 he, by omega⟩, y,
+          pkCh_mem_odds.2 ⟨(qB y).2 hy, by omega⟩, rfl⟩) hm)
     (fun u v hm hu hv huL hvL => by
-      have hn := mt ((pkCh_hit_iff hN hE hPo hm (by omega)).1 (by omega)).1 (fun h => h ⟨(mB u).2 huL, (mB v).2 hvL⟩)
+      have hn := mt ((pkCh_hit_iff hN hE hPo hm (by omega)).1 (by omega)).1 (fun h =>
+          h ⟨(mB u).2 huL, (mB v).2 hvL⟩)
       rw [← hh] at hn
       have hQB : u ∈ evenSide N Q ∧ v ∈ evenSide N Q := by
         by_contra h
@@ -921,10 +1412,12 @@ theorem pkCh_int_top {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
   have hxB := key x ((qA x).1 hx)
   exact (mA x).2 ((mAB x hxI).2 hxB)
 
-/-- [Int](b): a class member with `Sep_all` on its head has its head inside every class member's head (Lemma 5′,
-mirror form, from the same generic lemma with the sides exchanged). -/
+/-- **Class heads, lower bound**: a class member with `Sep_all` on its head has its head inside
+every class member's head (`pkCh_lem5`, mirror form, from the same generic lemma with the sides
+exchanged). -/
 theorem pkCh_int_bot {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {b Q : ℕ × ℕ}
-    (hb : b ∈ poleChords N S) (hbA : NoFreeSep N S (headStart b) (headLen N b) 0) (hQ : Q ∈ poleChords N S)
+    (hb : b ∈ poleChords N S) (hbA : NoFreeSep N S (headStart b) (headLen N b) 0)
+    (hQ : Q ∈ poleChords N S)
     (hh : hitSet N S Q = hitSet N S b) : oddSide N b ⊆ oddSide N Q := by
   obtain ⟨hbo, -, ⟨⟨g1, g2⟩, hg⟩, -⟩ := pkCh_mem_pole.1 hb
   obtain ⟨hQo, hQr, -, -⟩ := pkCh_mem_pole.1 hQ
@@ -945,14 +1438,17 @@ theorem pkCh_int_bot {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
     by_contra h
     exact hgnb (((pkCh_hit_iff hN hE hQo hgm (by omega)).1 hgp1).2 h)
   have hgI : g1 ∈ Icc 1 N := pkCo_cycArc_sub (by omega) ((mB g1).1 hg1)
-  have key := pkCh_lem5 (S := S) hE hhs hhl1 hhl3 hhlN qts (by omega) qtl1 (by omega) qhs (by omega) qBA
+  have key := pkCh_lem5 (S :=
+      S) hE hhs hhl1 hhl3 hhlN qts (by omega) qtl1 (by omega) qhs (by omega) qBA
     (by rw [show (headStart b + 1) % 2 = 0 by omega]; exact hbA)
     (fun e he y hy he2 hy2 => by
       rw [min_comm, max_comm]
       exact fun hm => disjoint_left.1 hQr (pkCh_mem_minRect.2 ⟨y,
-        pkCh_mem_evens.2 ⟨(qA y).2 hy, by omega⟩, e, pkCh_mem_odds.2 ⟨(qB e).2 he, by omega⟩, rfl⟩) hm)
+        pkCh_mem_evens.2 ⟨(qA y).2 hy, by omega⟩, e,
+            pkCh_mem_odds.2 ⟨(qB e).2 he, by omega⟩, rfl⟩) hm)
     (fun u v hm hu hv huL hvL => by
-      have hn := mt ((pkCh_hit_iff hN hE hbo hm (by omega)).2 (by omega)).1 (fun h => h ⟨(mA u).2 huL, (mA v).2 hvL⟩)
+      have hn := mt ((pkCh_hit_iff hN hE hbo hm (by omega)).2 (by omega)).1 (fun h =>
+          h ⟨(mA u).2 huL, (mA v).2 hvL⟩)
       rw [← hh] at hn
       have hQA : u ∈ oddSide N Q ∧ v ∈ oddSide N Q := by
         by_contra h
@@ -968,10 +1464,10 @@ theorem pkCh_int_bot {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ 
     exact hzQ ((qA z).2 (by by_contra h'; exact h ((qBA z hzI).2 h')))
   exact key z hzB hzA
 
-/-- `sorry` (pkgChain) · **[Can]** (Lemma X_all) [v3 §14.2 route step 3; BP App. C §C-3]: if `𝒫₁ ≠ ∅` a canonical chord
-exists. (BP: holds for every `S`; frozen with v3's F^π.) -/
-theorem can_exists {N : ℕ} (hN : 6 ≤ N) (hE : Even N) {S : Finset (ℕ × ℕ)} (hF : InFpi N S)
-    (hP : (poleChords N S).Nonempty) : ∃ P, IsMinimalChord N S P := by
+/-- **An innermost chord exists**: if `𝒫₁ ≠ ∅`, some chord of `𝒫₁` is innermost, for every set `S`
+of pairs. -/
+theorem can_exists {N : ℕ} (hN : 6 ≤ N) (hE : Even N) {S : Finset (ℕ × ℕ)}
+    (hP : (poleChords N S).Nonempty) : ∃ P, IsInnermostChord N S P := by
   have hE' : N % 2 = 0 := Nat.even_iff.1 hE
   obtain ⟨P0, hP0, hmin⟩ := exists_min_image (poleChords N S) (fun P => tailLen N P) hP
   have hG : P0 ∈ goodTail N S := by
@@ -986,10 +1482,11 @@ theorem can_exists {N : ℕ} (hN : 6 ≤ N) (hE : Even N) {S : Finset (ℕ × �
   have h2 := card_lt_card hss
   omega
 
-/-! ### Sub-wave b: [D] Lemma 14.5 through a linear core (labels `1..N`, head `[1, ω]`) -/
+/-! ### (Even-top′) through a linear core (labels `1..N`, head `[1, ω]`) -/
 
 theorem pkCh_isRun_iff {ω : ℕ} {Θ : Finset ℕ} {a b : ℕ} :
-    IsRun ω Θ a b ↔ 1 ≤ a ∧ a ≤ b ∧ b ≤ ω ∧ (a = 1 ∨ a - 1 ∈ Θ) ∧ (b = ω ∨ b + 1 ∈ Θ) ∧ ∀ w ∈ Icc a b, w ∉ Θ :=
+    IsRun ω Θ a b ↔ 1 ≤ a ∧ a ≤ b ∧ b ≤ ω ∧ (a = 1 ∨ a - 1 ∈ Θ) ∧ (b = ω ∨ b + 1 ∈ Θ) ∧
+        ∀ w ∈ Icc a b, w ∉ Θ :=
   Iff.rfl
 
 theorem pkCh_asc_iff {N a b : ℕ} {τ : Finset ℕ} :
@@ -997,24 +1494,29 @@ theorem pkCh_asc_iff {N a b : ℕ} {τ : Finset ℕ} :
       (2 ≤ τ.card ∧ τ ⊆ intCompl N a b ∧ ∀ t ∈ τ, t % 2 = 1) := Iff.rfl
 
 theorem pkCh_ta_iff {N ω : ℕ} {τ : Finset ℕ} :
-    TailAvoiding N ω τ ↔ Disjoint τ (Icc (ω + 2) (N - 1)) ∧ ((∀ t ∈ τ, t % 2 = 1) → Disjoint τ (Icc (ω + 1) N)) :=
+    TailAvoiding N ω τ ↔ Disjoint τ (Icc (ω + 2) (N - 1)) ∧
+        ((∀ t ∈ τ, t % 2 = 1) → Disjoint τ (Icc (ω + 1) N)) :=
   Iff.rfl
 
 theorem pkCh_tss_iff {N ω x0 x1 y0 y1 : ℕ} {Θ τ σ : Finset ℕ} :
-    ThreeSepSetting N ω x0 x1 y0 y1 Θ τ σ ↔ N % 2 = 0 ∧ ω % 2 = 1 ∧ ω + 3 ≤ N ∧ Θ.Nonempty ∧ Θ ⊆ Icc 2 (ω - 1) ∧
-      (∀ θ ∈ Θ, θ % 2 = 0) ∧ IsRun ω Θ x0 x1 ∧ IsRun ω Θ y0 y1 ∧ x1 < y0 ∧ x0 + 2 ≤ x1 ∧ y0 + 2 ≤ y1 ∧
+    ThreeSepSetting N ω x0 x1 y0 y1 Θ τ σ ↔ N % 2 = 0 ∧ ω % 2 = 1 ∧ ω + 3 ≤ N ∧ Θ.Nonempty ∧
+        Θ ⊆ Icc 2 (ω - 1) ∧
+      (∀ θ ∈ Θ, θ % 2 = 0) ∧ IsRun ω Θ x0 x1 ∧ IsRun ω Θ y0 y1 ∧ x1 < y0 ∧ x0 + 2 ≤ x1 ∧
+          y0 + 2 ≤ y1 ∧
       AdmSepCompl N x0 x1 τ ∧ AdmSepCompl N y0 y1 σ ∧ TailAvoiding N ω τ ∧ TailAvoiding N ω σ ∧
-      (y0 ∈ τ ∨ InST (Icc x0 x1 ∪ τ) y0 (ω + 2)) ∧ (x1 ∈ σ ∨ InST (Icc y0 y1 ∪ σ) x1 (ω + 2)) := Iff.rfl
+      (y0 ∈ τ ∨ InST (Icc x0 x1 ∪ τ) y0 (ω + 2)) ∧
+          (x1 ∈ σ ∨ InST (Icc y0 y1 ∪ σ) x1 (ω + 2)) := Iff.rfl
 
 theorem pkCh_mem_intCompl {N a b x : ℕ} :
     x ∈ intCompl N a b ↔ (1 ≤ x ∧ x ≤ N) ∧ ¬ (a ≤ x ∧ x ≤ b) ∧ x ≠ b + 1 ∧
       x ≠ (if a = 1 then N else a - 1) := by
-  show x ∈ Icc 1 N \ (Icc a b ∪ {b + 1, prevLeg N a}) ↔ _
+  change x ∈ Icc 1 N \ (Icc a b ∪ {b + 1, prevLeg N a}) ↔ _
   have e : prevLeg N a = if a = 1 then N else a - 1 := rfl
   rw [mem_sdiff, mem_union, mem_insert, mem_singleton, mem_Icc, mem_Icc, e]
   constructor
   · rintro ⟨h1, h2⟩
-    exact ⟨h1, fun h => h2 (Or.inl h), fun h => h2 (Or.inr (Or.inl h)), fun h => h2 (Or.inr (Or.inr h))⟩
+    exact ⟨h1, fun h => h2 (Or.inl h), fun h => h2 (Or.inr (Or.inl h)), fun h =>
+        h2 (Or.inr (Or.inr h))⟩
   · rintro ⟨h1, h2, h3, h4⟩
     refine ⟨h1, ?_⟩
     rintro (h | h | h)
@@ -1022,7 +1524,8 @@ theorem pkCh_mem_intCompl {N a b x : ℕ} :
     · exact h3 h
     · exact h4 h
 
-/-- An admissible trace of a complement: its legs lie in `intCompl`, and an even leg makes it a singleton. -/
+/-- An admissible trace of a complement: its legs lie in `intCompl`, and an even leg makes it a
+singleton. -/
 theorem pkCh_asc_facts {N a b : ℕ} {τ : Finset ℕ} (h : AdmSepCompl N a b τ) :
     τ.Nonempty ∧ τ ⊆ intCompl N a b ∧ ∀ t ∈ τ, t % 2 = 0 → τ = {t} := by
   rcases pkCh_asc_iff.1 h with ⟨t, ht, rfl⟩ | ⟨hc, hs, ho⟩
@@ -1033,7 +1536,8 @@ theorem pkCh_asc_facts {N a b : ℕ} {τ : Finset ℕ} (h : AdmSepCompl N a b τ
     omega
 
 /-- Transitivity of "same piece" through a reference leg `R`. -/
-theorem pkCh_inST_trans {T : Finset ℕ} {w z R : ℕ} (h1 : InST T w R) (hz : z ∉ T) (h2 : ¬ InST T z R) :
+theorem pkCh_inST_trans {T : Finset ℕ} {w z R : ℕ} (h1 : InST T w R) (hz : z ∉ T)
+    (h2 : ¬ InST T z R) :
     InST T w z := by
   rw [pkCo_inST_iff] at h1 h2 ⊢
   obtain ⟨hw, hR, ⟨g1, hg1, a1⟩, ⟨g2, hg2, a2⟩⟩ := h1
@@ -1068,22 +1572,27 @@ theorem pkCh_inST_trans {T : Finset ℕ} {w z R : ℕ} (h1 : InST T w R) (hz : z
       · exact ⟨g2, hg2, by omega⟩
 
 /-- The run of `A′ ∖ Θ` (`A′ = [1, ω]`) through a leg `u ∉ Θ`. -/
-theorem pkCh_runOf {ω u : ℕ} {Θ : Finset ℕ} (hΘ : Θ ⊆ Icc 2 (ω - 1)) (hu : u ∈ Icc 1 ω) (huΘ : u ∉ Θ) :
+theorem pkCh_runOf {ω u : ℕ} {Θ : Finset ℕ} (hΘ : Θ ⊆ Icc 2 (ω - 1)) (hu : u ∈ Icc 1 ω)
+    (huΘ : u ∉ Θ) :
     ∃ a b, IsRun ω Θ a b ∧ a ≤ u ∧ u ≤ b := by
   rw [mem_Icc] at hu
-  obtain ⟨a, ha1, hau, haΘ, hA⟩ : ∃ a, 1 ≤ a ∧ a ≤ u ∧ (a = 1 ∨ a - 1 ∈ Θ) ∧ ∀ θ ∈ Θ, θ < u → θ < a := by
+  obtain ⟨a, ha1, hau, haΘ, hA⟩ : ∃ a, 1 ≤ a ∧ a ≤ u ∧ (a = 1 ∨ a - 1 ∈ Θ) ∧ ∀ θ ∈ Θ, θ <
+      u → θ < a := by
     by_cases hL : (Θ.filter (fun x => x < u)).Nonempty
     · have hm := mem_filter.1 ((Θ.filter (fun x => x < u)).max'_mem hL)
-      refine ⟨(Θ.filter (fun x => x < u)).max' hL + 1, by omega, by omega, Or.inr ?_, fun θ hθ hθu => ?_⟩
+      refine ⟨(Θ.filter (fun x => x < u)).max' hL + 1, by omega, by omega, Or.inr ?_,
+          fun θ hθ hθu => ?_⟩
       · rw [Nat.add_sub_cancel]; exact hm.1
       · have := (Θ.filter (fun x => x < u)).le_max' θ (mem_filter.2 ⟨hθ, hθu⟩); omega
     · refine ⟨1, le_refl _, hu.1, Or.inl rfl, fun θ hθ hθu => ?_⟩
       exact absurd ⟨θ, mem_filter.2 ⟨hθ, hθu⟩⟩ hL
-  obtain ⟨b, hbω, hub, hbΘ, hB⟩ : ∃ b, b ≤ ω ∧ u ≤ b ∧ (b = ω ∨ b + 1 ∈ Θ) ∧ ∀ θ ∈ Θ, u < θ → b < θ := by
+  obtain ⟨b, hbω, hub, hbΘ, hB⟩ : ∃ b, b ≤ ω ∧ u ≤ b ∧ (b = ω ∨ b + 1 ∈ Θ) ∧ ∀ θ ∈ Θ, u <
+      θ → b < θ := by
     by_cases hR : (Θ.filter (fun x => u < x)).Nonempty
     · have hm := mem_filter.1 ((Θ.filter (fun x => u < x)).min'_mem hR)
       have hmI := mem_Icc.1 (hΘ hm.1)
-      refine ⟨(Θ.filter (fun x => u < x)).min' hR - 1, by omega, by omega, Or.inr ?_, fun θ hθ hθu => ?_⟩
+      refine ⟨(Θ.filter (fun x => u < x)).min' hR - 1, by omega, by omega, Or.inr ?_,
+          fun θ hθ hθu => ?_⟩
       · rw [Nat.sub_add_cancel (by omega)]; exact hm.1
       · have := (Θ.filter (fun x => u < x)).min'_le θ (mem_filter.2 ⟨hθ, hθu⟩); omega
     · refine ⟨ω, le_refl _, hu.2, Or.inl rfl, fun θ hθ hθu => ?_⟩
@@ -1096,25 +1605,29 @@ theorem pkCh_runOf {ω u : ℕ} {Θ : Finset ℕ} (hΘ : Θ ⊆ Icc 2 (ω - 1)) 
   · have := hB w hwΘ h; omega
 
 /-- A clean-pair predicate read through `min`/`max`. -/
-theorem pkCh_C_minmax {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v → C v u) {u v : ℕ} (h : C (min u v) (max u v)) :
+theorem pkCh_C_minmax {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v → C v u) {u v : ℕ}
+    (h : C (min u v) (max u v)) :
     C u v := by
   rcases le_total u v with huv | huv
   · rw [min_eq_left huv, max_eq_right huv] at h; exact h
   · rw [min_eq_right huv, max_eq_left huv] at h; exact hC _ _ h
 
-/-- **[b0]** in the linear setting (BP App. D §2): a failing admissible trace of `C_N ∖ [a, b]` (`[a, b] ⊆ A′`) is
-(b0)-shaped, given `Sep_all(W)` for the tail `W = [ω+1, N]`. -/
+/-- **(b0)-shape** in the linear setting: a failing admissible trace of `C_N ∖ [a, b]`
+(`[a, b] ⊆ A′`) is (b0)-shaped, given `Sep_all(W)` for the tail `W = [ω+1, N]`. -/
 theorem pkCh_b0 {N ω a b : ℕ} {τ : Finset ℕ} {C : ℕ → ℕ → Prop} (hN : N % 2 = 0) (hω : ω % 2 = 1)
-    (hωN : ω + 3 ≤ N) (hab : a ≤ b) (hbω : b ≤ ω)
-    (HW : ∀ τ0 : Finset ℕ, τ0.Nonempty → τ0 ⊆ Icc (ω + 2) (N - 1) → (τ0.card = 1 ∨ ∀ t ∈ τ0, t % 2 = 1) →
-      ∃ u v, u ∈ Icc (ω + 1) N ∧ v ∈ Icc (ω + 1) N ∧ u ∉ τ0 ∧ v ∉ τ0 ∧
+    (_hωN : ω + 3 ≤ N) (hab : a ≤ b) (hbω : b ≤ ω)
+    (HW : ∀ τ0 : Finset ℕ, τ0.Nonempty → τ0 ⊆ Icc (ω + 2) (N - 1) →
+        (τ0.card = 1 ∨ ∀ t ∈ τ0, t % 2 = 1) →
+        ∃ u v, u ∈ Icc (ω + 1) N ∧ v ∈ Icc (ω + 1) N ∧ u ∉ τ0 ∧ v ∉ τ0 ∧
         (∃ t ∈ τ0, min u v < t ∧ t < max u v) ∧ ¬ C u v)
-    (hτ : AdmSepCompl N a b τ) (hf : ∀ u v, InST (Icc a b ∪ τ) u v → C u v) : TailAvoiding N ω τ := by
+    (hτ : AdmSepCompl N a b τ)
+        (hf : ∀ u v, InST (Icc a b ∪ τ) u v → C u v) : TailAvoiding N ω τ := by
   obtain ⟨-, -, hev⟩ := pkCh_asc_facts hτ
   have part1 : Disjoint τ (Icc (ω + 2) (N - 1)) := by
     by_contra hnd
     obtain ⟨t0, ht0τ, ht0I⟩ := not_disjoint_iff.1 hnd
-    have hne : (τ.filter (fun t => ω + 2 ≤ t ∧ t ≤ N - 1)).Nonempty := ⟨t0, mem_filter.2 ⟨ht0τ, mem_Icc.1 ht0I⟩⟩
+    have hne : (τ.filter (fun t => ω + 2 ≤ t ∧ t ≤ N - 1)).Nonempty :=
+        ⟨t0, mem_filter.2 ⟨ht0τ, mem_Icc.1 ht0I⟩⟩
     have hsub : τ.filter (fun t => ω + 2 ≤ t ∧ t ≤ N - 1) ⊆ Icc (ω + 2) (N - 1) := fun t ht =>
       mem_Icc.2 (mem_filter.1 ht).2
     have hadm : (τ.filter (fun t => ω + 2 ≤ t ∧ t ≤ N - 1)).card = 1 ∨
@@ -1135,7 +1648,8 @@ theorem pkCh_b0 {N ω a b : ℕ} {τ : Finset ℕ} {C : ℕ → ℕ → Prop} (h
         rw [this, card_singleton]
     obtain ⟨u, v, hu, hv, hu0, hv0, ⟨t, ht, hb1, hb2⟩, hc⟩ := HW _ hne hsub hadm
     have htτ := (mem_filter.1 ht).1
-    have hnot : ∀ x ∈ Icc (ω + 1) N, x ∉ τ.filter (fun t => ω + 2 ≤ t ∧ t ≤ N - 1) → x ∉ Icc a b ∪ τ := by
+    have hnot : ∀ x ∈ Icc (ω + 1) N, x ∉ τ.filter (fun t => ω + 2 ≤ t ∧ t ≤ N - 1) →
+        x ∉ Icc a b ∪ τ := by
       intro x hx hx0 hxT
       rw [mem_Icc] at hx
       rcases mem_union.1 hxT with h | h
@@ -1159,8 +1673,9 @@ theorem pkCh_b0 {N ω a b : ℕ} {τ : Finset ℕ} {C : ℕ → ℕ → Prop} (h
   rw [mem_Icc] at htI h2
   omega
 
-/-- [St1] key step (BP App. D §8 (4)), linear: `w ∈ H(τ)` (separated from `R` by `Z ∪ τ`), a leg `θ′` of `R_τ` (or the
-adjoined even singleton trace) strictly between `w` and `z` inside `A′ = [1, ω]` ⇒ `w`, `z` are in different pieces. -/
+/-- Key step of shrinking a failing trace, linear: `w ∈ H(τ)` (separated from `R` by `Z ∪ τ`), a leg
+`θ′` of `R_τ` (or the adjoined even singleton trace) strictly between `w` and `z` inside
+`A′ = [1, ω]` ⇒ `w`, `z` are in different pieces. -/
 theorem pkCh_st1_key {ω R z0 z1 w z θ' : ℕ} {τ : Finset ℕ} (hRω : ω < R) (hz1 : z1 ≤ ω)
     (hτe : ∀ t ∈ τ, t % 2 = 0 → τ = {t}) (hθ'e : θ' % 2 = 0) (hθ'Z : θ' ∉ Icc z0 z1) (hθ'ω : θ' ≤ ω)
     (hzω : z ≤ ω) (hwω : w ≤ ω) (hw : InST (Icc z0 z1 ∪ τ) w R) (hθ' : ¬ InST (Icc z0 z1 ∪ τ) θ' R)
@@ -1168,11 +1683,13 @@ theorem pkCh_st1_key {ω R z0 z1 w z θ' : ℕ} {τ : Finset ℕ} (hRω : ω < R
   have hw' := hw
   rw [pkCo_inST_iff] at hw'
   obtain ⟨hwT, hRT, ⟨g1, hg1, a1⟩, ⟨g2, hg2, a2⟩⟩ := hw'
-  have hmem : ∀ t, t ∈ Icc z0 z1 ∪ τ ↔ (z0 ≤ t ∧ t ≤ z1) ∨ t ∈ τ := fun t => by rw [mem_union, mem_Icc]
+  have hmem : ∀ t, t ∈ Icc z0 z1 ∪ τ ↔ (z0 ≤ t ∧ t ≤ z1) ∨ t ∈ τ :=
+      fun t => by rw [mem_union, mem_Icc]
   have hθ'Z' : ¬ (z0 ≤ θ' ∧ θ' ≤ z1) := fun h => hθ'Z (mem_Icc.2 h)
   by_cases hθτ : θ' ∈ τ
   · have e := hτe θ' hθτ hθ'e
-    have hT : ∀ t, t ∈ Icc z0 z1 ∪ τ ↔ (z0 ≤ t ∧ t ≤ z1) ∨ t = θ' := fun t => by rw [hmem, e, mem_singleton]
+    have hT : ∀ t, t ∈ Icc z0 z1 ∪ τ ↔ (z0 ≤ t ∧ t ≤ z1) ∨ t = θ' :=
+        fun t => by rw [hmem, e, mem_singleton]
     have hwZ : ¬ (z0 ≤ w ∧ w ≤ z1) ∧ w ≠ θ' := by
       rw [hT] at hwT
       exact ⟨fun h => hwT (Or.inl h), fun h => hwT (Or.inr h)⟩
@@ -1196,7 +1713,8 @@ theorem pkCh_st1_key {ω R z0 z1 w z θ' : ℕ} {τ : Finset ℕ} (hRω : ω < R
     have hg1θ : g1 ≠ θ' := fun e => hθT (e ▸ hg1)
     have hg2θ : g2 ≠ θ' := fun e => hθT (e ▸ hg2)
     by_cases hbt : ∃ t ∈ Icc z0 z1 ∪ τ, min θ' R < t ∧ t < max θ' R
-    · have hno : ∀ t ∈ Icc z0 z1 ∪ τ, ¬ (t < min θ' R ∨ max θ' R < t) := fun t ht h => hθ2 ⟨hbt, ⟨t, ht, h⟩⟩
+    · have hno : ∀ t ∈ Icc z0 z1 ∪ τ, ¬ (t < min θ' R ∨ max θ' R < t) :=
+        fun t ht h => hθ2 ⟨hbt, ⟨t, ht, h⟩⟩
       have n2 := hno g2 hg2
       have hz : z < θ' := by omega
       refine pkCh_inST_trans hw ?_ ?_
@@ -1207,7 +1725,8 @@ theorem pkCh_st1_key {ω R z0 z1 w z θ' : ℕ} {τ : Finset ℕ} (hRω : ω < R
         rintro ⟨-, -, -, ⟨g', hg', bg'⟩⟩
         have := hno g' hg'
         omega
-    · have hno : ∀ t ∈ Icc z0 z1 ∪ τ, ¬ (min θ' R < t ∧ t < max θ' R) := fun t ht h => hbt ⟨t, ht, h⟩
+    · have hno : ∀ t ∈ Icc z0 z1 ∪ τ, ¬ (min θ' R < t ∧ t < max θ' R) :=
+        fun t ht h => hbt ⟨t, ht, h⟩
       have n1 := hno g1 hg1
       have hz : θ' < z := by omega
       refine pkCh_inST_trans hw ?_ ?_
@@ -1219,10 +1738,10 @@ theorem pkCh_st1_key {ω R z0 z1 w z θ' : ℕ} {τ : Finset ℕ} (hRω : ω < R
         have := hno g' hg'
         omega
 
-/-- **[St1] (4)**, linear: `Θ′ := Θ ∖ H(τ)` is failing. -/
-theorem pkCh_st1_fail {ω R z0 z1 : ℕ} {Θ τ : Finset ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v → C v u)
-    (hRω : ω < R) (hz1 : z1 ≤ ω) (hτe : ∀ t ∈ τ, t % 2 = 0 → τ = {t}) (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
-    (hZΘ : ∀ θ ∈ Θ, θ ∉ Icc z0 z1) (hΘω : ∀ θ ∈ Θ, θ ≤ ω)
+/-- **Shrinking a failing trace**, linear: `Θ′ := Θ ∖ H(τ)` is failing. -/
+theorem pkCh_st1_fail {ω R z0 z1 : ℕ} {Θ τ : Finset ℕ} {C : ℕ → ℕ → Prop}
+    (hC : ∀ u v, C u v → C v u) (hRω : ω < R) (hz1 : z1 ≤ ω) (hτe : ∀ t ∈ τ, t % 2 = 0 → τ = {t})
+    (hΘe : ∀ θ ∈ Θ, θ % 2 = 0) (hZΘ : ∀ θ ∈ Θ, θ ∉ Icc z0 z1) (hΘω : ∀ θ ∈ Θ, θ ≤ ω)
     (hΘf : ∀ u v, runSepA ω Θ u v → C u v) (hτf : ∀ u v, InST (Icc z0 z1 ∪ τ) u v → C u v) :
     ∀ u v, runSepA ω (Θ.filter (fun θ => ¬ InST (Icc z0 z1 ∪ τ) θ R)) u v → C u v := by
   intro u v h
@@ -1234,28 +1753,34 @@ theorem pkCh_st1_fail {ω R z0 z1 : ℕ} {Θ τ : Finset ℕ} {C : ℕ → ℕ �
   · have hwu : InST (Icc z0 z1 ∪ τ) u R := by
       by_contra hc
       exact huΘ' (mem_filter.2 ⟨huΘ, hc⟩)
-    exact hτf u v (pkCh_st1_key hRω hz1 hτe (hΘe θ' hθΘ) (hZΘ θ' hθΘ) (hΘω θ' hθΘ) hv'.2 hu'.2 hwu hθn ⟨b1, b2⟩)
+    exact hτf u v (pkCh_st1_key hRω hz1 hτe (hΘe θ' hθΘ) (hZΘ θ' hθΘ)
+        (hΘω θ' hθΘ) hv'.2 hu'.2 hwu hθn ⟨b1, b2⟩)
   · by_cases hvΘ : v ∈ Θ
     · have hwv : InST (Icc z0 z1 ∪ τ) v R := by
         by_contra hc
         exact hvΘ' (mem_filter.2 ⟨hvΘ, hc⟩)
       rw [min_comm] at b1
       rw [max_comm] at b2
-      exact hC _ _ (hτf v u (pkCh_st1_key hRω hz1 hτe (hΘe θ' hθΘ) (hZΘ θ' hθΘ) (hΘω θ' hθΘ) hu'.2 hv'.2 hwv hθn
-        ⟨b1, b2⟩))
+      exact hC _ _ (hτf v u (pkCh_st1_key hRω hz1 hτe (hΘe θ' hθΘ) (hZΘ θ' hθΘ)
+          (hΘω θ' hθΘ) hu'.2 hv'.2 hwv hθn
+          ⟨b1, b2⟩))
     · exact hΘf u v (pkT_runSepA_iff.2 ⟨hu, hv, huΘ, hvΘ, θ', hθΘ, b1, b2⟩)
 
-/-- **[St1] (1)–(3)** for `X` (before `Y`), linear: a short failing trace `τ` of `B_X` gives `Θ′ ⊊ Θ` keeping `y₀ − 1`. -/
+/-- **Shrinking a failing trace** for `X` (before `Y`), linear: a short failing trace `τ` of `B_X`
+gives `Θ′ ⊊ Θ` keeping `y₀ − 1`. -/
 theorem pkCh_st1X {N ω x0 x1 y0 : ℕ} {Θ τ : Finset ℕ} (hωN : ω + 3 ≤ N) (hΘ : Θ ⊆ Icc 2 (ω - 1))
-    (hX : IsRun ω Θ x0 x1) (hy : y0 - 1 ∈ Θ) (hxy : x1 < y0) (hy0ω : y0 ≤ ω) (hτ : AdmSepCompl N x0 x1 τ)
-    (hTA : TailAvoiding N ω τ) (hs : ¬ (y0 ∈ τ ∨ InST (Icc x0 x1 ∪ τ) y0 (ω + 2))) :
+    (hX : IsRun ω Θ x0 x1) (hy : y0 - 1 ∈ Θ) (hxy : x1 < y0) (hy0ω : y0 ≤ ω)
+    (hτ : AdmSepCompl N x0 x1 τ) (hTA : TailAvoiding N ω τ)
+    (hs : ¬ (y0 ∈ τ ∨ InST (Icc x0 x1 ∪ τ) y0 (ω + 2))) :
     (Θ.filter (fun θ => ¬ InST (Icc x0 x1 ∪ τ) θ (ω + 2))).card < Θ.card ∧
       y0 - 1 ∈ Θ.filter (fun θ => ¬ InST (Icc x0 x1 ∪ τ) θ (ω + 2)) := by
   obtain ⟨hx0, hx01, hx1ω, hxa, hxb, -⟩ := pkCh_isRun_iff.1 hX
   obtain ⟨⟨t, ht⟩, hτI, -⟩ := pkCh_asc_facts hτ
   obtain ⟨hTA1, -⟩ := pkCh_ta_iff.1 hTA
-  have hmem : ∀ g, g ∈ Icc x0 x1 ∪ τ ↔ (x0 ≤ g ∧ g ≤ x1) ∨ g ∈ τ := fun g => by rw [mem_union, mem_Icc]
-  have hτW : ∀ g ∈ τ, ¬ (ω + 2 ≤ g ∧ g ≤ N - 1) := fun g hg h => disjoint_left.1 hTA1 hg (mem_Icc.2 h)
+  have hmem : ∀ g, g ∈ Icc x0 x1 ∪ τ ↔ (x0 ≤ g ∧ g ≤ x1) ∨ g ∈ τ :=
+      fun g => by rw [mem_union, mem_Icc]
+  have hτW : ∀ g ∈ τ, ¬ (ω + 2 ≤ g ∧ g ≤ N - 1) :=
+      fun g hg h => disjoint_left.1 hTA1 hg (mem_Icc.2 h)
   have hy0τ : y0 ∉ τ := fun h => hs (Or.inl h)
   have hωT : ω + 2 ∉ Icc x0 x1 ∪ τ := by
     rw [hmem]
@@ -1283,7 +1808,8 @@ theorem pkCh_st1X {N ω x0 x1 y0 : ℕ} {Θ τ : Finset ℕ} (hωN : ω + 3 ≤ 
         · exact h
       refine ⟨x1 + 1, hx1Θ, not_not.2 ?_⟩
       rw [pkCo_inST_iff]
-      refine ⟨?_, hωT, ⟨t, mem_union_right _ ht, by omega⟩, ⟨x0, (hmem x0).2 (Or.inl ⟨le_refl _, hx01⟩), by omega⟩⟩
+      refine ⟨?_, hωT, ⟨t, mem_union_right _ ht, by omega⟩,
+          ⟨x0, (hmem x0).2 (Or.inl ⟨le_refl _, hx01⟩), by omega⟩⟩
       rw [hmem]
       rintro (h | h)
       · omega
@@ -1291,21 +1817,22 @@ theorem pkCh_st1X {N ω x0 x1 y0 : ℕ} {Θ τ : Finset ℕ} (hωN : ω + 3 ≤ 
     · have htN := hτW t ht
       have hx0' : x0 ≠ 1 := by
         intro e
-        rw [if_pos e] at htI
+        rw [ite_eq_left e] at htI
         omega
       have hx0Θ : x0 - 1 ∈ Θ := by
         rcases hxa with h | h
         · exact absurd h hx0'
         · exact h
-      rw [if_neg hx0'] at htI
+      rw [ite_eq_right hx0'] at htI
       refine ⟨x0 - 1, hx0Θ, not_not.2 ?_⟩
       rw [pkCo_inST_iff]
-      refine ⟨?_, hωT, ⟨x0, (hmem x0).2 (Or.inl ⟨le_refl _, hx01⟩), by omega⟩, ⟨t, mem_union_right _ ht, by omega⟩⟩
+      refine ⟨?_, hωT, ⟨x0, (hmem x0).2 (Or.inl ⟨le_refl _, hx01⟩), by omega⟩,
+          ⟨t, mem_union_right _ ht, by omega⟩⟩
       rw [hmem]
       rintro (h | h)
       · omega
       · have := (pkCh_mem_intCompl.1 (hτI h)).2.2.2
-        rw [if_neg hx0'] at this
+        rw [ite_eq_right hx0'] at this
         exact this rfl
   · rw [pkCo_inST_iff]
     rintro ⟨-, -, ⟨g, hg, bg⟩, -⟩
@@ -1313,18 +1840,21 @@ theorem pkCh_st1X {N ω x0 x1 y0 : ℕ} {Θ τ : Finset ℕ} (hωN : ω + 3 ≤ 
     · exact hy0T (e ▸ hg)
     · exact hno g hg (by omega)
 
-/-- **[St1] (1)–(3)**, mirror for `Y` (after `X`), linear: a short failing trace `σ` of `B_Y` gives `Θ′ ⊊ Θ` keeping
-`x₁ + 1`. -/
-theorem pkCh_st1Y {N ω x1 y0 y1 : ℕ} {Θ σ : Finset ℕ} (hωN : ω + 3 ≤ N) (hΘ : Θ ⊆ Icc 2 (ω - 1))
-    (hY : IsRun ω Θ y0 y1) (hx : x1 + 1 ∈ Θ) (hxy : x1 < y0) (hx1 : 1 ≤ x1) (hσ : AdmSepCompl N y0 y1 σ)
-    (hTA : TailAvoiding N ω σ) (hs : ¬ (x1 ∈ σ ∨ InST (Icc y0 y1 ∪ σ) x1 (ω + 2))) :
+/-- **Shrinking a failing trace**, mirror for `Y` (after `X`), linear: a short failing trace `σ` of
+`B_Y` gives `Θ′ ⊊ Θ` keeping `x₁ + 1`. -/
+theorem pkCh_st1Y {N ω x1 y0 y1 : ℕ} {Θ σ : Finset ℕ} (hωN : ω + 3 ≤ N) (_hΘ : Θ ⊆ Icc 2 (ω - 1))
+    (hY : IsRun ω Θ y0 y1) (hx : x1 + 1 ∈ Θ) (hxy : x1 < y0) (hx1 : 1 ≤ x1)
+    (hσ : AdmSepCompl N y0 y1 σ) (hTA : TailAvoiding N ω σ)
+    (hs : ¬ (x1 ∈ σ ∨ InST (Icc y0 y1 ∪ σ) x1 (ω + 2))) :
     (Θ.filter (fun θ => ¬ InST (Icc y0 y1 ∪ σ) θ (ω + 2))).card < Θ.card ∧
       x1 + 1 ∈ Θ.filter (fun θ => ¬ InST (Icc y0 y1 ∪ σ) θ (ω + 2)) := by
   obtain ⟨hy0, hy01, hy1ω, hya, hyb, -⟩ := pkCh_isRun_iff.1 hY
   obtain ⟨⟨t, ht⟩, hσI, -⟩ := pkCh_asc_facts hσ
   obtain ⟨hTA1, -⟩ := pkCh_ta_iff.1 hTA
-  have hmem : ∀ g, g ∈ Icc y0 y1 ∪ σ ↔ (y0 ≤ g ∧ g ≤ y1) ∨ g ∈ σ := fun g => by rw [mem_union, mem_Icc]
-  have hσW : ∀ g ∈ σ, ¬ (ω + 2 ≤ g ∧ g ≤ N - 1) := fun g hg h => disjoint_left.1 hTA1 hg (mem_Icc.2 h)
+  have hmem : ∀ g, g ∈ Icc y0 y1 ∪ σ ↔ (y0 ≤ g ∧ g ≤ y1) ∨ g ∈ σ :=
+      fun g => by rw [mem_union, mem_Icc]
+  have hσW : ∀ g ∈ σ, ¬ (ω + 2 ≤ g ∧ g ≤ N - 1) :=
+      fun g hg h => disjoint_left.1 hTA1 hg (mem_Icc.2 h)
   have hx1σ : x1 ∉ σ := fun h => hs (Or.inl h)
   have hωT : ω + 2 ∉ Icc y0 y1 ∪ σ := by
     rw [hmem]
@@ -1344,7 +1874,7 @@ theorem pkCh_st1Y {N ω x1 y0 y1 : ℕ} {Θ σ : Finset ℕ} (hωN : ω + 3 ≤ 
     refine ⟨hx1T, hωT, ⟨y0, (hmem y0).2 (Or.inl ⟨le_refl _, hy01⟩), by omega⟩, ⟨g, hg, by omega⟩⟩
   have htI := pkCh_mem_intCompl.1 (hσI ht)
   have hy0' : y0 ≠ 1 := by omega
-  rw [if_neg hy0'] at htI
+  rw [ite_eq_right hy0'] at htI
   have htn := hno t (mem_union_right _ ht)
   have htx : t ≠ x1 := fun e => hx1σ (e ▸ ht)
   have htN := hσW t ht
@@ -1356,12 +1886,13 @@ theorem pkCh_st1Y {N ω x1 y0 y1 : ℕ} {Θ σ : Finset ℕ} (hωN : ω + 3 ≤ 
         · exact h
       refine ⟨y0 - 1, hy0Θ, not_not.2 ?_⟩
       rw [pkCo_inST_iff]
-      refine ⟨?_, hωT, ⟨y0, (hmem y0).2 (Or.inl ⟨le_refl _, hy01⟩), by omega⟩, ⟨t, mem_union_right _ ht, by omega⟩⟩
+      refine ⟨?_, hωT, ⟨y0, (hmem y0).2 (Or.inl ⟨le_refl _, hy01⟩), by omega⟩,
+          ⟨t, mem_union_right _ ht, by omega⟩⟩
       rw [hmem]
       rintro (h | h)
       · omega
       · have := (pkCh_mem_intCompl.1 (hσI h)).2.2.2
-        rw [if_neg hy0'] at this
+        rw [ite_eq_right hy0'] at this
         exact this rfl
     · have hy1Θ : y1 + 1 ∈ Θ := by
         rcases hyb with h | h
@@ -1369,7 +1900,8 @@ theorem pkCh_st1Y {N ω x1 y0 y1 : ℕ} {Θ σ : Finset ℕ} (hωN : ω + 3 ≤ 
         · exact h
       refine ⟨y1 + 1, hy1Θ, not_not.2 ?_⟩
       rw [pkCo_inST_iff]
-      refine ⟨?_, hωT, ⟨t, mem_union_right _ ht, by omega⟩, ⟨y0, (hmem y0).2 (Or.inl ⟨le_refl _, hy01⟩), by omega⟩⟩
+      refine ⟨?_, hωT, ⟨t, mem_union_right _ ht, by omega⟩,
+          ⟨y0, (hmem y0).2 (Or.inl ⟨le_refl _, hy01⟩), by omega⟩⟩
       rw [hmem]
       rintro (h | h)
       · omega
@@ -1381,14 +1913,16 @@ theorem pkCh_st1Y {N ω x1 y0 y1 : ℕ} {Θ σ : Finset ℕ} (hωN : ω + 3 ≤ 
     · exact hx1T (e ▸ hg)
     · omega
 
-/-- **Lemma 14.5, linear core** (BP §3.3): head `A′ = [1, ω]`, tail `W = [ω+1, N]`; `C u v` reads "the pair `{u, v}` is
-not missing". Hypotheses: `Sep_all(W)` (`HW`), [L0] + head-minimality (`Hfail`: every O-run of a failing even trace
-has a failing admissible trace of its complement), F^π (`HG`: no one-parity leg set has `S_G` clean). Conclusion: no
-failing even trace `Θ` is spread (by strong induction on `|Θ|`, [St1] giving a smaller one when a trace is short). -/
-theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v → C v u) (hN : N % 2 = 0) (hω : ω % 2 = 1)
-    (hωN : ω + 3 ≤ N)
-    (HW : ∀ τ0 : Finset ℕ, τ0.Nonempty → τ0 ⊆ Icc (ω + 2) (N - 1) → (τ0.card = 1 ∨ ∀ t ∈ τ0, t % 2 = 1) →
-      ∃ u v, u ∈ Icc (ω + 1) N ∧ v ∈ Icc (ω + 1) N ∧ u ∉ τ0 ∧ v ∉ τ0 ∧
+/-- **(Even-top′), linear core**: head `A′ = [1, ω]`, tail `W = [ω+1, N]`; `C u v` reads "the pair
+`{u, v}` is not missing". Hypotheses: `Sep_all(W)` (`HW`), the run-chord lemma + head-minimality
+(`Hfail`: every O-run of a failing even trace has a failing admissible trace of its complement), F^π
+(`HG`: no one-parity leg set has `S_G` clean). Conclusion: no failing even trace `Θ` is spread (by
+strong induction on `|Θ|`, `pkCh_st1X` / `pkCh_st1Y` giving a smaller one when a trace is short). -/
+theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v → C v u) (hN : N % 2 = 0)
+    (hω : ω % 2 = 1) (hωN : ω + 3 ≤ N)
+    (HW : ∀ τ0 : Finset ℕ, τ0.Nonempty → τ0 ⊆ Icc (ω + 2) (N - 1) →
+        (τ0.card = 1 ∨ ∀ t ∈ τ0, t % 2 = 1) →
+        ∃ u v, u ∈ Icc (ω + 1) N ∧ v ∈ Icc (ω + 1) N ∧ u ∉ τ0 ∧ v ∉ τ0 ∧
         (∃ t ∈ τ0, min u v < t ∧ t < max u v) ∧ ¬ C u v)
     (Hfail : ∀ Θ : Finset ℕ, Θ.Nonempty → Θ ⊆ Icc 2 (ω - 1) → (∀ θ ∈ Θ, θ % 2 = 0) →
       (∀ u v, runSepA ω Θ u v → C u v) → ∀ a b, IsRun ω Θ a b →
@@ -1397,7 +1931,8 @@ theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v �
     (HG : ∀ G : Finset ℕ, G ⊆ Icc 1 N → 2 ≤ G.card → ((∀ g ∈ G, g % 2 = 0) ∨ (∀ g ∈ G, g % 2 = 1)) →
       ∃ u v, (min u v, max u v) ∈ diagonals N ∧ InST G u v ∧ ¬ C u v) :
     ∀ n (Θ : Finset ℕ), Θ.card = n → Θ ⊆ Icc 2 (ω - 1) → (∀ θ ∈ Θ, θ % 2 = 0) →
-      (∀ u v, runSepA ω Θ u v → C u v) → ∀ u1 v1 u2 v2 : ℕ, 1 ≤ u1 → u1 < v1 → v1 < u2 → u2 < v2 → v2 ≤ ω →
+      (∀ u v, runSepA ω Θ u v → C u v) → ∀ u1 v1 u2 v2 : ℕ, 1 ≤ u1 → u1 < v1 → v1 < u2 → u2 <
+          v2 → v2 ≤ ω →
       u1 % 2 = 1 → v1 % 2 = 1 → u2 % 2 = 1 → v2 % 2 = 1 → ¬ C u1 v1 → ¬ C u2 v2 →
       (∃ θ ∈ Θ, v1 < θ ∧ θ < u2) → False := by
   intro n
@@ -1419,8 +1954,9 @@ theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v �
       · omega
       · exact h
     have := hΘe _ hx1Θ
-    exact c1 (hΘf u1 v1 (pkT_runSepA_iff.2 ⟨mem_Icc.2 ⟨h1, by omega⟩, mem_Icc.2 ⟨by omega, by omega⟩, hnΘ u1 p1,
-      hnΘ v1 p2, x1 + 1, hx1Θ, by omega, by omega⟩))
+    exact c1 (hΘf u1 v1 (pkT_runSepA_iff.2 ⟨mem_Icc.2 ⟨h1, by omega⟩,
+        mem_Icc.2 ⟨by omega, by omega⟩, hnΘ u1 p1,
+        hnΘ v1 p2, x1 + 1, hx1Θ, by omega, by omega⟩))
   have hv2 : v2 ≤ y1 := by
     by_contra hc
     have hy1Θ : y1 + 1 ∈ Θ := by
@@ -1428,8 +1964,9 @@ theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v �
       · omega
       · exact h
     have := hΘe _ hy1Θ
-    exact c2 (hΘf u2 v2 (pkT_runSepA_iff.2 ⟨mem_Icc.2 ⟨by omega, by omega⟩, mem_Icc.2 ⟨by omega, by omega⟩,
-      hnΘ u2 p3, hnΘ v2 p4, y1 + 1, hy1Θ, by omega, by omega⟩))
+    exact c2 (hΘf u2 v2 (pkT_runSepA_iff.2 ⟨mem_Icc.2 ⟨by omega, by omega⟩,
+        mem_Icc.2 ⟨by omega, by omega⟩,
+        hnΘ u2 p3, hnΘ v2 p4, y1 + 1, hy1Θ, by omega, by omega⟩))
   have hxθ : x1 < θ0 := by omega
   have hθy : θ0 < y0 := by omega
   have hx1Θ : x1 + 1 ∈ Θ := by
@@ -1451,17 +1988,22 @@ theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v �
   have hLτ : y0 ∈ τ ∨ InST (Icc x0 x1 ∪ τ) y0 (ω + 2) := by
     by_contra hs
     obtain ⟨hcard, hmem⟩ := pkCh_st1X hωN hΘ hX hy0Θ (by omega) (by omega) hτ hTAτ hs
-    exact ih _ (hn ▸ hcard) _ rfl (subset_trans (filter_subset _ _) hΘ) (fun θ hθ => hΘe θ (mem_filter.1 hθ).1)
-      (pkCh_st1_fail hC (by omega) hx1ω (pkCh_asc_facts hτ).2.2 hΘe (fun θ hθ hI => hXΘ θ hI hθ) hΘω hΘf hτf)
+    exact ih _ (hn ▸ hcard) _ rfl (subset_trans (filter_subset _ _) hΘ)
+        (fun θ hθ => hΘe θ (mem_filter.1 hθ).1)
+      (pkCh_st1_fail hC (by omega) hx1ω (pkCh_asc_facts hτ).2.2 hΘe (fun θ hθ hI => hXΘ θ hI hθ)
+          hΘω hΘf hτf)
       u1 v1 u2 v2 h1 h12 h23 h34 h4 p1 p2 p3 p4 c1 c2 ⟨y0 - 1, hmem, by omega, by omega⟩
   have hLσ : x1 ∈ σ ∨ InST (Icc y0 y1 ∪ σ) x1 (ω + 2) := by
     by_contra hs
     obtain ⟨hcard, hmem⟩ := pkCh_st1Y hωN hΘ hY hx1Θ (by omega) (by omega) hσ hTAσ hs
-    exact ih _ (hn ▸ hcard) _ rfl (subset_trans (filter_subset _ _) hΘ) (fun θ hθ => hΘe θ (mem_filter.1 hθ).1)
-      (pkCh_st1_fail hC (by omega) hy1ω (pkCh_asc_facts hσ).2.2 hΘe (fun θ hθ hI => hYΘ θ hI hθ) hΘω hΘf hσf)
+    exact ih _ (hn ▸ hcard) _ rfl (subset_trans (filter_subset _ _) hΘ)
+        (fun θ hθ => hΘe θ (mem_filter.1 hθ).1)
+      (pkCh_st1_fail hC (by omega) hy1ω (pkCh_asc_facts hσ).2.2 hΘe (fun θ hθ hI => hYΘ θ hI hθ)
+          hΘω hΘf hσf)
       u1 v1 u2 v2 h1 h12 h23 h34 h4 p1 p2 p3 p4 c1 c2 ⟨x1 + 1, hmem, by omega, by omega⟩
   have hset : ThreeSepSetting N ω x0 x1 y0 y1 Θ τ σ :=
-    pkCh_tss_iff.2 ⟨hN, hω, hωN, hne, hΘ, hΘe, hX, hY, by omega, by omega, by omega, hτ, hσ, hTAτ, hTAσ, hLτ, hLσ⟩
+    pkCh_tss_iff.2 ⟨hN, hω, hωN, hne, hΘ, hΘe, hX, hY, by omega, by omega, by omega, hτ, hσ, hTAτ,
+        hTAσ, hLτ, hLσ⟩
   obtain ⟨G, hGc, hGs⟩ := threeSep_consecWit hset
   obtain ⟨hcard, a, -, len, -, hG⟩ := pkT_consecWit_iff.1 hGc
   have hN1 : 1 ≤ N := by omega
@@ -1485,18 +2027,21 @@ theorem pkCh_core {N ω : ℕ} {C : ℕ → ℕ → Prop} (hC : ∀ u v, C u v �
   · exact hc (pkCh_C_minmax hC (hτf _ _ h))
   · exact hc (pkCh_C_minmax hC (hσf _ _ h))
 
-/-! #### Rotation to the linear setting: `φ = rotLeg N (N + 1 − s)` (`φ x = cycPos N s x + 1`), inverse `ψ = rotLeg N (s − 1)` -/
+/-! #### Rotation to the linear setting
 
-theorem pkCh_phi_eq {N s : ℕ} (hs : s ∈ Icc 1 N) (x : ℕ) : rotLeg N (N + 1 - s) x = cycPos N s x + 1 := by
+`φ = rotLeg N (N + 1 − s)` (`φ x = cycPos N s x + 1`), inverse `ψ = rotLeg N (s − 1)`. -/
+
+theorem pkCh_phi_eq {N s : ℕ} (hs : s ∈ Icc 1 N) (x : ℕ) :
+    rotLeg N (N + 1 - s) x = cycPos N s x + 1 := by
   have hs' := mem_Icc.1 hs
-  show (x + (N + 1 - s) + N - 1) % N + 1 = (x + N - s) % N + 1
+  change (x + (N + 1 - s) + N - 1) % N + 1 = (x + N - s) % N + 1
   rw [show x + (N + 1 - s) + N - 1 = (x + N - s) + N by omega, Nat.add_mod_right]
 
 theorem pkCh_psi_phi {N s x : ℕ} (hs : s ∈ Icc 1 N) (hx : x ∈ Icc 1 N) :
     rotLeg N (s - 1) (rotLeg N (N + 1 - s) x) = x := by
   have hs' := mem_Icc.1 hs
   have hx' := mem_Icc.1 hx
-  show vtx N (vtx N (x + (N + 1 - s)) + (s - 1)) = x
+  change vtx N (vtx N (x + (N + 1 - s)) + (s - 1)) = x
   rw [pkCo_vtx_vtx_add (by omega), show x + (N + 1 - s) + (s - 1) = x + N by omega, vtx_add_n,
     vtx_of_mem hx'.1 hx'.2]
 
@@ -1504,40 +2049,45 @@ theorem pkCh_phi_psi {N s y : ℕ} (hs : s ∈ Icc 1 N) (hy : y ∈ Icc 1 N) :
     rotLeg N (N + 1 - s) (rotLeg N (s - 1) y) = y := by
   have hs' := mem_Icc.1 hs
   have hy' := mem_Icc.1 hy
-  show vtx N (vtx N (y + (s - 1)) + (N + 1 - s)) = y
+  change vtx N (vtx N (y + (s - 1)) + (N + 1 - s)) = y
   rw [pkCo_vtx_vtx_add (by omega), show y + (s - 1) + (N + 1 - s) = y + N by omega, vtx_add_n,
     vtx_of_mem hy'.1 hy'.2]
 
 theorem pkCh_psi_mem {N s : ℕ} (hN : 1 ≤ N) (y : ℕ) : rotLeg N (s - 1) y ∈ Icc 1 N := by
-  show vtx N (y + (s - 1)) ∈ Icc 1 N
+  change vtx N (y + (s - 1)) ∈ Icc 1 N
   exact mem_Icc.2 (vtx_bounds N _ hN)
 
-theorem pkCh_psi_pos {N s y : ℕ} (hs : s ∈ Icc 1 N) (hy : y ∈ Icc 1 N) : cycPos N s (rotLeg N (s - 1) y) = y - 1 := by
+theorem pkCh_psi_pos {N s y : ℕ} (hs : s ∈ Icc 1 N) (hy : y ∈ Icc 1 N) :
+    cycPos N s (rotLeg N (s - 1) y) = y - 1 := by
   have h := pkCh_phi_eq hs (rotLeg N (s - 1) y)
   rw [pkCh_phi_psi hs hy] at h
   omega
 
-theorem pkCh_psi_mod {N s : ℕ} (hN : 1 ≤ N) (hE : N % 2 = 0) (hs1 : 1 ≤ s) (hs2 : s % 2 = 1) (y : ℕ) :
+theorem pkCh_psi_mod {N s : ℕ} (hN : 1 ≤ N) (hE : N % 2 = 0) (hs1 : 1 ≤ s)
+    (hs2 : s % 2 = 1) (y : ℕ) :
     rotLeg N (s - 1) y % 2 = y % 2 := by
-  show vtx N (y + (s - 1)) % 2 = y % 2
+  change vtx N (y + (s - 1)) % 2 = y % 2
   rw [pkCo_vtx_mod_two hN hE]
   omega
 
-theorem pkCh_pos_mod {N s x : ℕ} (hE : N % 2 = 0) (hs : s ∈ Icc 1 N) (hs2 : s % 2 = 1) (hx : x ∈ Icc 1 N) :
+theorem pkCh_pos_mod {N s x : ℕ} (hE : N % 2 = 0) (hs : s ∈ Icc 1 N) (hs2 : s % 2 = 1)
+    (hx : x ∈ Icc 1 N) :
     (cycPos N s x + 1) % 2 = x % 2 := by
   have := pkCo_cycPos_mod_two hE hs hx
   omega
 
 /-- The clean-pair predicate of the linear setting (legs read through `ψ`). -/
-def pkCh_Cl (N s : ℕ) (S : Finset (ℕ × ℕ)) (u v : ℕ) : Prop :=
+def pkChCl (N s : ℕ) (S : Finset (ℕ × ℕ)) (u v : ℕ) : Prop :=
   ¬ (u ∈ Icc 1 N ∧ v ∈ Icc 1 N ∧ ((rotLeg N (s - 1) u, rotLeg N (s - 1) v) ∈ missing N S ∨
     (rotLeg N (s - 1) v, rotLeg N (s - 1) u) ∈ missing N S))
 
 theorem pkCh_Cl_iff {N s : ℕ} {S : Finset (ℕ × ℕ)} {u v : ℕ} :
-    pkCh_Cl N s S u v ↔ ¬ (u ∈ Icc 1 N ∧ v ∈ Icc 1 N ∧ ((rotLeg N (s - 1) u, rotLeg N (s - 1) v) ∈ missing N S ∨
-      (rotLeg N (s - 1) v, rotLeg N (s - 1) u) ∈ missing N S)) := Iff.rfl
+    pkChCl N s S u v ↔
+        ¬ (u ∈ Icc 1 N ∧ v ∈ Icc 1 N ∧ ((rotLeg N (s - 1) u, rotLeg N (s - 1) v) ∈ missing N S ∨
+        (rotLeg N (s - 1) v, rotLeg N (s - 1) u) ∈ missing N S)) := Iff.rfl
 
-theorem pkCh_Cl_symm {N s : ℕ} {S : Finset (ℕ × ℕ)} (u v : ℕ) (h : pkCh_Cl N s S u v) : pkCh_Cl N s S v u := by
+theorem pkCh_Cl_symm {N s : ℕ} {S : Finset (ℕ × ℕ)} (u v : ℕ) (h : pkChCl N s S u v) :
+    pkChCl N s S v u := by
   rw [pkCh_Cl_iff] at h ⊢
   rintro ⟨h1, h2, h3 | h3⟩
   · exact h ⟨h2, h1, Or.inr h3⟩
@@ -1546,7 +2096,7 @@ theorem pkCh_Cl_symm {N s : ℕ} {S : Finset (ℕ × ℕ)} (u v : ℕ) (h : pkCh
 /-- A missing pair of legs gives a non-clean pair of linear labels. -/
 theorem pkCh_notCl {N s : ℕ} {S : Finset (ℕ × ℕ)} (hs : s ∈ Icc 1 N) {x y : ℕ} (hx : x ∈ Icc 1 N)
     (hy : y ∈ Icc 1 N) (hm : (x, y) ∈ missing N S) :
-    ¬ pkCh_Cl N s S (rotLeg N (N + 1 - s) x) (rotLeg N (N + 1 - s) y) := by
+    ¬ pkChCl N s S (rotLeg N (N + 1 - s) x) (rotLeg N (N + 1 - s) y) := by
   have hN : 1 ≤ N := by have := mem_Icc.1 hs; omega
   rw [pkCh_Cl_iff, not_not, pkCh_psi_phi hs hx, pkCh_psi_phi hs hy]
   refine ⟨?_, ?_, Or.inl hm⟩
@@ -1555,19 +2105,20 @@ theorem pkCh_notCl {N s : ℕ} {S : Finset (ℕ × ℕ)} (hs : s ∈ Icc 1 N) {x
   · rw [pkCh_phi_eq hs, mem_Icc]
     exact ⟨by omega, Nat.succ_le_of_lt (pkCo_cycPos_lt hN s _)⟩
 
-/-- The tail of a mixed chord follows its head. -/
+/-- The tail of an odd chord follows its head. -/
 theorem pkCh_tail_eq {N : ℕ} {P : ℕ × ℕ} (hP : P ∈ oddDiagonals N) :
     tailStart P = vtx N (headStart P + headLen N P) := by
   obtain ⟨h1, h2, h3, h4, h5⟩ := pkCo_mem_oddDiagonals.1 hP
-  show (if P.1 % 2 = 1 then P.2 else P.1) =
-    vtx N ((if P.1 % 2 = 1 then P.1 else P.2) + (if P.1 % 2 = 1 then P.2 - P.1 else N - (P.2 - P.1)))
+  change (if P.1 % 2 = 1 then P.2 else P.1) =
+    vtx N ((if P.1 % 2 = 1 then P.1 else P.2) +
+        (if P.1 % 2 = 1 then P.2 - P.1 else N - (P.2 - P.1)))
   split_ifs with h
   · rw [show P.1 + (P.2 - P.1) = P.2 by omega, vtx_of_mem (by omega) h2]
   · rw [show P.2 + (N - (P.2 - P.1)) = P.1 + N by omega, vtx_add_n, vtx_of_mem h1 (by omega)]
 
 /-- Tail legs through head positions. -/
-theorem pkCh_tailpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} (hP : P ∈ oddDiagonals N) {x : ℕ}
-    (hx : x ∈ Icc 1 N) :
+theorem pkCh_tailpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ}
+    (hP : P ∈ oddDiagonals N) {x : ℕ} (hx : x ∈ Icc 1 N) :
     (x ∈ cycArc N (tailStart P) (tailLen N P) ↔ headLen N P ≤ cycPos N (headStart P) x) ∧
       (headLen N P ≤ cycPos N (headStart P) x →
         cycPos N (tailStart P) x = cycPos N (headStart P) x - headLen N P) := by
@@ -1578,22 +2129,24 @@ theorem pkCh_tailpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} 
   rw [← e] at hp
   have htl : tailLen N P = N - headLen N P := rfl
   rw [htl, pkCo_mem_cycArc_pos hts (by omega), hp]
-  refine ⟨?_, fun h => by rw [if_pos h]⟩
+  refine ⟨?_, fun h => by rw [ite_eq_left h]⟩
   constructor
   · rintro ⟨-, h⟩
     split_ifs at h with h' <;> omega
   · intro h
-    exact ⟨hx, by rw [if_pos h]; omega⟩
+    exact ⟨hx, by rw [ite_eq_left h]; omega⟩
 
 /-- Head legs through head positions. -/
-theorem pkCh_headpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} (hP : P ∈ oddDiagonals N) {x : ℕ} :
+theorem pkCh_headpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ}
+    (hP : P ∈ oddDiagonals N) {x : ℕ} :
     x ∈ oddSide N P ↔ x ∈ Icc 1 N ∧ cycPos N (headStart P) x < headLen N P := by
   obtain ⟨-, -, -, -, -, hs, -, -, -, hkN⟩ := pkCh_sides hE hP
   rw [(pkCh_arcs (by omega) hE hP).1 x, pkCo_mem_cycArc_pos hs (by omega)]
 
-theorem pkCh_evenpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} (hP : P ∈ oddDiagonals N) {x : ℕ} :
+theorem pkCh_evenpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ}
+    (hP : P ∈ oddDiagonals N) {x : ℕ} :
     x ∈ evenSide N P ↔ x ∈ Icc 1 N ∧ headLen N P ≤ cycPos N (headStart P) x := by
-  show x ∈ Icc 1 N \ oddSide N P ↔ _
+  change x ∈ Icc 1 N \ oddSide N P ↔ _
   rw [mem_sdiff, pkCh_headpos hN hE hP]
   constructor
   · rintro ⟨h1, h2⟩
@@ -1604,9 +2157,10 @@ theorem pkCh_evenpos {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P : ℕ × ℕ} 
 /-- `HW` of the linear core: `Sep_all` of the tail of `P`. -/
 theorem pkCh_HW {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P : ℕ × ℕ}
     (hPo : P ∈ oddDiagonals N) (hPB : NoFreeSep N S (tailStart P) (tailLen N P) 1) :
-    ∀ τ0 : Finset ℕ, τ0.Nonempty → τ0 ⊆ Icc (headLen N P + 2) (N - 1) → (τ0.card = 1 ∨ ∀ t ∈ τ0, t % 2 = 1) →
+    ∀ τ0 : Finset ℕ, τ0.Nonempty → τ0 ⊆ Icc (headLen N P + 2) (N - 1) →
+        (τ0.card = 1 ∨ ∀ t ∈ τ0, t % 2 = 1) →
       ∃ u v, u ∈ Icc (headLen N P + 1) N ∧ v ∈ Icc (headLen N P + 1) N ∧ u ∉ τ0 ∧ v ∉ τ0 ∧
-        (∃ t ∈ τ0, min u v < t ∧ t < max u v) ∧ ¬ pkCh_Cl N (headStart P) S u v := by
+        (∃ t ∈ τ0, min u v < t ∧ t < max u v) ∧ ¬ pkChCl N (headStart P) S u v := by
   obtain ⟨hts, -, -, htl3, -, hs, hs2, hk1, hk3, hkN⟩ := pkCh_sides hE hPo
   have hN1 : 1 ≤ N := by omega
   have hsI := mem_Icc.1 hs
@@ -1677,7 +2231,7 @@ theorem pkCh_HW {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × �
 theorem pkCh_HG {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} (hF : InFpi N S) {s : ℕ}
     (hs : s ∈ Icc 1 N) (hs2 : s % 2 = 1) :
     ∀ G : Finset ℕ, G ⊆ Icc 1 N → 2 ≤ G.card → ((∀ g ∈ G, g % 2 = 0) ∨ (∀ g ∈ G, g % 2 = 1)) →
-      ∃ u v, (min u v, max u v) ∈ diagonals N ∧ InST G u v ∧ ¬ pkCh_Cl N s S u v := by
+      ∃ u v, (min u v, max u v) ∈ diagonals N ∧ InST G u v ∧ ¬ pkChCl N s S u v := by
   intro G hG hc hp
   have hN1 : 1 ≤ N := by omega
   have hsI := mem_Icc.1 hs
@@ -1730,22 +2284,25 @@ theorem pkCh_HG {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × �
 /-- A missing pair in either order is not clean in the linear setting. -/
 theorem pkCh_notCl_mm {N s : ℕ} {S : Finset (ℕ × ℕ)} (hs : s ∈ Icc 1 N) {x y : ℕ} (hx : x ∈ Icc 1 N)
     (hy : y ∈ Icc 1 N) (hm : (min x y, max x y) ∈ missing N S) :
-    ¬ pkCh_Cl N s S (rotLeg N (N + 1 - s) x) (rotLeg N (N + 1 - s) y) := by
+    ¬ pkChCl N s S (rotLeg N (N + 1 - s) x) (rotLeg N (N + 1 - s) y) := by
   rcases le_total x y with h | h
   · rw [min_eq_left h, max_eq_right h] at hm
     exact pkCh_notCl hs hx hy hm
   · rw [min_eq_right h, max_eq_left h] at hm
     exact fun hc => pkCh_notCl hs hy hx hm (pkCh_Cl_symm _ _ hc)
 
-set_option maxHeartbeats 1000000 in
-/-- `Hfail` of the linear core: **[L0]** (the run chord `Q_Z` of an O-run is in `𝒫₁`, BP App. D §7) and head-minimality
-of the canonical chord give a failing admissible trace of `B_{Q_Z}`, read in the linear setting. -/
+set_option maxHeartbeats 800000 in
+-- one long proof (about 250 lines, mostly `omega` on positions): 665,498 heartbeats
+/-- `Hfail` of the linear core: the **run-chord lemma** (the run chord `Q_Z` of an O-run is in `𝒫₁`)
+and head-minimality of the innermost chord give a failing admissible trace of `B_{Q_Z}`, read in the
+linear setting. -/
 theorem pkCh_Hfail {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P : ℕ × ℕ}
-    (hP : IsMinimalChord N S P) :
+    (hP : IsInnermostChord N S P) :
     ∀ Θ : Finset ℕ, Θ.Nonempty → Θ ⊆ Icc 2 (headLen N P - 1) → (∀ θ ∈ Θ, θ % 2 = 0) →
-      (∀ u v, runSepA (headLen N P) Θ u v → pkCh_Cl N (headStart P) S u v) → ∀ a b, IsRun (headLen N P) Θ a b →
-      (∃ u v, a ≤ u ∧ u < v ∧ v ≤ b ∧ u % 2 = 1 ∧ v % 2 = 1 ∧ ¬ pkCh_Cl N (headStart P) S u v) →
-      ∃ τ, AdmSepCompl N a b τ ∧ ∀ u v, InST (Icc a b ∪ τ) u v → pkCh_Cl N (headStart P) S u v := by
+      (∀ u v, runSepA (headLen N P) Θ u v → pkChCl N (headStart P) S u v) → ∀ a b,
+          IsRun (headLen N P) Θ a b →
+      (∃ u v, a ≤ u ∧ u < v ∧ v ≤ b ∧ u % 2 = 1 ∧ v % 2 = 1 ∧ ¬ pkChCl N (headStart P) S u v) →
+      ∃ τ, AdmSepCompl N a b τ ∧ ∀ u v, InST (Icc a b ∪ τ) u v → pkChCl N (headStart P) S u v := by
   intro Θ hne hΘ hΘe hΘf a b hR huv
   obtain ⟨u, v, hau, huv, hvb, hu2, hv2, huvC⟩ := huv
   obtain ⟨hPg, hmin⟩ := pkCh_minChord_iff.1 hP
@@ -1766,12 +2323,13 @@ theorem pkCh_Hfail {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
     · have := hΘe _ h; omega
   have hr2 : rotLeg N (headStart P - 1) (b + 1) % 2 = 0 := by
     rw [pkCh_psi_mod hN1 hE hsI.1 hs2]; omega
-  obtain ⟨Q, hQo, hQts, hQtl⟩ := pkCh_mkTail (l := N - (b + 1 - a)) hE (pkCh_psi_mem hN1 (b + 1)) hr2
+  obtain ⟨Q, hQo, hQts, hQtl⟩ :=
+      pkCh_mkTail (l := N - (b + 1 - a)) hE (pkCh_psi_mem hN1 (b + 1)) hr2
     (by omega) (by omega) (by omega)
   have hQtsI : tailStart Q ∈ Icc 1 N := by rw [hQts]; exact pkCh_psi_mem hN1 _
   have hQts' : tailStart Q = vtx N (headStart P + b) := by
     rw [hQts]
-    show vtx N (b + 1 + (headStart P - 1)) = vtx N (headStart P + b)
+    change vtx N (b + 1 + (headStart P - 1)) = vtx N (headStart P + b)
     rw [show b + 1 + (headStart P - 1) = headStart P + b by omega]
   have hposQ : ∀ x ∈ Icc 1 N, cycPos N (tailStart Q) x = if b ≤ cycPos N (headStart P) x then
       cycPos N (headStart P) x - b else cycPos N (headStart P) x + N - b := fun x hx => by
@@ -1804,7 +2362,7 @@ theorem pkCh_Hfail {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
       refine ⟨hx, ?_⟩
       rw [hposQ x hx]
       split_ifs <;> omega
-  -- [L0]: `Q ∈ 𝒫₁`
+  -- run-chord step: `Q ∈ 𝒫₁`
   have hQpole : Q ∈ poleChords N S := by
     refine pkCh_mem_pole.2 ⟨hQo, disjoint_left.2 fun p hp hpm => ?_, ?_, ?_⟩
     · obtain ⟨e, he, o, ho, rfl⟩ := pkCh_mem_minRect.1 hp
@@ -1816,8 +2374,9 @@ theorem pkCh_Hfail {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
       have hopos := pkCh_pos_mod hE hs hs2 hoI
       by_cases hok : headLen N P ≤ cycPos N (headStart P) o
       · apply disjoint_left.1 hPclean _ hpm
-        exact pkCh_mem_minRect.2 ⟨e, pkCh_mem_evens.2 ⟨(pkCh_headpos hN hE hPo).2 ⟨heI, by omega⟩, he2⟩, o,
-          pkCh_mem_odds.2 ⟨(pkCh_evenpos hN hE hPo).2 ⟨hoI, hok⟩, ho2⟩, rfl⟩
+        exact pkCh_mem_minRect.2 ⟨e,
+            pkCh_mem_evens.2 ⟨(pkCh_headpos hN hE hPo).2 ⟨heI, by omega⟩, he2⟩, o,
+            pkCh_mem_odds.2 ⟨(pkCh_evenpos hN hE hPo).2 ⟨hoI, hok⟩, ho2⟩, rfl⟩
       · apply pkCh_notCl_mm hs heI hoI hpm
         apply hΘf
         rw [pkCh_phi_eq hs, pkCh_phi_eq hs, pkT_runSepA_iff]
@@ -1854,9 +2413,11 @@ theorem pkCh_Hfail {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
       have hoV : rotLeg N (headStart P - 1) v ∈ oddSide N Q :=
         (hodQ _).2 ⟨pkCh_psi_mem hN1 v, by omega, by omega⟩
       rcases hm with hm | hm
-      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm, (by omega : rotLeg N (headStart P - 1) u % 2 = 1),
+      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm,
+          (by omega : rotLeg N (headStart P - 1) u % 2 = 1),
           (by omega : rotLeg N (headStart P - 1) v % 2 = 1)⟩, hoU, hoV⟩⟩
-      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm, (by omega : rotLeg N (headStart P - 1) v % 2 = 1),
+      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm,
+          (by omega : rotLeg N (headStart P - 1) v % 2 = 1),
           (by omega : rotLeg N (headStart P - 1) u % 2 = 1)⟩, hoV, hoU⟩⟩
   -- head-minimality: `A_Q ⊊ A_P`, so `Q ∉ 𝒮_B`
   have hsub' : oddSide N Q ⊆ oddSide N P := fun x hx => by
@@ -1972,22 +2533,26 @@ theorem pkCh_Hfail {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
           rw [hposQ θ' (hτ0I θ' hθ').1]
           split_ifs <;> omega
     rcases hm with hm | hm
-    · exact disjoint_left.1 hτ0d (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hxA, hyA, hxτ, hyτ, hθc⟩) hm
+    · exact disjoint_left.1 hτ0d (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hxA, hyA, hxτ,
+        hyτ, hθc⟩) hm
     · obtain ⟨θ, hθ, c1, c2⟩ := hθc
       rw [min_comm] at c1
       rw [max_comm] at c2
-      exact disjoint_left.1 hτ0d (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hyA, hxA, hyτ, hxτ, θ, hθ, c1, c2⟩) hm
+      exact disjoint_left.1 hτ0d (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hyA, hxA, hyτ, hxτ,
+          θ, hθ, c1, c2⟩) hm
 
 theorem pkCh_evenTop_iff {N : ℕ} {S : Finset (ℕ × ℕ)} {P : ℕ × ℕ} :
     EvenTopP N S P ↔ ∀ Θ ∈ admSeps N (headStart P) (headLen N P) 0, (∀ θ ∈ Θ, θ % 2 = 0) →
-      Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S) → ¬ Spread N S (headStart P) (headLen N P) Θ :=
+      Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S) → ¬ Spread N S (headStart P)
+          (headLen N P) Θ :=
   Iff.rfl
 
-/-- **[D] Lemma 14.5** at a canonical chord, from the linear core: a spread failing even trace of the head gives a
-contradiction. -/
+/-- **(Even-top′) at an innermost chord**, from the linear core: a spread failing even trace of the
+head gives a contradiction. -/
 theorem pkCh_evenTop_gen {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} (hF : InFpi N S)
-    {P : ℕ × ℕ} (hP : IsMinimalChord N S P) {Θ : Finset ℕ} (hΘ : Θ ∈ admSeps N (headStart P) (headLen N P) 0)
-    (hΘe : ∀ θ ∈ Θ, θ % 2 = 0) (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S))
+    {P : ℕ × ℕ} (hP : IsInnermostChord N S P) {Θ : Finset ℕ}
+    (hΘ : Θ ∈ admSeps N (headStart P) (headLen N P) 0) (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
+    (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S))
     (hsp : Spread N S (headStart P) (headLen N P) Θ) : False := by
   obtain ⟨hPg, -⟩ := pkCh_minChord_iff.1 hP
   obtain ⟨hPp, hPB⟩ := pkCh_mem_goodTail.1 hPg
@@ -1996,7 +2561,8 @@ theorem pkCh_evenTop_gen {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (
   have hN1 : 1 ≤ N := by omega
   obtain ⟨hΘsub, -⟩ := pkCo_mem_admSeps.1 hΘ
   have hΘI : ∀ θ ∈ Θ, θ ∈ Icc 1 N ∧ 1 ≤ cycPos N (headStart P) θ ∧
-      cycPos N (headStart P) θ + 2 ≤ headLen N P := fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
+      cycPos N (headStart P) θ + 2 ≤ headLen N P :=
+          fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
   have hΘl : Θ.image (rotLeg N (N + 1 - headStart P)) ⊆ Icc 2 (headLen N P - 1) := fun y hy => by
     obtain ⟨θ, hθ, rfl⟩ := mem_image.1 hy
     have := hΘI θ hθ
@@ -2007,7 +2573,7 @@ theorem pkCh_evenTop_gen {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (
     rw [pkCh_phi_eq hs, pkCh_pos_mod hE hs hs2 (hΘI θ hθ).1]
     exact hΘe θ hθ
   have hΘlf : ∀ u v, runSepA (headLen N P) (Θ.image (rotLeg N (N + 1 - headStart P))) u v →
-      pkCh_Cl N (headStart P) S u v := by
+      pkChCl N (headStart P) S u v := by
     intro u v h
     obtain ⟨hu, hv, huΘ, hvΘ, t, ht, b1, b2⟩ := pkT_runSepA_iff.1 h
     obtain ⟨θ, hθ, rfl⟩ := mem_image.1 ht
@@ -2032,20 +2598,24 @@ theorem pkCh_evenTop_gen {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (
         (cycPos N (headStart P) (rotLeg N (headStart P - 1) v)) := by
       rw [hpu, hpv]; omega
     rcases hm with hm | hm
-    · exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψuA, hψvA, hψuΘ, hψvΘ, θ, hθ,
+    · exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψuA, hψvA, hψuΘ,
+        hψvΘ, θ, hθ,
         hθb⟩) hm
     · rw [min_comm, max_comm] at hθb
-      exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψvA, hψuA, hψvΘ, hψuΘ, θ, hθ,
-        hθb⟩) hm
+      exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψvA, hψuA, hψvΘ,
+          hψuΘ, θ, hθ,
+          hθb⟩) hm
   -- the two O-runs
   obtain ⟨⟨p1, p2⟩, hp, ⟨q1, q2⟩, hq, ⟨hp1, hp2, -, -, hpR⟩, ⟨hq1, hq2, -, -, hqR⟩, hpq⟩ := hsp
   have hp1' : p1 ∈ cycArc N (headStart P) (headLen N P) := hp1
   have hp2' : p2 ∈ cycArc N (headStart P) (headLen N P) := hp2
   have hq1' : q1 ∈ cycArc N (headStart P) (headLen N P) := hq1
   have hq2' : q2 ∈ cycArc N (headStart P) (headLen N P) := hq2
-  have hpR' : ¬ ∃ θ ∈ Θ, min (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) < cycPos N (headStart P) θ ∧
+  have hpR' : ¬ ∃ θ ∈ Θ, min (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) <
+      cycPos N (headStart P) θ ∧
       cycPos N (headStart P) θ < max (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) := hpR
-  have hqR' : ¬ ∃ θ ∈ Θ, min (cycPos N (headStart P) q1) (cycPos N (headStart P) q2) < cycPos N (headStart P) θ ∧
+  have hqR' : ¬ ∃ θ ∈ Θ, min (cycPos N (headStart P) q1) (cycPos N (headStart P) q2) <
+      cycPos N (headStart P) θ ∧
       cycPos N (headStart P) θ < max (cycPos N (headStart P) q1) (cycPos N (headStart P) q2) := hqR
   obtain ⟨θ, hθ, c1, c2⟩ : ∃ θ ∈ Θ, min (cycPos N (headStart P) p1) (cycPos N (headStart P) q1) <
       cycPos N (headStart P) θ ∧
@@ -2074,21 +2644,25 @@ theorem pkCh_evenTop_gen {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (
   have m4 := pkCh_pos_mod hE hs hs2 hq2I
   have m5 := pkCh_pos_mod hE hs hs2 hθI.1
   have e5 := hΘe θ hθ
-  have np : ¬ (min (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) < cycPos N (headStart P) θ ∧
+  have np : ¬ (min (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) <
+      cycPos N (headStart P) θ ∧
       cycPos N (headStart P) θ < max (cycPos N (headStart P) p1) (cycPos N (headStart P) p2)) :=
     fun h => hpR' ⟨θ, hθ, h⟩
-  have nq : ¬ (min (cycPos N (headStart P) q1) (cycPos N (headStart P) q2) < cycPos N (headStart P) θ ∧
+  have nq : ¬ (min (cycPos N (headStart P) q1) (cycPos N (headStart P) q2) <
+      cycPos N (headStart P) θ ∧
       cycPos N (headStart P) θ < max (cycPos N (headStart P) q1) (cycPos N (headStart P) q2)) :=
     fun h => hqR' ⟨θ, hθ, h⟩
   have hpne : cycPos N (headStart P) p1 ≠ cycPos N (headStart P) p2 := fun h => by
     have := pkCo_cycPos_inj hs hp1I hp2I h; omega
   have hqne : cycPos N (headStart P) q1 ≠ cycPos N (headStart P) q2 := fun h => by
     have := pkCo_cycPos_inj hs hq1I hq2I h; omega
-  have cp : ¬ pkCh_Cl N (headStart P) S (cycPos N (headStart P) p1 + 1) (cycPos N (headStart P) p2 + 1) := by
+  have cp : ¬ pkChCl N (headStart P) S (cycPos N (headStart P) p1 + 1)
+      (cycPos N (headStart P) p2 + 1) := by
     have := pkCh_notCl hs hp1I hp2I hpM
     rw [pkCh_phi_eq hs, pkCh_phi_eq hs] at this
     exact this
-  have cq : ¬ pkCh_Cl N (headStart P) S (cycPos N (headStart P) q1 + 1) (cycPos N (headStart P) q2 + 1) := by
+  have cq : ¬ pkChCl N (headStart P) S (cycPos N (headStart P) q1 + 1)
+      (cycPos N (headStart P) q2 + 1) := by
     have := pkCh_notCl hs hq1I hq2I hqM
     rw [pkCh_phi_eq hs, pkCh_phi_eq hs] at this
     exact this
@@ -2096,42 +2670,49 @@ theorem pkCh_evenTop_gen {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (
   have cq' := fun h => cq (pkCh_C_minmax pkCh_Cl_symm h)
   have hθl : cycPos N (headStart P) θ + 1 ∈ Θ.image (rotLeg N (N + 1 - headStart P)) := by
     rw [← pkCh_phi_eq hs]; exact mem_image_of_mem _ hθ
-  have core := pkCh_core (C := pkCh_Cl N (headStart P) S) pkCh_Cl_symm hE hk1 hkN (pkCh_HW hN hE hPo hPB)
-    (pkCh_Hfail hN hE hP) (pkCh_HG hN hE hF hs hs2) _ (Θ.image (rotLeg N (N + 1 - headStart P))) rfl hΘl
+  have core := pkCh_core (C :=
+      pkChCl N (headStart P) S) pkCh_Cl_symm hE hk1 hkN (pkCh_HW hN hE hPo hPB)
+    (pkCh_Hfail hN hE hP)
+        (pkCh_HG hN hE hF hs hs2) _ (Θ.image (rotLeg N (N + 1 - headStart P))) rfl hΘl
     hΘle hΘlf
-  rcases (show (max (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) < cycPos N (headStart P) θ ∧
+  rcases (show (max (cycPos N (headStart P) p1) (cycPos N (headStart P) p2) <
+      cycPos N (headStart P) θ ∧
       cycPos N (headStart P) θ < min (cycPos N (headStart P) q1) (cycPos N (headStart P) q2)) ∨
       (max (cycPos N (headStart P) q1) (cycPos N (headStart P) q2) < cycPos N (headStart P) θ ∧
-      cycPos N (headStart P) θ < min (cycPos N (headStart P) p1) (cycPos N (headStart P) p2)) by omega) with h | h
+      cycPos N (headStart P) θ < min (cycPos N (headStart P) p1)
+          (cycPos N (headStart P) p2)) by omega) with h | h
   · exact core (min (cycPos N (headStart P) p1 + 1) (cycPos N (headStart P) p2 + 1))
       (max (cycPos N (headStart P) p1 + 1) (cycPos N (headStart P) p2 + 1))
       (min (cycPos N (headStart P) q1 + 1) (cycPos N (headStart P) q2 + 1))
       (max (cycPos N (headStart P) q1 + 1) (cycPos N (headStart P) q2 + 1))
-      (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega)
+      (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega)
+          (by omega) (by omega)
       cp' cq' ⟨_, hθl, by omega, by omega⟩
   · exact core (min (cycPos N (headStart P) q1 + 1) (cycPos N (headStart P) q2 + 1))
       (max (cycPos N (headStart P) q1 + 1) (cycPos N (headStart P) q2 + 1))
       (min (cycPos N (headStart P) p1 + 1) (cycPos N (headStart P) p2 + 1))
       (max (cycPos N (headStart P) p1 + 1) (cycPos N (headStart P) p2 + 1))
-      (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega)
+      (by omega) (by omega) (by omega) (by omega) (by omega) (by omega) (by omega)
+          (by omega) (by omega)
       cq' cp' ⟨_, hθl, by omega, by omega⟩
 
-/-- `sorry` (pkgChain; consumes `threeSep_consecWit`) · **[D] Lemma 14.5** [v3 §14.3; BP §3.3]: a canonical chord
-satisfies (Even-top′). -/
+/-- **(Even-top′) at an innermost chord**: an innermost chord satisfies (Even-top′). The proof uses
+`threeSep_consecWit` (`C1`), through `pkCh_core`. -/
 theorem evenTop {N : ℕ} (hN : 6 ≤ N) (hE : Even N) {S : Finset (ℕ × ℕ)} (hF : InFpi N S) {P : ℕ × ℕ}
-    (hP : IsMinimalChord N S P) : EvenTopP N S P := by
+    (hP : IsInnermostChord N S P) : EvenTopP N S P := by
   rw [pkCh_evenTop_iff]
   intro Θ hΘ hΘe hΘd hsp
   exact pkCh_evenTop_gen hN (Nat.even_iff.1 hE) hF hP hΘ hΘe hΘd hsp
 
-/-! ### Sub-wave b (start of [Bot]): the lift of BP App. D §6c -/
+/-! ### Bottom of the class, start: the lift -/
 
 theorem pkCh_sameRun_iff {N s : ℕ} {Θ : Finset ℕ} {u v : ℕ} :
     SameRun N s Θ u v ↔ ¬ ∃ θ ∈ Θ, min (cycPos N s u) (cycPos N s v) < cycPos N s θ ∧
       cycPos N s θ < max (cycPos N s u) (cycPos N s v) := Iff.rfl
 
 theorem pkCh_inOneRun_iff {N s k : ℕ} {Θ : Finset ℕ} {p : ℕ × ℕ} :
-    InOneRun N s k Θ p ↔ p.1 ∈ cycArc N s k ∧ p.2 ∈ cycArc N s k ∧ p.1 ∉ Θ ∧ p.2 ∉ Θ ∧ SameRun N s Θ p.1 p.2 :=
+    InOneRun N s k Θ p ↔ p.1 ∈ cycArc N s k ∧ p.2 ∈ cycArc N s k ∧ p.1 ∉ Θ ∧ p.2 ∉ Θ ∧
+        SameRun N s Θ p.1 p.2 :=
   Iff.rfl
 
 theorem pkCh_spread_iff {N : ℕ} {S : Finset (ℕ × ℕ)} {s k : ℕ} {Θ : Finset ℕ} :
@@ -2143,16 +2724,19 @@ theorem pkCh_subHead {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P Ps : ℕ × �
     (hPso : Ps ∈ oddDiagonals N) (hsub : oddSide N P ⊆ oddSide N Ps) :
     cycPos N (headStart Ps) (headStart P) + headLen N P ≤ headLen N Ps ∧
       cycPos N (headStart Ps) (headStart P) % 2 = 0 ∧
-      (∀ x ∈ Icc 1 N, x ∈ oddSide N P ↔ cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-        cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧
+      (∀ x ∈ Icc 1 N, x ∈ oddSide N P ↔ cycPos N (headStart Ps) (headStart P) ≤
+          cycPos N (headStart Ps) x ∧
+          cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧
       (∀ x ∈ Icc 1 N, cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x →
-        cycPos N (headStart P) x = cycPos N (headStart Ps) x - cycPos N (headStart Ps) (headStart P)) := by
+        cycPos N (headStart P) x = cycPos N (headStart Ps) x - cycPos N (headStart Ps)
+            (headStart P)) := by
   obtain ⟨-, -, -, -, -, hs, hs2, hk1, hk3, hkN⟩ := pkCh_sides hE hPo
   obtain ⟨-, -, -, -, -, hss, hss2, hks1, hks3, hksN⟩ := pkCh_sides hE hPso
   have hN1 : 1 ≤ N := by omega
   have ha := pkCo_cycPos_lt hN1 (headStart Ps) (headStart P)
   have hpar := pkCo_cycPos_mod_two hE hss hs
-  have hv : vtx N (headStart Ps + cycPos N (headStart Ps) (headStart P)) = headStart P := pkCo_vtx_cycPos hss hs
+  have hv : vtx N (headStart Ps + cycPos N (headStart Ps) (headStart P)) = headStart P :=
+      pkCo_vtx_cycPos hss hs
   have hshift : ∀ x ∈ Icc 1 N, cycPos N (headStart P) x =
       if cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x then
         cycPos N (headStart Ps) x - cycPos N (headStart Ps) (headStart P)
@@ -2165,9 +2749,11 @@ theorem pkCh_subHead {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P Ps : ℕ × �
     have hm : cycPos N (headStart Ps) (headStart P) + headLen N P - 1 < N ∨
         N ≤ cycPos N (headStart Ps) (headStart P) + headLen N P - 1 := by omega
     rcases hm with hm | hm
-    · have hxI := mem_Icc.2 (vtx_bounds N (headStart Ps + (cycPos N (headStart Ps) (headStart P) + headLen N P - 1)) hN1)
+    · have hxI := mem_Icc.2 (vtx_bounds N (headStart Ps +
+        (cycPos N (headStart Ps) (headStart P) + headLen N P - 1)) hN1)
       have hp := pkCo_cycPos_vtx hss hm
-      have hin : vtx N (headStart Ps + (cycPos N (headStart Ps) (headStart P) + headLen N P - 1)) ∈ oddSide N P := by
+      have hin : vtx N (headStart Ps +
+          (cycPos N (headStart Ps) (headStart P) + headLen N P - 1)) ∈ oddSide N P := by
         rw [pkCh_headpos hN hE hPo, hshift _ hxI, hp]
         exact ⟨hxI, by split_ifs <;> omega⟩
       have := (pkCh_headpos hN hE hPso).1 (hsub hin)
@@ -2181,25 +2767,29 @@ theorem pkCh_subHead {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {P Ps : ℕ × �
       have := (pkCh_headpos hN hE hPso).1 (hsub hin)
       rw [hp] at this
       omega
-  refine ⟨hbound, by omega, fun x hx => ?_, fun x hx h => by rw [hshift x hx, if_pos h]⟩
+  refine ⟨hbound, by omega, fun x hx => ?_, fun x hx h => by rw [hshift x hx, ite_eq_left h]⟩
   rw [pkCh_headpos hN hE hPo, hshift x hx]
   have := pkCo_cycPos_lt hN1 (headStart Ps) x
   constructor
   · rintro ⟨-, h⟩
     split_ifs at h with h' <;> omega
   · rintro ⟨h1, h2⟩
-    exact ⟨hx, by rw [if_pos h1]; omega⟩
+    exact ⟨hx, by rw [ite_eq_left h1]; omega⟩
 
-/-- **The lift** (BP App. D §6c): a spread failing even trace `Θ` of the head of `P` (inside the head of `P*`, with
-`o_in(P*) ⊆ o_in(P)`, `P ∈ 𝒫₀`) gives the spread failing even trace `Θ ∪ evens(A* ∖ A_P)` of the head of `P*`. No F^π. -/
-theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P Ps : ℕ × ℕ}
-    (hP : P ∈ cleanChords N S) (hPso : Ps ∈ oddDiagonals N) (hsub : oddSide N P ⊆ oddSide N Ps)
-    (hoo : innerOO N S Ps ⊆ innerOO N S P) {Θ : Finset ℕ} (hΘ : Θ ∈ admSeps N (headStart P) (headLen N P) 0)
-    (hΘe : ∀ θ ∈ Θ, θ % 2 = 0) (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S))
+-- registry: C-B4RC
+/-- **The lift**, explicit witness: as `pkCh_lift`, the spread failing even trace is
+`Θ ∪ evens(A* ∖ A_P)`. No F^π. -/
+theorem pkCh_lift_explicit {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)}
+    {P Ps : ℕ × ℕ} (hP : P ∈ cleanChords N S) (hPso : Ps ∈ oddDiagonals N)
+    (hsub : oddSide N P ⊆ oddSide N Ps) (hoo : innerOO N S Ps ⊆ innerOO N S P) {Θ : Finset ℕ}
+    (hΘ : Θ ∈ admSeps N (headStart P) (headLen N P) 0) (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
+    (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S))
     (hsp : Spread N S (headStart P) (headLen N P) Θ) :
-    ∃ Θ' ∈ admSeps N (headStart Ps) (headLen N Ps) 0, (∀ θ ∈ Θ', θ % 2 = 0) ∧
-      Disjoint (sepIn N (headStart Ps) (headLen N Ps) Θ') (missing N S) ∧
-      Spread N S (headStart Ps) (headLen N Ps) Θ' := by
+    Θ ∪ evens (oddSide N Ps \ oddSide N P) ∈ admSeps N (headStart Ps) (headLen N Ps) 0 ∧
+      (∀ θ ∈ Θ ∪ evens (oddSide N Ps \ oddSide N P), θ % 2 = 0) ∧
+      Disjoint (sepIn N (headStart Ps) (headLen N Ps) (Θ ∪ evens (oddSide N Ps \ oddSide N P)))
+        (missing N S) ∧
+      Spread N S (headStart Ps) (headLen N Ps) (Θ ∪ evens (oddSide N Ps \ oddSide N P)) := by
   have hPo : P ∈ oddDiagonals N := (mem_filter.1 hP).1
   have hPc : Disjoint (minRect N P) (missing N S) := (mem_filter.1 hP).2
   obtain ⟨-, -, -, -, -, hs, hs2, hk1, hk3, hkN⟩ := pkCh_sides hE hPo
@@ -2207,12 +2797,14 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
   have hN1 : 1 ≤ N := by omega
   obtain ⟨hab, ha2, hmemP, hposP⟩ := pkCh_subHead hN hE hPo hPso hsub
   obtain ⟨hΘsub, hΘc⟩ := pkCo_mem_admSeps.1 hΘ
-  have hΘI : ∀ θ ∈ Θ, θ ∈ Icc 1 N ∧ 1 ≤ cycPos N (headStart P) θ ∧ cycPos N (headStart P) θ + 2 ≤ headLen N P :=
+  have hΘI : ∀ θ ∈ Θ, θ ∈ Icc 1 N ∧ 1 ≤ cycPos N (headStart P) θ ∧ cycPos N (headStart P) θ + 2 ≤
+      headLen N P :=
     fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
   -- positions of `Θ` in the big head
   have hΘpos : ∀ θ ∈ Θ, cycPos N (headStart Ps) (headStart P) + 1 ≤ cycPos N (headStart Ps) θ ∧
       cycPos N (headStart Ps) θ + 2 ≤ cycPos N (headStart Ps) (headStart P) + headLen N P ∧
-      cycPos N (headStart P) θ = cycPos N (headStart Ps) θ - cycPos N (headStart Ps) (headStart P) := by
+      cycPos N (headStart P) θ = cycPos N (headStart Ps) θ - cycPos N (headStart Ps)
+          (headStart P) := by
     intro θ hθ
     obtain ⟨hθI, h1, h2⟩ := hΘI θ hθ
     have hin : θ ∈ oddSide N P := (pkCh_headpos hN hE hPo).2 ⟨hθI, by omega⟩
@@ -2225,17 +2817,20 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
     fun x => pkCh_headpos hN hE hPso
   have hmemU : ∀ x, x ∈ Θ ∪ (Icc 1 N).filter (fun x => cycPos N (headStart Ps) x < headLen N Ps ∧
       ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-        cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0) ↔
+        cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+            (headStart P) + headLen N P) ∧ x % 2 = 0) ↔
       x ∈ Θ ∨ (x ∈ Icc 1 N ∧ cycPos N (headStart Ps) x < headLen N Ps ∧
         ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-          cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0) := by
+          cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+              (headStart P) + headLen N P) ∧ x % 2 = 0) := by
     intro x; rw [mem_union, mem_filter]
   have hparS : ∀ x ∈ Icc 1 N, cycPos N (headStart Ps) x % 2 = (x + headStart Ps) % 2 :=
     fun x hx => pkCo_cycPos_mod_two hE hss hx
   have hΘin : ∀ θ ∈ Θ, θ ∈ oddSide N P := fun θ hθ => by
     obtain ⟨hθI, h1, h2⟩ := hΘI θ hθ
     exact (pkCh_headpos hN hE hPo).2 ⟨hθI, by omega⟩
-  have hbigA : ∀ x, x ∈ cycArc N (headStart Ps) (headLen N Ps) ↔ x ∈ Icc 1 N ∧ cycPos N (headStart Ps) x < headLen N Ps :=
+  have hbigA : ∀ x, x ∈ cycArc N (headStart Ps) (headLen N Ps) ↔ x ∈ Icc 1 N ∧
+      cycPos N (headStart Ps) x < headLen N Ps :=
     fun x => pkCo_mem_cycArc_pos hss (by omega)
   have hsmA : ∀ x, x ∈ cycArc N (headStart P) (headLen N P) ↔ x ∈ oddSide N P :=
     fun x => ((pkCh_arcs (by omega) hE hPo).1 x).symm
@@ -2244,10 +2839,12 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
       cycPos N (headStart Ps) y < headLen N Ps → x ∉ oddSide N P →
       x ∉ Θ ∪ (Icc 1 N).filter (fun x => cycPos N (headStart Ps) x < headLen N Ps ∧
         ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-          cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0) →
+          cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+              (headStart P) + headLen N P) ∧ x % 2 = 0) →
       y ∉ Θ ∪ (Icc 1 N).filter (fun x => cycPos N (headStart Ps) x < headLen N Ps ∧
         ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-          cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0) →
+          cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+              (headStart P) + headLen N P) ∧ x % 2 = 0) →
       (min x y, max x y) ∉ missing N S := by
     intro x y hx hy hxK hyK hxP hxU hyU hm
     rw [hmemU] at hxU hyU
@@ -2260,19 +2857,19 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
     by_cases hy2 : y % 2 = 1
     · have hmoo : (min x y, max x y) ∈ innerOO N S Ps := by
         refine pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm, ?_, ?_⟩, ?_, ?_⟩
-        · show min x y % 2 = 1
+        · change min x y % 2 = 1
           rcases le_total x y with h | h
           · rw [min_eq_left h]; exact hx2
           · rw [min_eq_right h]; exact hy2
-        · show max x y % 2 = 1
+        · change max x y % 2 = 1
           rcases le_total x y with h | h
           · rw [max_eq_right h]; exact hy2
           · rw [max_eq_left h]; exact hx2
-        · show min x y ∈ oddSide N Ps
+        · change min x y ∈ oddSide N Ps
           rcases le_total x y with h | h
           · rw [min_eq_left h]; exact (hbig x).2 ⟨hx, hxK⟩
           · rw [min_eq_right h]; exact (hbig y).2 ⟨hy, hyK⟩
-        · show max x y ∈ oddSide N Ps
+        · change max x y ∈ oddSide N Ps
           rcases le_total x y with h | h
           · rw [max_eq_right h]; exact (hbig y).2 ⟨hy, hyK⟩
           · rw [max_eq_left h]; exact (hbig x).2 ⟨hx, hxK⟩
@@ -2286,14 +2883,27 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
         exact hyU (Or.inr ⟨hy, hyK, h, by omega⟩)
       have hyP := (hmemP y hy).2 hyin
       have hxB : x ∈ evenSide N P := by
-        show x ∈ Icc 1 N \ oddSide N P
+        change x ∈ Icc 1 N \ oddSide N P
         exact mem_sdiff.2 ⟨hx, hxP⟩
       apply disjoint_left.1 hPc _ hm
-      refine pkCh_mem_minRect.2 ⟨y, pkCh_mem_evens.2 ⟨hyP, by omega⟩, x, pkCh_mem_odds.2 ⟨hxB, hx2⟩, ?_⟩
+      refine pkCh_mem_minRect.2 ⟨y, pkCh_mem_evens.2 ⟨hyP, by omega⟩, x,
+          pkCh_mem_odds.2 ⟨hxB, hx2⟩, ?_⟩
       rw [min_comm, max_comm]
-  refine ⟨Θ ∪ (Icc 1 N).filter (fun x => cycPos N (headStart Ps) x < headLen N Ps ∧
+  have hEq : evens (oddSide N Ps \ oddSide N P) = (Icc 1 N).filter (fun x =>
+      cycPos N (headStart Ps) x < headLen N Ps ∧
       ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-        cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0), ?_, ?_, ?_, ?_⟩
+        cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+            (headStart P) + headLen N P) ∧ x % 2 = 0) := by
+    ext x
+    rw [pkCh_mem_evens, mem_sdiff, mem_filter]
+    constructor
+    · rintro ⟨⟨hxs, hxP⟩, h2⟩
+      obtain ⟨hxI, hxK⟩ := (hbig x).1 hxs
+      exact ⟨hxI, hxK, fun h => hxP ((hmemP x hxI).2 h), h2⟩
+    · rintro ⟨hxI, hxK, hn, h2⟩
+      exact ⟨⟨(hbig x).2 ⟨hxI, hxK⟩, fun h => hn ((hmemP x hxI).1 h)⟩, h2⟩
+  rw [hEq]
+  refine ⟨?_, ?_, ?_, ?_⟩
   · rw [pkCo_mem_admSeps]
     refine ⟨fun x hx => ?_, ?_⟩
     · rw [pkCo_mem_intArc hss (by omega)]
@@ -2304,14 +2914,16 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
         exact ⟨hxI, by omega, by omega⟩
     · by_cases hEne : ((Icc 1 N).filter (fun x => cycPos N (headStart Ps) x < headLen N Ps ∧
           ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-            cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0)).Nonempty
+            cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+                (headStart P) + headLen N P) ∧ x % 2 = 0)).Nonempty
       · right
         obtain ⟨e, he⟩ := hEne
         obtain ⟨θ, hθ⟩ : Θ.Nonempty := by
           rcases hΘc with h | h
           · exact card_pos.1 (by omega)
           · exact card_pos.1 (by omega)
-        refine ⟨one_lt_card.2 ⟨θ, mem_union_left _ hθ, e, mem_union_right _ he, fun h => ?_⟩, fun x hx => ?_⟩
+        refine ⟨one_lt_card.2 ⟨θ, mem_union_left _ hθ, e, mem_union_right _ he, fun h => ?_⟩,
+            fun x hx => ?_⟩
         · rw [← h] at he
           obtain ⟨-, -, h2, -⟩ := mem_filter.1 he
           obtain ⟨g1, g2, -⟩ := hΘpos θ hθ
@@ -2333,7 +2945,8 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
     simp only at hpd'
     obtain ⟨hp1I, hp1K⟩ := (hbigA p1).1 hp1
     obtain ⟨hp2I, hp2K⟩ := (hbigA p2).1 hp2
-    have e12 : (min p1 p2, max p1 p2) = (p1, p2) := by rw [min_eq_left (by omega), max_eq_right (by omega)]
+    have e12 : (min p1 p2, max p1 p2) = (p1, p2) :=
+        by rw [min_eq_left (by omega), max_eq_right (by omega)]
     by_cases hin1 : p1 ∈ oddSide N P
     · by_cases hin2 : p2 ∈ oddSide N P
       · obtain ⟨i1, i1'⟩ := (hmemP p1 hp1I).1 hin1
@@ -2344,8 +2957,9 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
           · exact absurd ⟨by omega, by omega⟩ h2
         obtain ⟨g1, g2, g3⟩ := hΘpos θ hθΘ
         apply disjoint_left.1 hΘd _ hpm
-        refine pkCo_mem_sepIn.2 ⟨hpd, (hsmA p1).2 hin1, (hsmA p2).2 hin2, fun h => hp1U (mem_union_left _ h),
-          fun h => hp2U (mem_union_left _ h), θ, hθΘ, ?_, ?_⟩ <;>
+        refine pkCo_mem_sepIn.2 ⟨hpd, (hsmA p1).2 hin1, (hsmA p2).2 hin2, fun h =>
+            hp1U (mem_union_left _ h),
+            fun h => hp2U (mem_union_left _ h), θ, hθΘ, ?_, ?_⟩ <;>
           simp only <;> rw [hposP p1 hp1I i1, hposP p2 hp2I i2, g3] <;> omega
       · rw [← e12] at hpm
         rw [min_comm, max_comm] at hpm
@@ -2360,7 +2974,8 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
         x ∈ cycArc N (headStart Ps) (headLen N Ps) ∧ x ∉ Θ ∪ (Icc 1 N).filter (fun x =>
           cycPos N (headStart Ps) x < headLen N Ps ∧
           ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-            cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0) ∧
+            cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+                (headStart P) + headLen N P) ∧ x % 2 = 0) ∧
           x ∈ Icc 1 N ∧ cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
           cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P := by
       intro x hx hxΘ
@@ -2375,14 +2990,16 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
     obtain ⟨a2, a2U, a2I, a2a, a2b⟩ := lift1 p2 hp2 hp2Θ
     obtain ⟨c1, c1U, c1I, c1a, c1b⟩ := lift1 q1 hq1 hq1Θ
     obtain ⟨c2, c2U, c2I, c2a, c2b⟩ := lift1 q2 hq2 hq2Θ
-    have sr : ∀ u v, u ∈ Icc 1 N → v ∈ Icc 1 N → cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) u →
+    have sr : ∀ u v, u ∈ Icc 1 N → v ∈ Icc 1 N → cycPos N (headStart Ps) (headStart P) ≤
+        cycPos N (headStart Ps) u →
         cycPos N (headStart Ps) u < cycPos N (headStart Ps) (headStart P) + headLen N P →
         cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) v →
         cycPos N (headStart Ps) v < cycPos N (headStart Ps) (headStart P) + headLen N P →
         SameRun N (headStart P) Θ u v → SameRun N (headStart Ps) (Θ ∪ (Icc 1 N).filter (fun x =>
           cycPos N (headStart Ps) x < headLen N Ps ∧
           ¬ (cycPos N (headStart Ps) (headStart P) ≤ cycPos N (headStart Ps) x ∧
-            cycPos N (headStart Ps) x < cycPos N (headStart Ps) (headStart P) + headLen N P) ∧ x % 2 = 0)) u v := by
+            cycPos N (headStart Ps) x < cycPos N (headStart Ps)
+                (headStart P) + headLen N P) ∧ x % 2 = 0)) u v := by
       intro u v hu hv u1 u2 v1 v2 h
       rw [pkCh_sameRun_iff] at h ⊢
       rintro ⟨θ, hθ, b1, b2⟩
@@ -2401,21 +3018,40 @@ theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × 
     rw [hposP p1 a1I a1a, hposP q1 c1I c1a, g3] at b1 b2
     exact ⟨θ, mem_union_left _ hθ, by omega, by omega⟩
 
-/-! ### Sub-wave c: [Bot] (BP App. D §6d) -/
+/-- **The lift**: a spread failing even trace `Θ` of the head of `P` (inside the head of `P*`, with
+`o_in(P*) ⊆ o_in(P)`, `P ∈ 𝒫₀`) gives the spread failing even trace `Θ ∪ evens(A* ∖ A_P)` of the
+head of `P*`. No F^π. -/
+theorem pkCh_lift {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P Ps : ℕ × ℕ}
+    (hP : P ∈ cleanChords N S) (hPso : Ps ∈ oddDiagonals N) (hsub : oddSide N P ⊆ oddSide N Ps)
+    (hoo : innerOO N S Ps ⊆ innerOO N S P) {Θ : Finset ℕ}
+    (hΘ : Θ ∈ admSeps N (headStart P) (headLen N P) 0) (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
+    (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S))
+    (hsp : Spread N S (headStart P) (headLen N P) Θ) :
+    ∃ Θ' ∈ admSeps N (headStart Ps) (headLen N Ps) 0, (∀ θ ∈ Θ', θ % 2 = 0) ∧
+      Disjoint (sepIn N (headStart Ps) (headLen N Ps) Θ') (missing N S) ∧
+      Spread N S (headStart Ps) (headLen N Ps) Θ' := by
+  obtain ⟨h1, h2, h3, h4⟩ := pkCh_lift_explicit hN hE hP hPso hsub hoo hΘ hΘe hΘd hsp
+  exact ⟨_, h1, h2, h3, h4⟩
+
+/-! ### Bottom of the class
+
+This section continues in `C3`. -/
 
 /-- A failing even head trace read in the linear setting of the head (labels `cycPos + 1`). -/
 theorem pkCh_toLin {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P : ℕ × ℕ}
     (hPo : P ∈ oddDiagonals N) {Θ : Finset ℕ} (hΘ : Θ ∈ admSeps N (headStart P) (headLen N P) 0)
-    (hΘe : ∀ θ ∈ Θ, θ % 2 = 0) (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S)) :
+    (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
+    (hΘd : Disjoint (sepIn N (headStart P) (headLen N P) Θ) (missing N S)) :
     Θ.image (rotLeg N (N + 1 - headStart P)) ⊆ Icc 2 (headLen N P - 1) ∧
       (∀ t ∈ Θ.image (rotLeg N (N + 1 - headStart P)), t % 2 = 0) ∧
       (∀ u v, runSepA (headLen N P) (Θ.image (rotLeg N (N + 1 - headStart P))) u v →
-        pkCh_Cl N (headStart P) S u v) := by
+        pkChCl N (headStart P) S u v) := by
   obtain ⟨-, -, -, -, -, hs, hs2, hk1, hk3, hkN⟩ := pkCh_sides hE hPo
   have hN1 : 1 ≤ N := by omega
   obtain ⟨hΘsub, -⟩ := pkCo_mem_admSeps.1 hΘ
   have hΘI : ∀ θ ∈ Θ, θ ∈ Icc 1 N ∧ 1 ≤ cycPos N (headStart P) θ ∧
-      cycPos N (headStart P) θ + 2 ≤ headLen N P := fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
+      cycPos N (headStart P) θ + 2 ≤ headLen N P :=
+          fun θ h => (pkCo_mem_intArc hs (by omega)).1 (hΘsub h)
   have hΘl : Θ.image (rotLeg N (N + 1 - headStart P)) ⊆ Icc 2 (headLen N P - 1) := fun y hy => by
     obtain ⟨θ, hθ, rfl⟩ := mem_image.1 hy
     have := hΘI θ hθ
@@ -2426,7 +3062,7 @@ theorem pkCh_toLin {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
     rw [pkCh_phi_eq hs, pkCh_pos_mod hE hs hs2 (hΘI θ hθ).1]
     exact hΘe θ hθ
   have hΘlf : ∀ u v, runSepA (headLen N P) (Θ.image (rotLeg N (N + 1 - headStart P))) u v →
-      pkCh_Cl N (headStart P) S u v := by
+      pkChCl N (headStart P) S u v := by
     intro u v h
     obtain ⟨hu, hv, huΘ, hvΘ, t, ht, b1, b2⟩ := pkT_runSepA_iff.1 h
     obtain ⟨θ, hθ, rfl⟩ := mem_image.1 ht
@@ -2451,20 +3087,23 @@ theorem pkCh_toLin {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ ×
         (cycPos N (headStart P) (rotLeg N (headStart P - 1) v)) := by
       rw [hpu, hpv]; omega
     rcases hm with hm | hm
-    · exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψuA, hψvA, hψuΘ, hψvΘ, θ, hθ,
+    · exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψuA, hψvA, hψuΘ,
+        hψvΘ, θ, hθ,
         hθb⟩) hm
     · rw [min_comm, max_comm] at hθb
-      exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψvA, hψuA, hψvΘ, hψuΘ, θ, hθ,
-        hθb⟩) hm
+      exact disjoint_left.1 hΘd (pkCo_mem_sepIn.2 ⟨(pkCh_mem_missing.1 hm).1, hψvA, hψuA, hψvΘ,
+          hψuΘ, θ, hθ,
+          hθb⟩) hm
   exact ⟨hΘl, hΘle, hΘlf⟩
 
-/-- **[L0]** (BP App. D §7) for any `P ∈ 𝒫₁`, linear setting of its head: the run chord of an O-run `[a, b]` of a
-failing even trace is in `𝒫₁`; its head is the label interval `[a, b]`. -/
+/-- **Run-chord lemma** for any `P ∈ 𝒫₁`, linear setting of its head: the run chord of an O-run
+`[a, b]` of a failing even trace is in `𝒫₁`; its head is the label interval `[a, b]`. -/
 theorem pkCh_L0 {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × ℕ)} {P : ℕ × ℕ}
-    (hPp : P ∈ poleChords N S) {Θ : Finset ℕ} (hΘ : Θ ⊆ Icc 2 (headLen N P - 1)) (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
-    (hΘf : ∀ u v, runSepA (headLen N P) Θ u v → pkCh_Cl N (headStart P) S u v) {a b : ℕ}
+    (hPp : P ∈ poleChords N S) {Θ : Finset ℕ} (hΘ : Θ ⊆ Icc 2 (headLen N P - 1))
+    (hΘe : ∀ θ ∈ Θ, θ % 2 = 0)
+    (hΘf : ∀ u v, runSepA (headLen N P) Θ u v → pkChCl N (headStart P) S u v) {a b : ℕ}
     (hR : IsRun (headLen N P) Θ a b)
-    (huv : ∃ u v, a ≤ u ∧ u < v ∧ v ≤ b ∧ u % 2 = 1 ∧ v % 2 = 1 ∧ ¬ pkCh_Cl N (headStart P) S u v) :
+    (huv : ∃ u v, a ≤ u ∧ u < v ∧ v ≤ b ∧ u % 2 = 1 ∧ v % 2 = 1 ∧ ¬ pkChCl N (headStart P) S u v) :
     ∃ Q ∈ poleChords N S, ∀ x, x ∈ oddSide N Q ↔ x ∈ Icc 1 N ∧
       a ≤ cycPos N (headStart P) x + 1 ∧ cycPos N (headStart P) x + 1 ≤ b := by
   obtain ⟨u, v, hau, huv, hvb, hu2, hv2, huvC⟩ := huv
@@ -2484,12 +3123,13 @@ theorem pkCh_L0 {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × �
     · have := hΘe _ h; omega
   have hr2 : rotLeg N (headStart P - 1) (b + 1) % 2 = 0 := by
     rw [pkCh_psi_mod hN1 hE hsI.1 hs2]; omega
-  obtain ⟨Q, hQo, hQts, hQtl⟩ := pkCh_mkTail (l := N - (b + 1 - a)) hE (pkCh_psi_mem hN1 (b + 1)) hr2
+  obtain ⟨Q, hQo, hQts, hQtl⟩ :=
+      pkCh_mkTail (l := N - (b + 1 - a)) hE (pkCh_psi_mem hN1 (b + 1)) hr2
     (by omega) (by omega) (by omega)
   have hQtsI : tailStart Q ∈ Icc 1 N := by rw [hQts]; exact pkCh_psi_mem hN1 _
   have hQts' : tailStart Q = vtx N (headStart P + b) := by
     rw [hQts]
-    show vtx N (b + 1 + (headStart P - 1)) = vtx N (headStart P + b)
+    change vtx N (b + 1 + (headStart P - 1)) = vtx N (headStart P + b)
     rw [show b + 1 + (headStart P - 1) = headStart P + b by omega]
   have hposQ : ∀ x ∈ Icc 1 N, cycPos N (tailStart Q) x = if b ≤ cycPos N (headStart P) x then
       cycPos N (headStart P) x - b else cycPos N (headStart P) x + N - b := fun x hx => by
@@ -2522,7 +3162,7 @@ theorem pkCh_L0 {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × �
       refine ⟨hx, ?_⟩
       rw [hposQ x hx]
       split_ifs <;> omega
-  -- [L0]: `Q ∈ 𝒫₁`
+  -- run-chord step: `Q ∈ 𝒫₁`
   have hQpole : Q ∈ poleChords N S := by
     refine pkCh_mem_pole.2 ⟨hQo, disjoint_left.2 fun p hp hpm => ?_, ?_, ?_⟩
     · obtain ⟨e, he, o, ho, rfl⟩ := pkCh_mem_minRect.1 hp
@@ -2534,8 +3174,9 @@ theorem pkCh_L0 {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × �
       have hopos := pkCh_pos_mod hE hs hs2 hoI
       by_cases hok : headLen N P ≤ cycPos N (headStart P) o
       · apply disjoint_left.1 hPclean _ hpm
-        exact pkCh_mem_minRect.2 ⟨e, pkCh_mem_evens.2 ⟨(pkCh_headpos hN hE hPo).2 ⟨heI, by omega⟩, he2⟩, o,
-          pkCh_mem_odds.2 ⟨(pkCh_evenpos hN hE hPo).2 ⟨hoI, hok⟩, ho2⟩, rfl⟩
+        exact pkCh_mem_minRect.2 ⟨e,
+            pkCh_mem_evens.2 ⟨(pkCh_headpos hN hE hPo).2 ⟨heI, by omega⟩, he2⟩, o,
+            pkCh_mem_odds.2 ⟨(pkCh_evenpos hN hE hPo).2 ⟨hoI, hok⟩, ho2⟩, rfl⟩
       · apply pkCh_notCl_mm hs heI hoI hpm
         apply hΘf
         rw [pkCh_phi_eq hs, pkCh_phi_eq hs, pkT_runSepA_iff]
@@ -2572,11 +3213,13 @@ theorem pkCh_L0 {N : ℕ} (hN : 6 ≤ N) (hE : N % 2 = 0) {S : Finset (ℕ × �
       have hoV : rotLeg N (headStart P - 1) v ∈ oddSide N Q :=
         (hodQ _).2 ⟨pkCh_psi_mem hN1 v, by omega, by omega⟩
       rcases hm with hm | hm
-      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm, (by omega : rotLeg N (headStart P - 1) u % 2 = 1),
+      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm,
+          (by omega : rotLeg N (headStart P - 1) u % 2 = 1),
           (by omega : rotLeg N (headStart P - 1) v % 2 = 1)⟩, hoU, hoV⟩⟩
-      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm, (by omega : rotLeg N (headStart P - 1) v % 2 = 1),
+      · exact ⟨_, pkCh_mem_innerOO.2 ⟨pkCh_mem_Moo.2 ⟨hm,
+          (by omega : rotLeg N (headStart P - 1) v % 2 = 1),
           (by omega : rotLeg N (headStart P - 1) u % 2 = 1)⟩, hoV, hoU⟩⟩
   exact ⟨Q, hQpole, hodQ⟩
 
 
-end PiZ
+end PionCompleteness.Pi

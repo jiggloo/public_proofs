@@ -1,23 +1,34 @@
-import Mathlib
+/-
+Copyright (c) 2026 Henru Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Henru Wang
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Ring
 
 /-!
-# R12-P1b: the tree rectangle zero of Tr(φ³), proved for all n
+# The tree rectangle zero of Tr(φ³), proved for all n
 
-Step 1b of the R12 Lean pilot (thread `surfaceology/threads/R12-P1b.md`). Starting point: the
-fidelity-reviewed statement draft `../r12p1/TreeRectangleZero.lean` (R12-P1, reviewed in
-`../r12p1rev/REVIEW.md`). The paper-facing definitions (`diagonals`, `Crosses`, `IsTriangulation`,
-`triangulations`, `amp`, `vtx`, `planar`, `mesh`, `OnRect`) and the statements of
-`amp_eq_zero_of_onRect` and `onRect_inhabited` are copied verbatim (frozen). The only change of
-layout: the main statements now come after the lemmas they use.
+The colour-ordered tree amplitude `A_n` of Tr(φ³) vanishes on every rectangle locus `R_{k,m}` of
+the mesh variables, at every point where the planar variables are non-zero
+(`amp_eq_zero_of_onRect`), and these loci contain such points (`onRect_inhabited`). The
+paper-facing definitions (`diagonals`, `Crosses`, `IsTriangulation`, `triangulations`, `amp`,
+`vtx`, `planar`, `mesh`, `OnRect`) and these two statements are what later files build on.
 
-Conventions: C0 = arXiv:2312.16282 §2. Polygon vertices `1..n`; diagonal `(a,b)` with `a < b`,
+Conventions follow arXiv:2312.16282 §2. Polygon vertices `1..n`; diagonal `(a,b)` with `a < b`,
 `b - a ≥ 2`, `(a,b) ≠ (1,n)`; planar variable `X (a,b)`; polygon edges carry `X = 0`
 ([arXiv:2312.16282 eq. (2.2) and the sentence after it]). Mesh variable
 `c i j = X i j + X (i+1) (j+1) - X i (j+1) - X (i+1) j` with vertex labels mod `n`
 ([arXiv:2312.16282 eq. (2.4)]). Rectangle `R_{k,m}` of [arXiv:2503.03805 eq. (1)]:
 `i ∈ {m, …, m+k-1}`, `j ∈ {k+m+1, …, m-2+n}`.
 
-Proof route A′ (R12-P1 §4): Zhou's factorisation of propagators [arXiv:2411.07944 §2.6, eqs. (55),
+Proof route: Zhou's factorisation of propagators [arXiv:2411.07944 §2.6, eqs. (55),
 (74)–(77)] reorganised as an induction on the apex (Berends–Giele) recursion `F`:
 1. triangulation combinatorics: every triangulation of a sub-polygon has a unique apex on its base,
    hence `amp = F 1 n` (`F_eq_sum`, `amp_eq_F`);
@@ -25,59 +36,83 @@ Proof route A′ (R12-P1 §4): Zhou's factorisation of propagators [arXiv:2411.0
    the `m = 1` family (`amp_eq_zero_m1`);
 3. rotation (`amp_rot`, `onRect_rot`); the main theorem by induction on `m`;
 4. the general witness (`onRect_inhabited`) and `mesh_adjacent`.
+
+## References
+
+* N. Arkani-Hamed, Q. Cao, J. Dong, C. Figueiredo, S. He, *Hidden zeros for particle/string
+  amplitudes and the unity of colored scalars, pions and gluons*, arXiv:2312.16282 (2023)
+* K. Zhou, *Understanding zeros and splittings of ordered tree amplitudes via Feynman diagrams*,
+  arXiv:2411.07944 (2024)
+* J. V. Backus, L. Rodina, *Emergence of Unitarity and Locality from Hidden Zeros at
+  One-Loop Order*, arXiv:2503.03805 (2025)
 -/
 
-namespace R12P1
+@[expose] public section
+
+namespace PionCompleteness.TreeRectangleZero
 
 open Finset
 
 /-! ## Definitions (paper-facing) -/
 
+-- registry: T-3YQS
 /-- Diagonals of the convex `n`-gon with vertices `1..n`. -/
 def diagonals (n : ℕ) : Finset (ℕ × ℕ) :=
   (Icc 1 n ×ˢ Icc 1 n).filter (fun p => p.1 + 2 ≤ p.2 ∧ ¬ (p.1 = 1 ∧ p.2 = n))
 
+-- registry: C-8TJ0
 /-- Two diagonals `(a,b)`, `(c,d)` (with `a < b`, `c < d`) cross iff their endpoints interleave. -/
 def Crosses (p q : ℕ × ℕ) : Prop :=
   (p.1 < q.1 ∧ q.1 < p.2 ∧ p.2 < q.2) ∨ (q.1 < p.1 ∧ p.1 < q.2 ∧ q.2 < p.2)
 
+/-- Whether two diagonals cross is decidable: it unfolds to comparisons of natural numbers. -/
 instance : DecidableRel Crosses := fun _ _ => by unfold Crosses; infer_instance
 
+-- registry: C-R89P T-HQ8F
 /-- A triangulation is a maximal set of pairwise non-crossing diagonals. -/
 def IsTriangulation (n : ℕ) (T : Finset (ℕ × ℕ)) : Prop :=
   T ⊆ diagonals n ∧ (∀ p ∈ T, ∀ q ∈ T, ¬ Crosses p q) ∧
     (∀ d ∈ diagonals n, d ∉ T → ∃ p ∈ T, Crosses p d)
 
+/-- Whether a set of diagonals is a triangulation is decidable, so that `triangulations` can select
+the triangulations among the subsets of `diagonals n`. -/
 instance (n : ℕ) : DecidablePred (IsTriangulation n) := fun _ => by
   unfold IsTriangulation; infer_instance
 
+-- registry: C-R89P T-HQ8F
+/-- The triangulations of the `n`-gon, as a `Finset`: the sets with `IsTriangulation n`. -/
 def triangulations (n : ℕ) : Finset (Finset (ℕ × ℕ)) :=
   (diagonals n).powerset.filter (IsTriangulation n)
 
 variable {K : Type*} [Field K]
 
+-- registry: C-R89P T-PHEE
 /-- The colour-ordered tree amplitude: sum over triangulations of `∏ 1/X`
 ([arXiv:2312.16282 eqs. (3.1), (3.6)]). -/
 def amp (n : ℕ) (X : ℕ × ℕ → K) : K :=
   ∑ T ∈ triangulations n, ∏ d ∈ T, (X d)⁻¹
 
+-- registry: T-G7ZH
 /-- Vertex label mod `n`, into `1..n`. -/
 def vtx (n i : ℕ) : ℕ := (i + n - 1) % n + 1
 
+-- registry: T-ZWNB
 /-- Planar variable for arbitrary (cyclic) labels: `0` on edges and on coincident labels. -/
 def planar (n : ℕ) (X : ℕ × ℕ → K) (i j : ℕ) : K :=
   if (min (vtx n i) (vtx n j), max (vtx n i) (vtx n j)) ∈ diagonals n then
     X (min (vtx n i) (vtx n j), max (vtx n i) (vtx n j)) else 0
 
+-- registry: T-SZXS
 /-- Mesh variable `c_{i,j}` ([arXiv:2312.16282 eq. (2.4)]). -/
 def mesh (n : ℕ) (X : ℕ × ℕ → K) (i j : ℕ) : K :=
   planar n X i j + planar n X (i + 1) (j + 1) - planar n X i (j + 1) - planar n X (i + 1) j
 
+-- registry: T-M4DH
 /-- The `(k,m)`-zero locus ([arXiv:2503.03805 eq. (1)]). -/
 def OnRect (n k m : ℕ) (X : ℕ × ℕ → K) : Prop :=
   ∀ i ∈ Ico m (m + k), ∀ j ∈ Icc (k + m + 1) (m + n - 2), mesh n X i j = 0
 
-/-! ## Skeleton definitions (internal; as in the step-1a draft) -/
+/-! ## Auxiliary definitions (internal) -/
 
 /-- Side weight: `1` for a polygon side of the sub-polygon, `1/X` for a diagonal. -/
 def w (X : ℕ × ℕ → K) (a b : ℕ) : K := if a + 1 < b then (X (a, b))⁻¹ else 1
@@ -104,6 +139,7 @@ def rot (n : ℕ) (d : ℕ × ℕ) : ℕ × ℕ :=
 
 /-! ## Step 1. Triangulation combinatorics and `amp = F 1 n` -/
 
+-- registry: T-3YQS
 /-- Diagonals of the sub-polygon with vertices `a, a+1, …, b` (its base `(a,b)` excluded).
 `diagonals n = sdiag 1 n` by definition. -/
 def sdiag (a b : ℕ) : Finset (ℕ × ℕ) :=
@@ -121,6 +157,7 @@ lemma mem_diagonals {n : ℕ} {d : ℕ × ℕ} :
     d ∈ diagonals n ↔ 1 ≤ d.1 ∧ d.2 ≤ n ∧ d.1 + 2 ≤ d.2 ∧ ¬ (d.1 = 1 ∧ d.2 = n) :=
   mem_sdiag
 
+-- registry: T-HQ8F
 /-- Triangulations of the sub-polygon `a..b`: maximal non-crossing sets of its diagonals. -/
 def IsTri (a b : ℕ) (T : Finset (ℕ × ℕ)) : Prop :=
   T ⊆ sdiag a b ∧ (∀ p ∈ T, ∀ q ∈ T, ¬ Crosses p q) ∧
@@ -129,6 +166,8 @@ def IsTri (a b : ℕ) (T : Finset (ℕ × ℕ)) : Prop :=
 instance (a b : ℕ) : DecidablePred (IsTri a b) := fun _ => by
   unfold IsTri; infer_instance
 
+-- registry: T-HQ8F
+/-- The triangulations of the sub-polygon `a..b`, as a `Finset`: the sets with `IsTri a b`. -/
 def tri (a b : ℕ) : Finset (Finset (ℕ × ℕ)) :=
   (sdiag a b).powerset.filter (IsTri a b)
 
@@ -524,7 +563,7 @@ theorem F_eq_sum (X : ℕ × ℕ → K) (a b : ℕ) : F X a b = ∑ T ∈ tri a 
   exact sum_congr rfl step
 
 /-- L-bridge: the triangulation sum equals the apex recursion. -/
-theorem amp_eq_F (n : ℕ) (hn : 3 ≤ n) (X : ℕ × ℕ → K) : amp n X = F X 1 n := by
+theorem amp_eq_F (n : ℕ) (_hn : 3 ≤ n) (X : ℕ × ℕ → K) : amp n X = F X 1 n := by
   rw [amp, triangulations_eq_tri, F_eq_sum]
 
 /-! ## Step 2. Telescoping, the factorisation lemma, the `m = 1` family -/
@@ -558,7 +597,8 @@ lemma planar_side {n : ℕ} (X : ℕ × ℕ → K) {i : ℕ} (hi : 1 ≤ i) (hn 
   rw [planar_of_mem X hi (by omega) hn, ite_eq_right (by rw [mem_diagonals]; dsimp only; omega)]
 
 lemma planar_one_n {n : ℕ} (X : ℕ × ℕ → K) (hn : 2 ≤ n) : planar n X 1 n = 0 := by
-  rw [planar_of_mem X le_rfl (by omega) le_rfl, ite_eq_right (by rw [mem_diagonals]; dsimp only; omega)]
+  rw [planar_of_mem X le_rfl (by omega) le_rfl,
+    ite_eq_right (by rw [mem_diagonals]; dsimp only; omega)]
 
 lemma sum_Icc_telescope (φ : ℕ → K) {r t : ℕ} (hrt : r ≤ t) :
     ∑ j ∈ Icc r t, (φ j - φ (j + 1)) = φ r - φ (t + 1) := by
@@ -570,12 +610,14 @@ lemma sum_Icc_telescope (φ : ℕ → K) {r t : ℕ} (hrt : r ≤ t) :
 
 /-- L-tele: the sum of mesh variables over a rectangle of legs telescopes to its four corners.
 (A pure identity for any function of two labels; the hypotheses exclude empty ranges, for which
-the statement is false: a disprover check made while drafting.) -/
+the statement is false.) -/
 theorem mesh_telescope (n : ℕ) (X : ℕ × ℕ → K) {p q r t : ℕ} (hpq : p ≤ q) (hrt : r ≤ t) :
     ∑ i ∈ Icc p q, ∑ j ∈ Icc r t, mesh n X i j =
-      planar n X p r + planar n X (q + 1) (t + 1) - planar n X p (t + 1) - planar n X (q + 1) r := by
+      planar n X p r + planar n X (q + 1) (t + 1) - planar n X p (t + 1) -
+        planar n X (q + 1) r := by
   have inner : ∀ i, ∑ j ∈ Icc r t, mesh n X i j =
-      (planar n X i r - planar n X i (t + 1)) - (planar n X (i + 1) r - planar n X (i + 1) (t + 1)) := by
+      (planar n X i r - planar n X i (t + 1)) -
+        (planar n X (i + 1) r - planar n X (i + 1) (t + 1)) := by
     intro i
     have hm : ∀ j ∈ Icc r t, mesh n X i j = (planar n X i j - planar n X (i + 1) j) -
         (planar n X i (j + 1) - planar n X (i + 1) (j + 1)) := fun j _ => by unfold mesh; ring
@@ -623,7 +665,8 @@ lemma F_eq_X_mul_W (X : ℕ × ℕ → K) {a b : ℕ} (h : a + 1 < b) (hx : X (a
 leg `n`; locus `R_{s-1,1}`. Only the spine diagonals `(a,b)`, `a ≤ s < b`, need `X ≠ 0`. -/
 theorem F_factor {n s : ℕ} (hs : 2 ≤ s) (hsn : s + 2 ≤ n) (X : ℕ × ℕ → K)
     (hspine : ∀ a b, 1 ≤ a → a ≤ s → s + 1 ≤ b → b ≤ n → (a, b) ∈ diagonals n → X (a, b) ≠ 0)
-    (hR : OnRect n (s - 1) 1 X) {a b : ℕ} (ha : 1 ≤ a) (has : a < s) (hbs : s + 1 < b) (hbn : b ≤ n) :
+    (hR : OnRect n (s - 1) 1 X) {a b : ℕ} (ha : 1 ≤ a) (has : a < s) (hbs : s + 1 < b)
+    (hbn : b ≤ n) :
     F X a b = (planar n X a (s + 1) + planar n X s b) * W X a (s + 1) * W X s b := by
   obtain ⟨N, hN⟩ : ∃ N, b - a = N := ⟨_, rfl⟩
   induction N using Nat.strong_induction_on generalizing a b with
@@ -631,7 +674,8 @@ theorem F_factor {n s : ℕ} (hs : 2 ≤ s) (hsn : s + 2 ≤ n) (X : ℕ × ℕ 
   have hsp : ∀ a' b', 1 ≤ a' → a' ≤ s → s + 1 ≤ b' → b' ≤ n → a' + 2 ≤ b' →
       ¬ (a' = 1 ∧ b' = n) → X (a', b') ≠ 0 := fun a' b' h1 h2 h3 h4 h5 h6 =>
     hspine a' b' h1 h2 h3 h4 (mem_diagonals.2 (by dsimp only; omega))
-  -- consequences of the induction hypothesis: `W(k,b) = W(k,s+1) W(s,b)`, `W(a,k) = W(a,s+1) W(s,k)`
+  -- consequences of the induction hypothesis:
+  -- `W(k,b) = W(k,s+1) W(s,b)` and `W(a,k) = W(a,s+1) W(s,k)`
   have hL : ∀ k ∈ Ico (a + 1) s, W X k b = W X k (s + 1) * W X s b := by
     intro k hk
     rw [mem_Ico] at hk
@@ -858,14 +902,14 @@ theorem amp_rot (n : ℕ) (hn : 3 ≤ n) (X : ℕ × ℕ → K) : amp n (X ∘ r
   rw [prod_image (fun p hp q hq h => hinj (hsub T hT hp) (hsub T hT hq) h)]
   rfl
 
-/-! ## Main statement (what Phase 2 imports) -/
+/-! ## Main statement -/
 
 /-- **Tree rectangle zero.** Pointwise form over any field: at every point of the `(k,m)`-locus
 where all planar variables are non-zero, `A_n = 0`. -/
-theorem amp_eq_zero_of_onRect {n k m : ℕ} (hk : 1 ≤ k) (hkn : k + 3 ≤ n) (hm : 1 ≤ m) (hmn : m ≤ n)
-    (X : ℕ × ℕ → K) (hX : ∀ d ∈ diagonals n, X d ≠ 0) (hR : OnRect n k m X) :
+theorem amp_eq_zero_of_onRect {n k m : ℕ} (hk : 1 ≤ k) (hkn : k + 3 ≤ n) (hm : 1 ≤ m)
+    (_hmn : m ≤ n) (X : ℕ × ℕ → K) (hX : ∀ d ∈ diagonals n, X d ≠ 0) (hR : OnRect n k m X) :
     amp n X = 0 := by
-  clear hmn
+  clear _hmn
   induction m, hm using Nat.le_induction generalizing X with
   | base => exact amp_eq_zero_m1 hk hkn X hX hR
   | succ m hm ih =>
@@ -873,11 +917,12 @@ theorem amp_eq_zero_of_onRect {n k m : ℕ} (hk : 1 ≤ k) (hkn : k + 3 ≤ n) (
     rw [← amp_rot n (by omega) X]
     exact ih (X ∘ rot n) (fun d hd => hX _ (rot_mem (by omega) hd)) hR
 
-/-! ## Step 5. The general witness, `mesh_adjacent` -/
+/-! ## Step 4. The general witness, `mesh_adjacent` -/
 
-/-- Witness coordinates on the spine region `a ≤ s < b` (R12-P1 C8), as integers. -/
+/-- Witness coordinates on the spine region `a ≤ s < b`, as integers. -/
 def uZ (s a : ℕ) : ℤ := if a < s then (s : ℤ) + 1 - a else 0
 
+/-- Witness coordinates `v_b` on the spine region, as integers (the companion of `uZ`). -/
 def vZ (n s b : ℕ) : ℤ := if b = n then -(s : ℤ) else if b = s + 1 then 0 else (b : ℤ) - s
 
 /-- The witness point on `R_{s-1,1}`: `X_{ab} = u_a + v_b` on the spine region, `1` elsewhere. -/
@@ -897,7 +942,7 @@ lemma wit_planar {n s : ℕ} (hs : 2 ≤ s) (hsn : s + 2 ≤ n) {a b : ℕ} (ha 
       split_ifs <;> omega
     rw [h0, Int.cast_zero]
 
-lemma wit_ne_zero {n s : ℕ} (hs : 2 ≤ s) (hsn : s + 2 ≤ n) :
+lemma wit_ne_zero {n s : ℕ} (hs : 2 ≤ s) (_hsn : s + 2 ≤ n) :
     ∀ d ∈ diagonals n, wit n s d ≠ 0 := by
   rintro ⟨a, b⟩ hd
   rw [mem_diagonals] at hd
@@ -938,6 +983,7 @@ lemma onRect_add_n {n k m : ℕ} (X : ℕ × ℕ → K) (h : OnRect n k m X) : O
     show i + 1 - n = i - n + 1 by omega, show j + 1 - n = j - n + 1 by omega]
   exact this
 
+-- registry: C-WEM6
 /-- Inhabitation witness (general `n`): the hypotheses of the main theorem are satisfiable. -/
 theorem onRect_inhabited {n k m : ℕ} (hk : 1 ≤ k) (hkn : k + 3 ≤ n) (hm : 1 ≤ m) (hmn : m ≤ n) :
     ∃ X : ℕ × ℕ → ℚ, (∀ d ∈ diagonals n, X d ≠ 0) ∧ OnRect n k m X := by
@@ -995,14 +1041,14 @@ theorem mesh_adjacent (n : ℕ) (hn : 4 ≤ n) (X : ℕ × ℕ → K) (i : ℕ) 
 
 section N5
 
-/-- PROVED (target): the definition reproduces the printed five-term amplitude
+/-- The definition reproduces the printed five-term amplitude
 [arXiv:2312.16282 eq. (3.1)]. -/
 theorem triangulations_five :
     triangulations 5 = {{(1, 3), (1, 4)}, {(1, 3), (3, 5)}, {(1, 4), (2, 4)}, {(2, 5), (3, 5)},
       {(2, 4), (2, 5)}} := by
   decide
 
-/-- The n = 5 witness for `R_{1,1}` (explicit values from `route_a.py witness`). -/
+/-- An explicit n = 5 point of `R_{1,1}` with all planar variables non-zero. -/
 def X5w : ℕ × ℕ → ℚ := fun d =>
   if d = (1, 3) then 2 else if d = (1, 4) then 4 else if d = (2, 4) then 2
   else if d = (2, 5) then -2 else if d = (3, 5) then 1 else 0
@@ -1025,17 +1071,19 @@ theorem negcontrol_minus_tile :
     mesh 5 X5n 1 3 = 0 ∧ (∀ d ∈ diagonals 5, X5n d ≠ 0) ∧ amp 5 X5n ≠ 0 := by
   refine ⟨by simp [mesh, planar, vtx, diagonals, X5n]; norm_num, by decide, ?_⟩
   rw [amp, triangulations_five]
-  simp (config := {decide := true}) only [Finset.sum_insert, Finset.prod_insert, Finset.sum_singleton,
-    Finset.prod_singleton, Finset.mem_insert, Finset.mem_singleton]
+  simp +decide only [Finset.sum_insert, Finset.prod_insert,
+    Finset.sum_singleton, Finset.prod_singleton, Finset.mem_insert, Finset.mem_singleton]
   norm_num [X5n]
 
-/-- PROVED: the main theorem at `n = 5`, `R_{1,1}`, from the definitions above (end-to-end check
+/-- The main theorem at `n = 5`, `R_{1,1}`, from the definitions above (end-to-end check
 that `vtx`/`planar`/`mesh`/`OnRect` encode [arXiv:2312.16282 §3.1.1] `c₁₃ = c₁₄ = 0`). -/
 theorem amp_five_rect11 (X : ℕ × ℕ → K) (hX : ∀ d ∈ diagonals 5, X d ≠ 0) (hR : OnRect 5 1 1 X) :
     amp 5 X = 0 := by
-  have e3 := hR 1 (by simp) 3 (by simp)
-  have e4 := hR 1 (by simp) 4 (by simp)
-  simp [mesh, planar, vtx, diagonals] at e3 e4
+  -- the two mesh conditions `c₁₃ = c₁₄ = 0` of `R_{1,1}`, in planar variables
+  have e3 : X (1, 3) + X (2, 4) - X (1, 4) = 0 := by
+    simpa [mesh, planar, vtx, diagonals] using hR 1 (by simp) 3 (by simp)
+  have e4 : X (1, 4) + X (2, 5) - X (2, 4) = 0 := by
+    simpa [mesh, planar, vtx, diagonals] using hR 1 (by simp) 4 (by simp)
   have h13 := hX (1, 3) (by decide)
   have h14 := hX (1, 4) (by decide)
   have h24 := hX (2, 4) (by decide)
@@ -1044,8 +1092,8 @@ theorem amp_five_rect11 (X : ℕ × ℕ → K) (hX : ∀ d ∈ diagonals 5, X d 
   have x24 : X (2, 4) = X (1, 4) - X (1, 3) := by linear_combination e3
   have x25 : X (2, 5) = - X (1, 3) := by linear_combination e4 + e3
   rw [amp, triangulations_five]
-  simp (config := {decide := true}) only [Finset.sum_insert, Finset.prod_insert, Finset.sum_singleton,
-    Finset.prod_singleton, Finset.mem_insert, Finset.mem_singleton]
+  simp +decide only [Finset.sum_insert, Finset.prod_insert,
+    Finset.sum_singleton, Finset.prod_singleton, Finset.mem_insert, Finset.mem_singleton]
   rw [x24] at h24
   rw [x25] at h25
   rw [x24, x25]
@@ -1054,9 +1102,9 @@ theorem amp_five_rect11 (X : ℕ × ℕ → K) (hX : ∀ d ∈ diagonals 5, X d 
 
 end N5
 
-/-! ## Reviewer additions (opus-2026-09-23-R12P1-rev) -/
+/-! ## Further negative controls and sanity checks -/
 
-/-- Reviewer negative control 1: the main statement WITHOUT the non-vanishing hypothesis `hX`
+/-- Negative control: the main statement WITHOUT the non-vanishing hypothesis `hX`
 is false (junk value `0⁻¹ = 0`). Point on `R_{1,1}` at n = 5 with `X₁₃ = X₁₄ = 1`, hence
 `X₂₄ = 0` (a spine diagonal) and `X₂₅ = -1`; `X₃₅ = 1`. Then `amp = 1 ≠ 0`. -/
 def Xrev1 : ℕ × ℕ → ℚ := fun d =>
@@ -1072,14 +1120,14 @@ theorem rev_negcontrol_no_hX :
     obtain rfl : i = 1 := by omega
     have h1 : 3 ≤ j := by omega
     have h2 : j ≤ 4 := by omega
-    interval_cases j <;> simp [mesh, planar, vtx, diagonals, Xrev1] <;> norm_num
+    interval_cases j <;> simp [mesh, planar, vtx, diagonals, Xrev1]
   have h0 := h Xrev1 hR
   rw [amp, triangulations_five] at h0
-  simp (config := {decide := true}) only [Finset.sum_insert, Finset.prod_insert, Finset.sum_singleton,
-    Finset.prod_singleton, Finset.mem_insert, Finset.mem_singleton] at h0
+  simp +decide only [Finset.sum_insert, Finset.prod_insert,
+    Finset.sum_singleton, Finset.prod_singleton, Finset.mem_insert, Finset.mem_singleton] at h0
   norm_num [Xrev1] at h0
 
-/-- Reviewer negative control 2: with a non-strict crossing test (diagonals sharing an endpoint
+/-- Negative control: with a non-strict crossing test (diagonals sharing an endpoint
 count as crossing), the "triangulations" of the pentagon would be wrong: none of the five genuine
 triangulations survives. Shows `Crosses` must be strict. -/
 def CrossesBad (p q : ℕ × ℕ) : Prop :=
@@ -1092,36 +1140,16 @@ theorem rev_negcontrol_crossing :
       ∀ p ∈ T, ∀ q ∈ T, ¬ CrossesBad p q)).card ≠ 5 := by
   decide
 
-/-- Reviewer sanity: the six-gon has Catalan(4) = 14 triangulations under the file's definition. -/
+/-- Sanity check: the six-gon has Catalan(4) = 14 triangulations under the file's definition. -/
 theorem rev_card_triangulations_six : (triangulations 6).card = 14 := by
   decide
 
-/-! ## R12-P1b additions -/
+/-! ## A non-vacuous instance at n = 7 -/
 
-/-- A concrete non-vacuous instance: the step-5 witness at `n = 7` satisfies every hypothesis of
+/-- A concrete non-vacuous instance: the witness of step 4 at `n = 7` satisfies every hypothesis of
 the `m = 1` theorem on `R_{2,1}` (`s = 3`), which then gives `A_7 = 0` there. -/
 example : amp 7 (wit 7 3) = 0 :=
   amp_eq_zero_m1 (k := 2) (by norm_num) (by norm_num) _ (wit_ne_zero (by norm_num) (by norm_num))
     (wit_onRect (n := 7) (s := 3) (by norm_num) (by norm_num))
 
-end R12P1
-
-#print axioms R12P1.amp_eq_zero_of_onRect
-#print axioms R12P1.onRect_inhabited
-#print axioms R12P1.amp_eq_F
-#print axioms R12P1.F_eq_sum
-#print axioms R12P1.mesh_telescope
-#print axioms R12P1.star
-#print axioms R12P1.F_factor
-#print axioms R12P1.amp_eq_zero_m1
-#print axioms R12P1.amp_rot
-#print axioms R12P1.onRect_rot
-#print axioms R12P1.mesh_adjacent
-#print axioms R12P1.triangulations_five
-#print axioms R12P1.X5w_onRect
-#print axioms R12P1.X5w_ne_zero
-#print axioms R12P1.negcontrol_minus_tile
-#print axioms R12P1.amp_five_rect11
-#print axioms R12P1.rev_negcontrol_no_hX
-#print axioms R12P1.rev_negcontrol_crossing
-#print axioms R12P1.rev_card_triangulations_six
+end PionCompleteness.TreeRectangleZero

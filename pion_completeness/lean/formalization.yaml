@@ -1,0 +1,1706 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/99c678e569c7c4c0772db297c5ddd5e4c9b6322e/schema/v0.4.schema.json
+# Generated from the companion paper's statements and metadata and from this project's
+# comparator.json, Verify.lean and Lean files; not edited by hand.
+version: v0.4
+project:
+  name: Completeness of the coordinate zeros of tree-level pion amplitudes
+  description: >-
+    A Lean 4 / Mathlib proof of the classification of the minimal coordinate zeros of the tree-level amplitudes
+    of pions, those of the non-linear sigma model (NLSM). For every even number n >= 6 of pions, the minimal sets
+    of Mandelstam invariants s_ab whose vanishing makes the flavor-ordered amplitude vanish identically, without
+    making a propagator vanish identically, are exactly the causal diamonds of the kinematic mesh (the hidden zeros)
+    and the T-separated sets, for T any set of at least three legs of one parity: the invariants s_ab of every two
+    legs a and b outside T that T separates. The formalization proves both parts of the classification: completeness
+    (every such zero contains a causal diamond or a T-separated set) and minimality (each of these sets is a zero,
+    and none stays one when one of its invariants is left free). The zeros on the causal diamonds, and on the T-separated
+    sets for |T| = 3 and for T a whole parity class, were known; completeness and the zeros for 4 <= |T| <= n/2
+    - 1 were not found in earlier work. The amplitude is the tree-level, flavor-ordered, massless amplitude in general
+    spacetime dimension, with the planar variables independent. Comparator checks the three compared statements
+    against a self-contained Challenge in the paper's terms.
+  authors:
+  - Henru Wang
+  responsible_maintainers:
+  - Henru Wang
+  license: Apache-2.0
+sources:
+- title: >-
+    Completeness of the coordinate zeros of tree-level pion amplitudes (Theorem 3.1 of the companion paper)
+  authors:
+  - Henru Wang
+  type: original-proof
+  relationship: other
+  author_endorsement: participated
+  note: >-
+    New here, as far as the literature search found: completeness (every regular coordinate zero contains a causal
+    diamond or a T-separated set) and the zeros on the T-separated sets with 4 <= |T| <= n/2 - 1; neither was found
+    in earlier work. Proved here, its novelty not searched: the minimality of every member. Known before: the zeros
+    on the causal diamonds, on the T-separated sets with |T| = 3, and with T a whole parity class (the sources below,
+    credited as such). First presented on 2026-09-29 by the first version of this formalization, released together
+    with an initial draft note (see related_formalizations and the draft below). The Lean proof is the first stable
+    artifact: the current Lean is close to that version at its core, while the companion paper below was written
+    afresh from the formalization and differs completely from the draft note. The research behind it is unpublished.
+- title: Completeness of the coordinate zeros of tree-level pion amplitudes (companion paper)
+  authors:
+  - Henru Wang
+  id: 'TODO: the companion paper''s identifier'
+  type: article
+  location: Theorem 3.1; Appendix A (the formalization); Section 'Tool and computational resource disclosure'
+  relationship: other
+  author_endorsement: participated
+  note: >-
+    The companion paper, written from this formalization and released with it. Its Appendix A says how the Lean
+    statements match the paper's and how to check them.
+- title: Completeness of the coordinate zeros of tree-level pion amplitudes (initial public draft)
+  authors:
+  - Henru Wang
+  id: https://github.com/jiggloo/public_proofs/tree/3c27d89b1cc873b5c2625a9dbbb45e8055f3e48b/pion_completeness
+  type: web post
+  location: pion-completeness-A.html, Theorem 3.1 (Theorem Π in the folder's README)
+  relationship: other
+  author_endorsement: participated
+  note: >-
+    Released on 2026-09-29 together with the first version of this formalization, an AI-written draft; superseded
+    by the companion paper.
+- title: Hidden zeros for particle/string amplitudes and the unity of colored scalars, pions and gluons
+  authors:
+  - Nima Arkani-Hamed
+  - Qu Cao
+  - Jin Dong
+  - Carolina Figueiredo
+  - Song He
+  id: arXiv:2312.16282
+  type: article
+  location: >-
+    §2.1 (the kinematic mesh); §3.2 (causal diamonds); §4 (zeros on causal diamonds); §7.4.1 (the analytic inputs)
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    The zeros on the causal diamonds are this paper's; the formalization proves them again as part of minimality.
+    The setup is taken from it and from arXiv:2401.05483: the amplitude's definition, the kinematic mesh, the causal
+    diamonds and the analytic inputs, which the formalization proves.
+- title: Nonlinear Sigma model amplitudes to all loop orders are contained in the Tr(Phi^3) theory
+  authors:
+  - Nima Arkani-Hamed
+  - Qu Cao
+  - Jin Dong
+  - Carolina Figueiredo
+  - Song He
+  id: arXiv:2401.05483
+  type: article
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    With arXiv:2312.16282, the definition of the amplitude and the analytic inputs, which the formalization proves.
+- title: From Hidden Zeros to Exact Splittings and New Zeros
+  authors:
+  - Yang Li
+  - Laurentiu Rodina
+  id: arXiv:2610.01775
+  type: article
+  location: §2.2 (regular linear zeros); §6.2 (zeros on other linear loci)
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    The notion of zero the theorem classifies is its regular linear zero restricted to coordinate loci, and the
+    amplitude's sign is its. Its zeros on loci that no set of invariants cuts out (§6.2) are outside the theorem.
+- title: Scattering Forms and the Positive Geometry of Kinematics, Color and the Worldsheet
+  authors:
+  - Nima Arkani-Hamed
+  - Yuntao Bai
+  - Song He
+  - Gongwang Yan
+  id: arXiv:1711.09102
+  type: article
+  location: §2.2
+  relationship: other
+  author_endorsement: not-contacted
+  note: The planar and mesh variables, as the formalization defines them (with arXiv:2312.16282 §2.1).
+- title: Causal diamonds, cluster polytopes and scattering amplitudes
+  authors:
+  - Nima Arkani-Hamed
+  - Song He
+  - Giulio Salvatori
+  - Hugh Thomas
+  id: arXiv:1912.12948
+  type: article
+  relationship: other
+  author_endorsement: not-contacted
+  note: The mesh picture of the planar variables as a grid, with arXiv:2312.16282.
+- title: Circles and triangles, the NLSM and Tr(Phi^3)
+  authors:
+  - Nima Arkani-Hamed
+  - Carolina Figueiredo
+  id: arXiv:2403.04826
+  type: article
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    With Kampf et al., the reading s_{i,j} = X_{i,j+1} that relates the amplitude to the NLSM Lagrangian's (Remark
+    2.7); that relation is cited, not formalized.
+- title: Smoothly splitting amplitudes and semi-locality
+  authors:
+  - Freddy Cachazo
+  - Nick Early
+  - Bruno Giménez Umbert
+  id: arXiv:2112.14191
+  type: article
+  location: §2 (the separated pairs); §4 (the zeros)
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    The zeros on the T-separated sets with |T| = 3 (split kinematics) are this paper's; the formalization proves
+    them again.
+- title: NLSM amplitudes from a quartic two-derivative theory
+  authors:
+  - Qu Cao
+  - Zhenqi Han
+  - Fan Zhu
+  id: arXiv:2607.27345
+  type: article
+  location: §IV.1
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    Observes the zeros on the T-separated sets with T a whole parity class; the formalization proves them again.
+    Its quartic Feynman rules fix the normalization of the amplitude.
+- title: Tree-level Amplitudes in the Nonlinear Sigma Model
+  authors:
+  - Karol Kampf
+  - Jiri Novotny
+  - Jaroslav Trnka
+  id: arXiv:1304.3048
+  type: article
+  location: §2.3.1; §4.2, eq. (62); the closed formulas at n = 4, 6, 8
+  relationship: other
+  author_endorsement: not-contacted
+  note: >-
+    The formalization transcribes its Cayley vertex and checks its closed formulas at n = 4, 6, 8 against the amplitude;
+    it has no Lagrangian (Remark 2.7).
+related_formalizations:
+- id: https://github.com/jiggloo/public_proofs/tree/3c27d89b1cc873b5c2625a9dbbb45e8055f3e48b/pion_completeness/lean
+  relationship: supersedes
+  note: >-
+    The first version of this formalization (toolchain v4.34.0-rc2), released 2026-09-29. This release is a port
+    of it: PROVENANCE.md records what changed and how it was checked.
+- id: https://github.com/GoldenPhysicsProject/GPPVerify/blob/7c139b04c0f9e42e4a621cedb4a49c980800dc37/GppVerify/CelestialHolography/HiddenZeros.lean
+  relationship: independent
+  note: >-
+    Hidden zeros of the Tr(phi^3) amplitude at n = 4, 5, 6 (arXiv:2312.16282), the amplitude written out by hand;
+    its docstring says the general causal-diamond statement is not formalized. No NLSM, no classification.
+- id: https://github.com/andrey-kokoev/marici/blob/cb0c25477b0b710fc1feb9dd5cc1e82e8ecdef6c/research/nima/lean/PolygonDissections.lean
+  relationship: independent
+  note: >-
+    The biadjoint (Tr(phi^3)) amplitude as a sum over triangulations of a polygon, with residue factorization; no
+    zeros, no NLSM. A parallel encoding of the amplitude this formalization also sums over triangulations.
+classification:
+  arxiv:
+  - hep-th
+  - hep-ph
+  - math.CO
+  msc2020:
+  - 81U20
+  - 81T18
+automation:
+  methods:
+  - method: agent
+    models:
+    - claude-opus-5-5
+    framework: Claude Code
+    tool_setup: >-
+      Research agents, review agents and Lean agents, run by the author in Claude Code; Lean 4 with Mathlib.
+    prompting_notes: >-
+      Research, September 2026: the result, its proof and the first version of this formalization (released 2026-09-29).
+      Some agents were asked to run Claude Fable 5.1 (claude-fable-5-1); their records show that almost all of their
+      requests were served by Claude Opus 5.5.
+  - method: agent
+    models:
+    - claude-opus-5-5
+    framework: Claude Code
+    tool_setup: >-
+      Port and paper agents; review agents of the same model reviewed each change; comparator run on the Challenge,
+      which CI builds.
+    prompting_notes: >-
+      October 2026: the port of the first version to a stable toolchain (PROVENANCE.md), the paper-form statements
+      and the Challenge, and the companion paper written from the formalization.
+  notes: >-
+    The agents made most of the research's choices. The author made the main decisions at the level of the project
+    (aims, scope, standards, the methods of production and checking) and chose among the agents' options in the
+    research. The author approved each change to the paper and to the Lean code after its automated checks had passed
+    and AI agents had reviewed it; in the research, from which the first version of the Lean code came, the author
+    approved the work the same way. Approval was a decision to accept a change, not a reading of it. Time and cost
+    are not reported: the research was a larger project, not one for this result. The companion paper's section
+    "Tool and computational resource disclosure" is the full account.
+status:
+  scope: >-
+    Theorem 3.1 of the companion paper (the classification, completeness and minimality) in the paper's terms, and
+    every definition, fact, lemma, proposition, theorem and corollary of the paper except Lemma F.8 (proved only
+    in the paper; the Lean code discharges its hypothesis another way).
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms:
+  - propext
+  - Classical.choice
+  - Quot.sound
+  main_results:
+  - declaration: PionCompleteness.Paper.NLSM.Zeros.every_coordinate_zero_contains_a_family_member
+    file: PionCompleteness/Paper.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    comparator_config: comparator.json
+  - declaration: PionCompleteness.Paper.NLSM.Zeros.family_members_are_minimal_zeros
+    file: PionCompleteness/Paper.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    comparator_config: comparator.json
+  - declaration: PionCompleteness.Paper.NLSM.Zeros.minimal_coordinate_zeros_are_the_list
+    file: PionCompleteness/Paper.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    comparator_config: comparator.json
+fidelity:
+  divergences: >-
+    The compared statements are in the paper's terms and match the paper's Theorem 3.1; the library proves its own
+    form and derives the paper's through proved equalities of the definitions. The amplitude is defined as the leading
+    coefficient of the shifted Tr(phi^3) amplitude (arXiv:2312.16282, arXiv:2401.05483); the formalization proves
+    its Feynman-rule form for every even n >= 4 (Corollary D.9) and Kampf et al.'s closed formulas at n = 4, 6,
+    8, while its identity with the NLSM Lagrangian's amplitude is cited, not formalized (Remark 2.7). Also not formalized:
+    the value of the sign in Remark F.17 (only that it is not zero), and Lemma F.8. The overall sign is that of
+    arXiv:2610.01775; arXiv:2312.16282 eqs. (4.4), (7.17) write the opposite one at n = 4, and no zero depends on
+    it. Out of scope: zeros on linear loci that no set of invariants cuts out (arXiv:2610.01775 §6.2), and four
+    spacetime dimensions, where the planar variables satisfy Gram-determinant relations.
+review:
+  status: agent-reviewed
+  reviewers:
+  - Claude Opus 5.5 (claude-opus-5-5) review agents
+  notes: >-
+    AI agents of the same model reviewed the research, each change to the Lean code and each change to the paper,
+    and compared the paper's statements and definitions with the Lean code. The author read and understood the main
+    theorem's statement and its definitions, and the idea and the map of its proof in the paper, but did not read
+    the Lean code. At this release no person had checked the proofs or compared the statements with the Lean code.
+    Lean's kernel checked every proof; comparator checks the Challenge's statements and copied definitions against
+    the proof.
+alignment:
+  note: >-
+    One entry per statement of the companion paper that names its Lean declarations or records how they differ,
+    in the paper's order, numbered as the paper prints them. Status proved or defined: the declarations state it
+    as the paper does. Proved-in-another-form or defined-in-another-form: they state another form, and the note
+    says how the forms differ and how they agree. Not-formalized: no declaration states it.
+  statements:
+  - source: Definition 2.1 (planar variables and mesh variables)
+    lean:
+    - PionCompleteness.TreeRectangleZero.diagonals
+    - PionCompleteness.TreeRectangleZero.planar
+    - PionCompleteness.TreeRectangleZero.mesh
+    - PionCompleteness.TreeRectangleZero.vtx
+    - PionCompleteness.PionZeros.oddDiagonals
+    - PionCompleteness.PionNLSM.shiftSign
+    - PionCompleteness.Pi.pkGQ
+    modules:
+    - PionCompleteness.Base.TreeRectangleZero
+    - PionCompleteness.Base.PionZeros
+    - PionCompleteness.Base.PionNLSM
+    - PionCompleteness.C4
+    status: defined-in-another-form
+    note: >-
+      Pi.pkGQ, the block sum, is minus the sum of the mesh variables over the numbers a < b of a finite set, adjacent
+      ones included, read modulo N; here U is a set of legs.
+  - source: Lemma 2.3 (the one relation)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.momentum_conservation_relation
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Definition 2.6 (the amplitudes)
+    lean:
+    - PionCompleteness.TreeRectangleZero.amp
+    - PionCompleteness.TreeRectangleZero.triangulations
+    - PionCompleteness.TreeRectangleZero.IsTriangulation
+    - PionCompleteness.TreeRectangleZero.Crosses
+    - PionCompleteness.PionNLSM.delta
+    - PionCompleteness.PionNLSM.shifted
+    - PionCompleteness.PionNLSM.shiftCoeff
+    - PionCompleteness.PionNLSM.NLSM
+    modules:
+    - PionCompleteness.Base.TreeRectangleZero
+    - PionCompleteness.Base.PionNLSM
+    status: defined-in-another-form
+    note: >-
+      amp and NLSM are defined over any field, at every point, where 1/0 reads as 0; the paper's are the rational
+      functions, which the Lean's are at the generic point (gen). NLSM is defined for every N, with no hypothesis
+      that N is even; the statements that use it assume it. The Laurent series is in e = 1/delta: shiftCoeff takes
+      the coefficient of e^(N-2) in amp over the field of Laurent series.
+  - source: Remark 2.7 (the Lagrangian amplitude)
+    lean:
+    - PionCompleteness.Pi.nlsm_four_knt
+    - PionCompleteness.Pi.nlsm_six_knt
+    - PionCompleteness.Pi.nlsm_eight_knt
+    modules:
+    - PionCompleteness.Conventions
+    status: proved-in-another-form
+    note: >-
+      The three declarations prove the relation at n = 4, 6, 8 with M_n the closed formulas of the cited paper (n
+      = 8 off the poles), which that paper computed with the Feynman rules of the minimal parametrization; for every
+      n the Lean proves the first step below (Corollary D.9).
+  - source: Fact 2.8 (analytic inputs)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.analytic_facts_delta_order
+    - PionCompleteness.Paper.NLSM.Amplitude.analytic_facts_factorisation
+    - PionCompleteness.Paper.NLSM.Amplitude.analytic_facts_symmetry
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states homogeneity pointwise, over every field, for c not zero and at points where no odd chord vanishes,
+      and the rotations over every field and for every number of steps: both stronger, the paper's forms their instances
+      at the generic point. The factorization is stated as the vanishing of the difference on the hyperplane (RatZeroOn),
+      the children relabeled by relab, as here.
+  - source: Definition 2.11 (coordinate loci, regular sets and zeros)
+    lean:
+    - PionCompleteness.ChainSlice.OnLocus
+    - PionCompleteness.Paper.NLSM.Zeros.IsRegularSet
+    - PionCompleteness.PionNLSM.RatZeroOn
+    - PionCompleteness.Paper.NLSM.Zeros.IsCoordinateZero
+    - PionCompleteness.Paper.NLSM.Zeros.IsRegularCoordinateZero
+    - PionCompleteness.Paper.ratZeroOn_add
+    modules:
+    - PionCompleteness.Base.ChainSlice
+    - PionCompleteness.Paper
+    - PionCompleteness.Base.PionNLSM
+    status: defined-in-another-form
+    note: >-
+      The Lean reads a polynomial vanishing identically on the locus as vanishing at every rational point of it,
+      which is the same over the rationals; RatZeroOn is defined for any set of points. In Lean a set of pairs is
+      a subset of diagonals N: OnLocus, IsRegularSet and IsCoordinateZero do not assume it; IsRegularCoordinateZero
+      does. The Lean's points are functions on all pairs of numbers, not only on the chords; the planar variables
+      and the amplitude read only the chords, so the other coordinates are free on the locus and change nothing.
+      IsCoordinateZero has no hypothesis that N is even; the statements assume it. That the sum of two rational
+      functions that vanish identically on a linear subspace vanishes identically on it is Paper.ratZeroOn_add;
+      that the definition does not depend on the choice of the numerator and the denominator is not a Lean statement.
+      The library's proofs use the pointwise forms ChainSlice.Nondeg and Pi.IsNDZero, the latter through Pi.AmpZeroOn,
+      for the amplitude times minus one to the power N/2 - 1, at the points at which no odd chord vanishes. They
+      are equal to the forms here by Paper.NLSM.Zeros.isRegularSet_iff_nondeg and Paper.NLSM.Zeros.isRegularCoordinateZero_iff_isNDZero.
+  - source: Lemma 2.13 (zeros pointwise)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.isCoordinateZero_iff_pointwise
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Definition 2.14 (minimal zero)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.IsMinimalCoordinateZero
+    modules:
+    - PionCompleteness.Paper
+    status: defined
+  - source: Remark 2.16 (why minimal zeros)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.isCoordinateZero_of_subset
+    - PionCompleteness.Paper.NLSM.Zeros.exists_minimal_coordinate_zero_subset
+    - PionCompleteness.Paper.NLSM.Zeros.isCoordinateZero_iff_contains_minimal
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The momentum language is not Lean's. The Lean states the three steps for a set S of pairs, with N even and
+      at least 4 where a zero is read pointwise, as in Lemma 2.13: a regular S, inside diagonals N, is a zero if
+      a zero Z inside it is (isCoordinateZero_of_subset), a regular coordinate zero contains a minimal one (exists_minimal_coordinate_zero_subset),
+      and so a regular S is a zero exactly when it contains a minimal one (isCoordinateZero_iff_contains_minimal).
+  - source: Definition 2.17 (separated pairs)
+    lean:
+    - PionCompleteness.Pi.sepPairs
+    - PionCompleteness.PionZeros.InST
+    modules:
+    - PionCompleteness.C0
+    - PionCompleteness.Base.PionZeros
+    status: defined-in-another-form
+    note: >-
+      Pi.sepPairs is the set of the pairs that PionZeros.InST picks: both legs outside G, a leg of G strictly between
+      them and a leg of G outside them. That is the second form of the definition. Pi.sepPairs takes any finite
+      set of numbers; here G is a set of legs.
+  - source: Remark 2.19 (separated pairs in momentum language)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.separated_pairs_eq_blocks
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.separated_pairs_block_tile
+    - PionCompleteness.Paper.Combinatorics.Polygons.nextCut
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The momentum language and the cited zeros are not Lean's. The Lean names each arc by the leg of G before it:
+      the gap after a leg g of G is the legs vtx N i for g < i < nextCut N G g, numbered past N where it wraps around.
+      S_G is the union, over legs g < h of G, of the tiles c(i, j) with i in the gap after g and j in the gap after
+      h: the image under tlab of a product of two ranges of integers with i < j < i + N, the form in which ChainSlice.diamond
+      writes a causal diamond; an empty gap gives an empty block. That such a range of tiles is a rectangular block
+      in the picture is the mesh's layout (Definition 2.1), not a Lean statement.
+  - source: Definition 2.20 (causal diamonds)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.IsCausalDiamond
+    - PionCompleteness.ChainSlice.diamond
+    - PionCompleteness.TreeRectangleZero.OnRect
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.separated_pairs_of_two_legs_eq_diamond
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.Base.ChainSlice
+    - PionCompleteness.Base.TreeRectangleZero
+    status: defined-in-another-form
+    note: >-
+      IsCausalDiamond states it, for legs a < b, with "the set of the two legs has two arcs" as a leg strictly between
+      a and b and a leg outside them. The library's proofs use two other forms. ChainSlice.diamond, the diamond
+      anchored at a chord, is a causal diamond written as a range of tiles, not as separated pairs: anchored at
+      the chord of the two legs after a and b, it is the causal diamond of a and b. For legs a < b, Paper.Amplitudes.Kinematics.Mesh.separated_pairs_of_two_legs_eq_diamond
+      states that it is the set of their separated pairs, with the anchor written with the number n + 1 when b =
+      n. Anchored instead at the chord of the legs 1 and a + 1, the same tiles for the legs a and n are not a Lean
+      statement. TreeRectangleZero.OnRect, the hypothesis of the Lean's diamond zero, takes the number of legs between
+      a and b and the leg after a, and is the coordinate locus of the causal diamond of a and b. That it lies in
+      the locus of the separated pairs is Pi.pkL_onLocus_anchor; the converse is ChainSlice.onRect_of_diamond, stated
+      for ChainSlice.diamond anchored at a chord, so not for the legs a and n. Pi.IsMixedAnchor picks out the causal
+      diamonds anchored at an odd planar variable.
+  - source: Definition 2.21 (T-separated sets and the list)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.IsListMember
+    - PionCompleteness.Pi.gFamily
+    - PionCompleteness.PionZeros.OnZT
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.C0
+    - PionCompleteness.Base.PionZeros
+    status: defined-in-another-form
+    note: >-
+      IsListMember states the list, with the T-separated sets for |T| at least three written out: the Lean has no
+      definition of a T-separated set of its own. The library's list gFamily, which its proofs use, is the second
+      form in Lemma 2.22; the two forms are equal for even N by Paper.NLSM.Zeros.Families.isListMember_iff_mem_gFamily.
+      gFamily needs even N: for odd N it contains the empty set (the test PaperTests.empty_mem_gFamily_of_odd).
+      The Lean's other form of the T-separated locus, OnZT, equals the coordinate locus of the separated pairs for
+      T a subset of the legs (Paper.onZT_iff_onLocus_sepPairs). sepPairs accepts any set of numbers; the paper's
+      G is a set of legs.
+  - source: Lemma 2.22 (the list's second form)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.isListMember_iff_mem_gFamily
+    - PionCompleteness.Paper.Combinatorics.Polygons.opposite_parity_gaps_even
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      That both corners of a causal diamond of opposite-parity legs are odd chords is part of opposite_parity_gaps_even,
+      for legs a < b whose set has two arcs, with the corner at the legs a + 1, b + 1 written tlab N (a + 1) (b
+      + 1) (for b = N it is the chord (1, a + 1)).
+  - source: Example 2.23 (the list at eight legs)
+    lean:
+    - PionCompleteness.PaperTests.list_eight_card
+    modules:
+    - PionCompleteness.PaperTests
+    status: proved-in-another-form
+    note: >-
+      The Lean states the count only (list_eight_card, through the library's count of gFamily 8); the breakdown
+      into kinds and the members named are not Lean statements.
+  - source: Remark 2.24 (the list and parity)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.one_parity_iff_gaps_odd
+    - PionCompleteness.Paper.Combinatorics.Polygons.opposite_parity_gaps_even
+    - PionCompleteness.Paper.NLSM.Zeros.Families.subset_pair_of_causal_diamond_subset
+    - PionCompleteness.Paper.NLSM.Zeros.Families.no_causal_diamond_in_separated_pairs
+    - PionCompleteness.Paper.Combinatorics.Polygons.nextCut
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The momentum language and the physics reasoning from the symmetry are not Lean's; the zeros on the causal
+      diamonds are Theorem 2.29 with Proposition I.1 (b). The Lean writes the gap after a leg g of G with nextCut
+      N G g, the next leg of G cyclically, numbered past N where the gap wraps around: the gap holds nextCut N G
+      g - g - 1 legs. That the arcs of G are its non-empty gaps is read from the definitions, not a Lean statement;
+      separated_pairs_eq_blocks writes S_G through the gaps. One parity iff every gap odd is one_parity_iff_gaps_odd,
+      for N even; the even arcs of two legs of opposite parity and the odd corners are opposite_parity_gaps_even,
+      for legs a < b whose set has two arcs; the containment is subset_pair_of_causal_diamond_subset, stated for
+      such legs a, b, and its consequence for |T| >= 3 is no_causal_diamond_in_separated_pairs, for any set T of
+      at least three legs.
+  - source: Lemma 2.25 (T-separated sets are regular)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.t_separated_locus_nondegenerate
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Lemma 2.26 (causal diamonds are regular)
+    lean:
+    - PionCompleteness.TreeRectangleZero.onRect_inhabited
+    - PionCompleteness.Pi.pkL_onLocus_anchor
+    modules:
+    - PionCompleteness.Base.TreeRectangleZero
+    - PionCompleteness.C0
+    status: proved-in-another-form
+    note: >-
+      No single Lean declaration states it. onRect_inhabited gives, for the Lean's OnRect n k m (the coordinate
+      locus of the causal diamond of a = m - 1 and b = m + k, see Definition 2.20), a rational point at which every
+      planar variable is non-zero; pkL_onLocus_anchor puts that point on the coordinate locus of the separated pairs
+      of a and b. The Lean composes the two this way in cl2a_nondeg, for the causal diamonds anchored at an odd
+      planar variable, and uses onRect_inhabited in amp_ratZero_onRect. Written with a < b, the hypotheses of onRect_inhabited
+      (k = b - a - 1 at least 1, k + 3 at most N, m = a + 1 between 1 and N) say exactly that a + 2 is at most b
+      and (a, b) is not (1, N), that is, that a and b are not adjacent. Neither lemma has a parity hypothesis, and
+      both hold for N at least 4; nonDeg_of_pt turns the point into the per-chord form.
+  - source: Theorem 2.27 (T-separated zeros)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.t_separated_zero
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Theorem 2.29 (the cubic amplitude vanishes on causal diamonds)
+    lean:
+    - PionCompleteness.PionNLSM.amp_ratZero_onRect
+    modules:
+    - PionCompleteness.Base.PionNLSM
+    status: proved-in-another-form
+    note: >-
+      The Lean indexes a causal diamond by k, the number of legs between a and b, and m = a + 1: OnRect n k m is
+      the coordinate locus of the causal diamond of a = m - 1 and b = m + k. The Lean states the zero on OnRect
+      n k m. That the rectangle locus lies in the locus of the diamond is pkL_onLocus_anchor (1 <= a, a + 2 <= b
+      <= n). The converse is onRect_of_diamond, stated for ChainSlice.diamond at the chord (a + 1, b + 1), so for
+      b < n only: for the causal diamonds of a leg a and the leg n it is not a Lean statement. Those diamonds are
+      rotations of the others.
+  - source: Lemma 2.31 (zeros on skinny rectangles)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.single_leg_locus
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Theorem 3.1 (main theorem)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.every_coordinate_zero_contains_a_family_member
+    - PionCompleteness.Paper.NLSM.Zeros.family_members_are_minimal_zeros
+    - PionCompleteness.Paper.NLSM.Zeros.minimal_coordinate_zeros_are_the_list
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Remark 3.3 (the theorem in physics terms)
+    lean:
+    - PionCompleteness.PaperTests.example_pole_free_locus_six
+    - PionCompleteness.PaperTests.example_pole_free_locus_six_rational
+    modules:
+    - PionCompleteness.PaperTests
+    status: proved-in-another-form
+    note: >-
+      The momentum language is not Lean's; the rest restates the results cited. The Lean states the example at N
+      = 6: S is a candidate set without residue chords (poleChords is empty), and on its locus NLSM_6 = E (pkGE)
+      at every rational point at which no odd chord vanishes; as rational functions on the locus, NLSM_6 - E restricts
+      to zero (example_pole_free_locus_six_rational, RatZeroOn, the form of a zero), with E written at the generic
+      point.
+  - source: Definition 4.1 (missing set)
+    lean:
+    - PionCompleteness.Pi.missing
+    - PionCompleteness.Pi.Mee
+    - PionCompleteness.Pi.Moo
+    modules:
+    - PionCompleteness.C0
+    status: defined-in-another-form
+    note: >-
+      y_P and y(h) are notation, unfolded in the Lean statements: y_P is mesh N X P.1 P.2 at a point X with OnLocus
+      N S X, y(h) a sum of these.
+  - source: Definition 4.4 (candidate sets)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.IsCandidateSet
+    modules:
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      IsCandidateSet N S also requires S to be a subset of diagonals N, the Lean's set of pairs, which the paper's
+      "set of pairs" says. The library's form InFpi, which its proofs use, is equal for even N by isCandidateSet_iff_inFpi.
+  - source: Definition 4.7 (sides, flank sets and the flank overlap)
+    lean:
+    - PionCompleteness.Pi.oddSide
+    - PionCompleteness.Pi.evenSide
+    - PionCompleteness.Pi.odds
+    - PionCompleteness.Pi.evens
+    - PionCompleteness.Pi.oddSideSplit
+    - PionCompleteness.Pi.evenSideSplit
+    - PionCompleteness.Pi.hitSet
+    - PionCompleteness.Pi.minRect
+    - PionCompleteness.Paper.Combinatorics.Polygons.odd_chord_sides
+    modules:
+    - PionCompleteness.C0
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      The Lean writes a pair as (a, b) with a < b: minRect is the image of evens(A_P) x odds(B_P) under sorting.
+      odd_chord_sides states that both sides have odd size at least 3 and that a chord is determined by its odd-ended
+      side; the end-leg parities and P = (a, a'+1) are read from the definitions of oddSide and evenSide.
+  - source: Theorem 4.10 (the chord formula)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.chord_formula
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Proposition 4.12 (candidate sets are transversals)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.candidate_sets_are_transversals
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: A set of pairs is a subset of diagonals N.
+  - source: Lemma 4.14 (the parity form on a candidate locus)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.parity_form_nonvanishing
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states "E does not vanish identically on L_S" as a point of L_S at which E is not zero, equivalent
+      for a linear form over the rationals.
+  - source: Remark 4.16 (the first-order term in physics terms)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.parity_form_vanishes_iff_contains_whole_parity
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.parity_form_vanishes_on_member_iff
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.whole_parity_members
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The physics vocabulary rests on the cited units; the candidate sets are Lemma 4.14. The Lean states, for N
+      even and at least 4: for a set S of pairs, E (pkGE) vanishes at every point of the locus of S iff S contains
+      S_T for T the odd legs or for T the even legs (parity_form_vanishes_iff_contains_whole_parity); for a member
+      Z of the list, iff Z is one of these two (parity_form_vanishes_on_member_iff); and these two are the sets
+      of all ee pairs and of all oo pairs (whole_parity_members).
+  - source: Definition 4.17 (on-shell and residue chords; the same-parity sublocus)
+    lean:
+    - PionCompleteness.Pi.innerEE
+    - PionCompleteness.Pi.innerOO
+    - PionCompleteness.Pi.cleanChords
+    - PionCompleteness.Pi.poleChords
+    - PionCompleteness.Pi.pkGSame
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.on_shell_iff_flank_sets_share_no_missing_pair
+    modules:
+    - PionCompleteness.C0
+    - PionCompleteness.C4
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      The same-parity sublocus is OnLocus N (S union pkGSame N); on_shell_iff_flank_sets_share_no_missing_pair states
+      the "equivalently" of the on-shell chords.
+  - source: Definition 5.1 (even-angulations and their faces)
+    lean:
+    - PionCompleteness.Pi.pkGDis
+    - PionCompleteness.TreeRectangleZero.Crosses
+    - PionCompleteness.Paper.Combinatorics.Polygons.IsFace
+    - PionCompleteness.Paper.Combinatorics.Polygons.faces
+    - PionCompleteness.Paper.Combinatorics.Polygons.sideStart
+    - PionCompleteness.Paper.Combinatorics.Polygons.oddStartLegs
+    - PionCompleteness.Paper.Combinatorics.Polygons.chordSides
+    modules:
+    - PionCompleteness.C4
+    - PionCompleteness.Base.TreeRectangleZero
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      A chord is written (i, j) with i < j; Separates says that one vertex lies strictly inside the chord and the
+      other strictly outside. The edge a leg lies on is sideStart, the last vertex of the face at or before the
+      leg (the closing edge for a leg before the first vertex), so the legs an edge carries are read from sideStart;
+      U_f is oddStartLegs. The chord edges are chordSides, the chords of Gamma with both ends on the face.
+  - source: Definition 5.3 (Cayley vertices and the Cayley sum)
+    lean:
+    - PionCompleteness.Paper.NLSM.FeynmanRules.faceVertex
+    - PionCompleteness.Paper.NLSM.FeynmanRules.cayleySum
+    modules:
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      faceVertex and cayleySum are defined over any field; the paper's are the rational functions, which the Lean's
+      are at the generic point (cayley_form). The block sum is written as the sum of -c(a, b) over a < b in U_f.
+  - source: Theorem 5.4 (the Cayley form)
+    lean:
+    - PionCompleteness.Paper.NLSM.FeynmanRules.cayley_form
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Theorem 5.5 (the first-order regime)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.nonvanishing_without_residue_chords
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the conclusion pointwise (NonzeroOn): a rational point of L_S at which no odd chord vanishes
+      and the amplitude is not zero, which implies the paper's form; the proof below gives such a point.
+  - source: Definition 6.1 (separators, linked sides and flank classes)
+    lean:
+    - PionCompleteness.Pi.admSeps
+    - PionCompleteness.Pi.intArc
+    - PionCompleteness.Pi.cycArc
+    - PionCompleteness.Pi.sepIn
+    - PionCompleteness.Pi.NoFreeSep
+    - PionCompleteness.Pi.goodTail
+    - PionCompleteness.Pi.IsInnermostChord
+    - PionCompleteness.Pi.hitClass
+    modules:
+    - PionCompleteness.C0
+    status: defined-in-another-form
+    note: >-
+      The Lean writes an arc as its first leg and its size (cycArc, positions cycPos), the sides A_P and B_P as
+      headStart, headLen and tailStart, tailLen (the same sets as oddSide, evenSide), and the separator parity as
+      q = 0 for A_P and q = 1 for B_P. sepIn asks for a leg of the separator strictly between the two legs by position
+      along the arc. A linked side is NoFreeSep, the residue chords with a linked even-ended side are goodTail,
+      an innermost chord is IsInnermostChord, the flank class is hitClass. Top and bottom are written out in the
+      statement of flank_class_top_and_bottom.
+  - source: Corollary 6.3 (an innermost chord exists)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.innermost_chord_exists
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states residue chords as poleChords N S nonempty, and the first conclusion as goodTail N S nonempty.
+  - source: Proposition 6.4 (top and bottom)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.flank_class_top_and_bottom
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states P* in goodTail N S, the class as hitClass N S P*, a linked odd-ended side as NoFreeSep N S
+      (headStart b) (headLen N b) 0, and top and bottom written out.
+  - source: Definition 6.6 (the children of an odd chord)
+    lean:
+    - PionCompleteness.PionNLSM.relab
+    - PionCompleteness.Pi.ChildPairIn
+    - PionCompleteness.Pi.childSetA
+    - PionCompleteness.Pi.pkRBChildB'
+    modules:
+    - PionCompleteness.Base.PionNLSM
+    - PionCompleteness.C0
+    - PionCompleteness.C8
+    status: defined-in-another-form
+    note: >-
+      The Lean writes the child's planar variables as X composed with relab N s, s the first leg of the side (headStart
+      for the A-child, tailStart for the B-child), and the child set as the pairs of the child's legs that satisfy
+      ChildPairIn, the new leg being the last child leg: childSetA for the A-child, pkRBChildB' for the B-child.
+      The Lean's childSetB is the B-child set with the legs numbered from the new leg, the same set rotated by one
+      leg (pkR_b_childB_rot).
+  - source: Proposition 6.8 (the children)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.children_of_odd_chord_locus
+    - PionCompleteness.Paper.NLSM.Zeros.children_of_odd_chord_size
+    - PionCompleteness.Paper.NLSM.Zeros.children_of_odd_chord_linked
+    - PionCompleteness.Paper.NLSM.Zeros.children_of_odd_chord_flank_class
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states (1) and the onto statements of (4) as two inclusions each, a point of the child's locus being
+      matched on the child's chords. For the B-child, (3) and the hypothesis of (4)'s last statement are stated
+      for childSetB, the child set with the legs numbered from the new leg, which is the paper's child set rotated
+      by one leg (pkR_b_childB_rot); the conclusions of (1) and (4) use the paper's numbering. The hypothesis of
+      (4)'s last statement is NonzeroOn of the child set. A set of pairs is a subset of diagonals N. (2) and (3)
+      are stated for every odd chord P, not only for a residue chord: their proofs use only that P is odd.
+  - source: Definition 6.12 (no pole along a hyperplane; hypotheses of the class residue)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.HasNoPoleAlong
+    - PionCompleteness.Paper.NLSM.Amplitude.RestrictsToZeroAlong
+    - PionCompleteness.Paper.NLSM.Amplitude.FlankClassPoleHypotheses
+    - PionCompleteness.Paper.NLSM.Amplitude.residueHyperplane
+    - PionCompleteness.Paper.NLSM.Amplitude.childAmpB
+    - PionCompleteness.Paper.NLSM.Amplitude.childAmpA
+    modules:
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      The Lean states that G does not vanish identically on H as a point of H at which G is not zero, and that F
+      vanishes identically on H as F being zero at every point of H; over the rationals these are the same. FlankClassPoleHypotheses
+      also records that K consists of odd chords, which follows from (H3). Two generalizations: HasNoPoleAlong and
+      RestrictsToZeroAlong take any sets V and H, not only linear subspaces, and FlankClassPoleHypotheses does not
+      contain that N >= 6 is even; the theorems that use it assume that separately.
+  - source: Lemma 6.13 (the hypotheses for an innermost chord)
+    lean:
+    - PionCompleteness.Paper.flank_class_pole_hypotheses_innermost
+    - PionCompleteness.Paper.odd_chord_outside_class_nonvanishing_on_hyperplane
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states (a) with the innermost chord as IsInnermostChord, its flank class as hitClass and the linked
+      odd-ended side as NoFreeSep, and (b)'s conclusion as a point of H at which the planar variable is not zero.
+      (b) holds in the Lean for every N: it assumes only the hypotheses of the class residue, which do not contain
+      that N >= 6 is even.
+  - source: Lemma 6.15 (rules for restrictions)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.HasNoPoleAlong.add
+    - PionCompleteness.Paper.NLSM.Amplitude.HasNoPoleAlong.mul
+    - PionCompleteness.Paper.NLSM.Amplitude.RestrictsToZeroAlong.add
+    - PionCompleteness.Paper.NLSM.Amplitude.RestrictsToZeroAlong.sum
+    - PionCompleteness.Paper.NLSM.Amplitude.RestrictsToZeroAlong.mul
+    - PionCompleteness.Paper.restrictsToZeroAlong_of_ratZeroOn
+    - PionCompleteness.Paper.restrictsToZeroAlong_of_eq
+    - PionCompleteness.Paper.hasNoPoleAlong_const
+    - PionCompleteness.Paper.NLSM.Amplitude.RestrictsToZeroAlong.congr
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the rules one by one, with the paper's W named V. Each rule takes only the hypotheses it needs,
+      and none assumes that H lies in V. (a) is HasNoPoleAlong.add, HasNoPoleAlong.mul, RestrictsToZeroAlong.add,
+      RestrictsToZeroAlong.sum and RestrictsToZeroAlong.mul, for V and H linear subspaces (pkRSub). (b) is restrictsToZeroAlong_of_ratZeroOn,
+      for H not empty; restrictsToZeroAlong_of_eq, with the denominator 1 for the planar variable, for 0 in V and
+      H not empty; and hasNoPoleAlong_const, for V a linear subspace and H not empty. (c) is RestrictsToZeroAlong.congr,
+      for V a linear subspace. The Lean has no object for the restriction to H, so the second claim of (a), that
+      restrictions add and multiply, is not a Lean statement.
+  - source: Theorem 6.16 (the class residue)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.simple_pole_along_flank_class
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Lemma 6.18 (the base case)
+    lean:
+    - PionCompleteness.Pi.pkM_base4
+    modules:
+    - PionCompleteness.C4
+    status: proved-in-another-form
+    note: >-
+      The Lean states the conclusion pointwise for every candidate set (NonzeroOn 4 S): a rational point of the
+      locus at which no odd chord vanishes and the amplitude is not zero; for a regular set this is the paper's
+      form, by Lemma 2.13, and the proof below gives the point. The Lean does not state that the empty set is a
+      candidate set, nor that every candidate set is empty. A candidate set is the library's InFpi, equal to the
+      paper's form for even N by isCandidateSet_iff_inFpi.
+  - source: Proposition 7.1 (the bottom exists)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.innermost_class_has_linked_member
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the innermost chord as IsInnermostChord N S P*, the flank class as hitClass N S P* and a linked
+      odd-ended side as NoFreeSep N S (headStart b) (headLen N b) 0. It is bot_of_evenTop applied to evenTop (Lemma
+      G.5).
+  - source: Definition 7.3 (three cuts of a circle)
+    lean:
+    - PionCompleteness.Pi.ThreeSepSetting
+    - PionCompleteness.Pi.threeSepCut
+    - PionCompleteness.Pi.IsRun
+    - PionCompleteness.Pi.AdmSepCompl
+    - PionCompleteness.Pi.TailAvoiding
+    - PionCompleteness.Pi.runSepA
+    modules:
+    - PionCompleteness.C0
+    status: defined-in-another-form
+    note: >-
+      ThreeSepSetting N omega x0 x1 y0 y1 Theta tau sigma states the hypotheses: the runs by IsRun (an interval
+      of [1, omega] off Theta whose neighbors are in Theta or outside [1, omega]), the admissible separators by
+      AdmSepCompl (intCompl is the interior of B_Z, prevLeg the leg g_0 - 1), avoiding W by TailAvoiding, reaching
+      by InST, the predicate of sepPairs (S_G, as in Definition 2.17). threeSepCut is the union of the three cuts
+      as pairs (a, b) with a < b, not adjacent (diagonals N); the first cut is runSepA. Theta, tau and sigma are
+      sets of numbers, sets of legs by the hypotheses.
+  - source: Theorem 7.4 (the three-cut theorem)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.three_separators_single_parity_arc_witness
+    - PionCompleteness.Pi.ConsecWit
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.C0
+    status: proved-in-another-form
+    note: >-
+      ConsecWit N Theta tau sigma G says that G has at least two elements and is the intersection of evens(Theta
+      union tau union sigma) or of odds(tau union sigma) with a cyclic interval cycArc N a len, for a leg a and
+      0 <= len <= N; odds(tau union sigma) are the odd legs of Theta union tau union sigma, as Theta is even.
+  - source: Definition 7.6 (runs of an even separator; reaching separators)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.IsRunOf
+    - PionCompleteness.Paper.Combinatorics.Polygons.IsOccupiedRun
+    - PionCompleteness.Paper.Combinatorics.Polygons.IsSpread
+    - PionCompleteness.Paper.Combinatorics.Polygons.reachPiece
+    modules:
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      IsRunOf N s L Theta Z says that Z is a run of L minus Theta for the arc L with first leg s (SameRun: no leg
+      of Theta between two legs by position along the arc). IsOccupiedRun asks for a pair of Moo N S with both legs
+      in Z, IsSpread for two different occupied runs. reachPiece N P Q tau is R_tau: it reads the arc of A_Q union
+      tau at the leg after the first leg of B', an interior leg of B', as the run of B_Q minus tau through it, and
+      adds tau when tau is a single even leg. The Lean states "not reaching" as y_0 not in Icc 1 N minus reachPiece
+      N P Q tau (the hypothesis hnr of Lemma G.4), that is y_0 in R_tau; reaching is y_0 not in R_tau. "Before along
+      A'" is by positions from the first leg of A' (cycPos).
+  - source: Proposition 8.1 (minimality from completeness)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.minimality_from_containment
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Lemma B.1 (block sums)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.block_sums
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean's Q_U is pkGQ, a sum of -c(a, b) over a < b in U, the legs 1 and N included (c is symmetric and read
+      modulo N); its first clause is c(a, a+1) = -X(a, a+2). The symmetry of c and c(a, a) = 0 are not clauses of
+      block_sums: they follow from the definitions. In (e) the flank overlap is minRect N P, as in Definition 4.7.
+  - source: Corollary B.2 (coordinates on a locus)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.locus_coordinates
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states "onto" as "into" and "onto", and a linear form f on the planar variables as a coefficient
+      vector on the chords.
+  - source: Proposition B.3 (the flank sets of a chord)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.flank_sets_of_odd_chord
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean writes a pair as (a, b) with a < b, so each product U x Theta is the sorted pairs of U x Theta and
+      Theta x U.
+  - source: Lemma B.4 (three skinny rectangles)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.three_row_zeros
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Definition C.1 (quartic diagrams)
+    lean:
+    - PionCompleteness.PionZeros.IsQuadrangulation
+    - PionCompleteness.PionZeros.quadrangulations
+    - PionCompleteness.PionZeros.Quad
+    - PionCompleteness.PionZeros.quads
+    - PionCompleteness.PionZeros.IsPlus
+    - PionCompleteness.PionZeros.plusPair
+    - PionCompleteness.PionZeros.vnum
+    - PionCompleteness.PionZeros.diagram
+    - PionCompleteness.PionZeros.Qpi
+    - PionCompleteness.PionZeros.vnum_eq_vnumX
+    modules:
+    - PionCompleteness.Base.PionZeros
+    status: defined
+  - source: Lemma C.2 (structure of the diagram sum)
+    lean:
+    - PionCompleteness.Paper.NLSM.FeynmanRules.quartic_diagram_sum_structure
+    - PionCompleteness.PionZeros.p3b_face_quad
+    - PionCompleteness.PionZeros.p3b_eq_of_base
+    - PionCompleteness.PionZeros.p3b_qf
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.Base.PionZeros
+    status: proved-in-another-form
+    note: >-
+      The paper-form declaration states the counts of (i) and that each vertex factor is a homogeneous linear polynomial,
+      but not the quads below the chords: p3b_face_quad (existence), p3b_eq_of_base (uniqueness) and p3b_qf (every
+      quad's edge u1 u4 is a chord of the set or the edge 1 N). It states homogeneity pointwise, over every field,
+      for c not zero and at points where no odd chord vanishes: stronger, the paper's form its instance at the generic
+      point. The factorization is stated as the vanishing of the difference on the hyperplane (RatZeroOn), the children
+      relabeled by relab, with pi_L = (pi + i + 1) mod 2 and pi_R = (pi + j + 1) mod 2, as here.
+  - source: Lemma C.3 (a good quad exists)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.quadrangulation_has_good_quad
+    - PionCompleteness.PionZeros.Meets
+    - PionCompleteness.PionZeros.GoodQ
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.Base.PionZeros
+    status: proved-in-another-form
+    note: >-
+      quadrangulation_has_good_quad states the lemma. The words the lemma defines are the library's definitions:
+      live is Meets, and good is GoodQ, whose condition that a side is a plus side exactly when it is not live says
+      that the two minus slots are live and the two plus slots are not.
+  - source: Lemma C.4 (the good vertex factor vanishes)
+    lean:
+    - PionCompleteness.Paper.NLSM.FeynmanRules.good_vertex_factor_vanishes
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Theorem C.5 (every diagram vanishes)
+    lean:
+    - PionCompleteness.Paper.NLSM.FeynmanRules.diagrams_vanish_on_t_separated_locus
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Theorem C.6 (the quartic rules give the NLSM amplitude)
+    lean:
+    - PionCompleteness.Paper.NLSM.FeynmanRules.quartic_rules_give_nlsm
+    - PionCompleteness.PionNLSM.theoremB_rat
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.Base.PionNLSM
+    status: proved-in-another-form
+    note: The library form theoremB_rat writes the sign as sigma N = (-1)^(N/2+1), which is the same.
+  - source: Lemma D.1 (the faces of an even-angulation)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.dissections
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean lemma dissections states (a) and (c): the face count, and for every face at least four and an even
+      number of vertices, consecutive vertices (the last and the first included) at an odd distance. (b), (d) and
+      (e) are not separate Lean statements: the Lean reads the edges of a face through sideStart and chordSides
+      and proves its lemmas on its own encoding of the faces by root sides (isFace_iff, faces_eq_image).
+  - source: Lemma D.2 (odd chords on the same-parity sublocus)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.odd_chord_vanishing_on_same_parity_sublocus
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the combination as a coefficient family on the same-parity pairs, and "vanishes identically
+      on the same-parity sublocus" as vanishing at every rational point of it, which is the same for a linear form
+      over the rationals; S is a subset of diagonals N.
+  - source: Lemma D.3 (the face identity)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.face_identity
+    - PionCompleteness.PaperTests.faces_empty
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.PaperTests
+    status: proved-in-another-form
+    note: >-
+      The Lean writes the mesh variable of a pair of the double sum as c(min, max), and states the vanishing on
+      the same-parity sublocus and the equality on L_S at every rational point of these loci, which is the same
+      for linear forms over the rationals. The hypothesis of (b) is that chordSides D F minus cleanChords N S has
+      at most one element. The first sentence of (c), that the empty even-angulation has the one face of all the
+      dual points, is the test PaperTests.faces_empty.
+  - source: Lemma D.4 (order count)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.dissection_face_count
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Lemma D.5 (a vanishing face)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.on_shell_dissection_has_vanishing_face
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states "vanishes identically on L_S" as vanishing at every rational point of L_S, which is the same
+      for a linear form over the rationals.
+  - source: Lemma D.6 (no residues, no poles)
+    lean:
+    - PionCompleteness.Paper.Algebra.RationalFunctions.pole_free_on_odd_chords_is_polynomial
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: The Lean states the lemma for every N, with no hypothesis that N >= 4.
+  - source: Definition D.7 (the Feynman sum of the Cayley parametrization)
+    lean:
+    - PionCompleteness.Pi.kntV
+    - PionCompleteness.Pi.kntDot
+    - PionCompleteness.Pi.kntSq
+    - PionCompleteness.Pi.kntFeynman
+    - PionCompleteness.Pi.kntCayleySum
+    - PionCompleteness.Pi.kntS
+    modules:
+    - PionCompleteness.Conventions
+    status: defined-in-another-form
+    note: >-
+      The Lean writes the definition in the variables s(i, j) of the cited paper and applies it through kntS, s(i,
+      j) = X(i, j+1). The vertex kntV takes the square as an argument; the square kntSq is the sum over a < b in
+      U of kntDot s a b = s(a, b) - s(a+1, b) - s(a, b-1) + s(a+1, b-1), which is 2 p_a.p_b by the cited eq. (30)
+      (a derived formula, not printed there); kntSq_kntS proves that through kntS it is the block sum. The propagator
+      of the chord (i, j) is -1/s(i, j-1), that is -1/X(i, j). kntV takes k where the paper writes the number of
+      legs 2k + 2, and kntFeynman passes |f|/2 - 1. kntFeynman takes the vertex and the propagator as arguments,
+      for the negative controls; kntCayleySum is it with kntV and -1/x.
+  - source: Proposition D.8 (the constant)
+    lean:
+    - PionCompleteness.Pi.kntCayleySum_eq
+    - PionCompleteness.Pi.faces_card_sub_two_sum
+    modules:
+    - PionCompleteness.Conventions
+    status: proved-in-another-form
+    note: >-
+      The Lean states the identity at every point, over every field of characteristic zero, for every F not zero,
+      with the Feynman sum applied to kntS N X. faces_card_sub_two_sum is the count of the proof; the Lean proves
+      it by counting the legs of the root sides of its encoding of the faces, not by merging the two faces of a
+      chord as the proof here does.
+  - source: Corollary D.9 (the amplitude as a Feynman sum)
+    lean:
+    - PionCompleteness.Pi.nlsm_knt_cayley
+    modules:
+    - PionCompleteness.Conventions
+    status: proved-in-another-form
+    note: >-
+      The Lean states it as rational functions, at the generic point, for every non-zero F in the field of rational
+      functions, the non-zero constants included, with the Feynman sum applied to kntS N gen.
+  - source: Remark D.10 (the transcription checked)
+    lean:
+    - PionCompleteness.Pi.kntCayleySum_four_knt
+    - PionCompleteness.Pi.kntCayleySum_six_knt
+    - PionCompleteness.Pi.kntCayleySum_eight_knt
+    - PionCompleteness.Pi.negctl_knt_vertex_constant
+    - PionCompleteness.Pi.negctl_knt_vertex_sign
+    - PionCompleteness.Pi.negctl_knt_propagator_sign
+    modules:
+    - PionCompleteness.Conventions
+    status: proved-in-another-form
+    note: >-
+      The Lean states the comparisons at N = 4 and 6 over every field and for every F in it. Where F = 0, or 2 =
+      0 in the field, they hold only through Lean's x / 0 = 0. It states N = 4 at every point, and N = 6 at every
+      point at which no odd planar variable is zero. It states N = 8 as rational functions, at the generic point,
+      for every non-zero F in the field of rational functions, the non-zero constants included. The negative controls
+      are each one inequality, with F = 1, at one rational point of the hexagon (hexPt 2 3 5 7 11 13 17 19 23).
+  - source: Lemma E.1 (descent to a smaller side)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.descent_to_smaller_side
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      |B| is the size of evenSide; B_P not linked is the negation of NoFreeSep N S (tailStart P) (tailLen N P) 1.
+  - source: Lemma E.3 (containment)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.odd_side_nesting
+    - PionCompleteness.Paper.Combinatorics.Polygons.odd_side_nesting_mirror
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      Two declarations, one per part; the Lean states B_P linked as NoFreeSep N S (tailStart P) (tailLen N P) 1,
+      A_P linked as NoFreeSep N S (headStart P) (headLen N P) 0, and meeting sides as a nonempty intersection.
+  - source: Lemma E.4 (proportional chords)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.proportional_odd_chords_share_missing_flank_set
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Lemma E.5 (grouping)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.grouping_identity
+    - PionCompleteness.Paper.ampAvoiding
+    - PionCompleteness.Paper.NLSM.Amplitude.nlsmAvoiding
+    - PionCompleteness.Paper.NLSM.Amplitude.avoidingA
+    - PionCompleteness.Paper.NLSM.Amplitude.avoidingB
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean reads a child's set of chords K^tau through relab (pkRBPull) and writes the avoiding amplitudes of
+      the two children of C as avoidingA and avoidingB; the identities are in the field of rational functions (the
+      generic point gen).
+  - source: Lemma E.6 (the cut image)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.cut_relation
+    - PionCompleteness.Paper.NLSM.Zeros.child_onLocus
+    - PionCompleteness.Paper.NLSM.Zeros.cut_image_onto
+    - PionCompleteness.Paper.NLSM.Zeros.cut_image_hyperplane
+    - PionCompleteness.Paper.NLSM.Zeros.cut_absorber_of_inner_pair
+    - PionCompleteness.Paper.NLSM.Zeros.cut_absorber_of_residue_chord
+    - PionCompleteness.Paper.HasCutAbsorber
+    - PionCompleteness.Paper.cutWeight
+    - PionCompleteness.Paper.cutVal
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states (a)-(c) for the side of k legs from the leg s and the chord with dual points s and s + k,
+      numbered from s (relab N s): the side is the legs 1 to k, the legs outside it k + 1 to N, and the child set
+      is the filter of ChildPairIn, as in child_onLocus. An odd chord and its side are the hypotheses k odd, 3 <=
+      k, k + 3 <= N and s a leg; (a) does not assume N even. The absorber (HasCutAbsorber) and the sums of (a) (cutVal)
+      are stated in that numbering, which, N being even, keeps whether two legs have one parity; the parities in
+      (a) are the child's, as here. The inclusion of (b) is child_onLocus; its equality and (c) are stated as which
+      points of the child's locus are child points of points of the cut, with (c)'s form l through cutWeight, which
+      writes the weight of the missing pairs of the leg a with the legs outside the side as that of (a, a). (d)
+      is stated for A_P and B_P as the sides from headStart and from tailStart: for any odd chord, each pair of
+      e_in(P) (innerEE) and of o_in(P) (innerOO) is the absorber of the first kind it names (cut_absorber_of_inner_pair);
+      for a residue chord, both sides have an absorber (cut_absorber_of_residue_chord).
+  - source: Example E.7 (a cut image that is a hyperplane)
+    lean:
+    - PionCompleteness.PaperTests.example_cut_image_hyperplane
+    modules:
+    - PionCompleteness.PaperTests
+    status: proved-in-another-form
+    note: >-
+      The Lean states that the set is a candidate set, that the chord (1, 4) is on shell (cleanChords) and not a
+      residue chord (poleChords), that its even-ended side, the side of five legs from the leg 4, has no absorber,
+      that its child set is a candidate set of the 6-gon, and that some point of the B-child's locus is not in the
+      cut image. The sets e_in and o_in, the pairs at the legs 5, 6 and 7, the child set, the weights and the description
+      of the image as a coordinate locus are not Lean statements; an exact check of the paper's provenance recomputes
+      them.
+  - source: Lemma E.8 (members of a child's list without the new leg)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.child_zeros_away_from_new_leg
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the kind of T as IsGSet (the list's second form, Lemma 2.22: gLegSets), T up as the image
+      of T under the child's numbering, and the side as oddSide N P or evenSide N P. For the B-child it is stated
+      for childSetB, the child set with the legs numbered from the new leg (new leg 1), which is the paper's child
+      set rotated by one leg (pkR_b_childB_rot).
+  - source: Lemma E.9 (members of a child's list with the new leg)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.child_zeros_at_new_leg
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the bijection of (a) from the other side: for T of list form (IsGSet) with the new leg, the
+      image of T without it under the child's numbering is an admissible separator, and each admissible separator
+      is that image for exactly one such T. A free separator is one whose sepIn is disjoint from the missing set,
+      and a linked side is NoFreeSep with the separator parity 0 for A_P and 1 for B_P. For the B-child it is stated
+      for childSetB, the child set with the legs numbered from the new leg (new leg 1), the paper's child set rotated
+      by one leg (pkR_b_childB_rot).
+  - source: Corollary E.10 (the child of a side that is not linked)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.unlinked_side_child_vanishes
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      A side that is not linked is not NoFreeSep, with the separator parity 0 for A_P and 1 for B_P. For the B-child
+      the Lean states it for childSetB, the child set with the legs numbered from the new leg, the paper's child
+      set rotated by one leg (pkR_b_childB_rot), and its coordinate locus.
+  - source: Corollary E.11 (a residue chord with both sides linked)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.both_sides_linked_alone_in_flank_class
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states a linked side as NoFreeSep (separator parity 0 for A_P, 1 for B_P), the flank class as hitClass
+      and an innermost chord as IsInnermostChord.
+  - source: Example E.12 (no residue chord with both sides linked)
+    lean:
+    - PionCompleteness.PaperTests.example_no_residue_chord_with_both_sides_linked
+    - PionCompleteness.PaperTests.example_four_six_residue_regime
+    modules:
+    - PionCompleteness.PaperTests
+    status: proved-in-another-form
+    note: >-
+      The Lean states the residue chords, the two free separators, that the set is a candidate set, that the chord
+      (1, 6) is an innermost chord (so its even-ended side is linked), the flank class with its top and bottom (the
+      hypotheses of the class residue), that half the number of the strip legs is 1, and that no residue chord has
+      both sides linked. The separated pairs listed, that the odd-ended side of (1, 4) is linked, that (1, 6) is
+      the only innermost chord, the children's sizes and which legs form the strip are not Lean statements; an exact
+      check of the paper's provenance recomputes them.
+  - source: Lemma F.1 (chains)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.flank_class_members_form_chains
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the lemma for every N, with no hypothesis that N >= 4 or that N is even: K is a set of odd
+      chords (a subset of oddDiagonals N), and the top and the bottom are hypotheses.
+  - source: Definition F.2 (strip regions)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.regionAmp
+    - PionCompleteness.Paper.NLSM.Amplitude.stripFactor
+    modules:
+    - PionCompleteness.Paper
+    status: defined-in-another-form
+    note: >-
+      The Lean's regionAmp is the amplitude of the region read at the parent's planar variables through its vertex
+      list pkRBOmL, numbered from the first leg of A_Q as here. Its stripFactor N P Q Q' is 1 for Q = Q' and regionAmp
+      N Q Q' / X_P otherwise; the paper writes the case Q = Q' apart.
+  - source: Lemma F.3 (collapse identity)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.collapse_identity
+    - PionCompleteness.Paper.NLSM.Amplitude.nlsm_collapse
+    - PionCompleteness.Paper.NLSM.Amplitude.childAmpA_expansion
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean's collapse_identity writes the two sums as one, over the members Q, Q' with A_Q' contained in A_Q,
+      with the strip factor stripFactor, which is 1 for Q = Q'. nlsm_collapse and childAmpA_expansion are the two
+      peelings of the proof, as identities of rational functions.
+  - source: Lemma F.4 (strip legs on the locus)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.strip_regions
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.strip_pairs_positions
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      strip_regions states (ii)'s first claim in the Lean's vertex list of the region, pkRBOmL, where l_A is leg
+      k + 1, k the size of the first strip arc, and l_B is leg n'. strip_pairs_positions is the form of the vanishing
+      pairs the library's proofs use (pkRBTP, pkRBOT).
+  - source: Lemma F.5 (mesh variables with leg values)
+    lean:
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.corner_identity
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.planarWithSides
+    - PionCompleteness.Paper.Amplitudes.Kinematics.Mesh.meshWithSides
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the identity over any field, for the planar variables X of the n-gon read at a pair of labels,
+      and writes the straddled legs as two conditions, vtx n j = vtx n (i + 2) and vtx n i = vtx n (j + 2).
+  - source: Lemma F.6 (polynomials on a linear subspace)
+    lean:
+    - PionCompleteness.Pi.pkR_div
+    - PionCompleteness.Pi.pkR_prodDiv
+    - PionCompleteness.Pi.pkR_homQuot
+    - PionCompleteness.Pi.pkR_const
+    modules:
+    - PionCompleteness.C5
+    - PionCompleteness.C7
+    status: proved-in-another-form
+    note: >-
+      The Lean states every equality on Y pointwise, at every rational point of Y, which over the rationals is the
+      same as an identity of the restrictions. pkR_prodDiv writes the hypothesis on two forms as a point of Y where
+      the first vanishes and the second does not. pkR_homQuot is (c) for D a linear form, with the scaling of F
+      assumed on the whole space; pkR_const is (c) for e = 0, with the constant the value of G at 0. (d) is not
+      a separate Lean statement: the Lean works with numerators throughout.
+  - source: Lemma F.7 (ear lemma)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.polygon_numerators_vanish_on_ear_locus
+    - PionCompleteness.Paper.NLSM.Amplitude.earLocus
+    - PionCompleteness.Paper.NLSM.Amplitude.earLocus_iff
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean writes b and i as lo and hi, the amplitude of the B-child of Q as childAmpB n Q, and the vanishing
+      as RatZeroOn of the locus earLocus, whose three clauses are (z1)-(z3); earLocus_iff equates it with the library's
+      pkRBZ5.
+  - source: Lemma F.8 (the ear locus is generic)
+    status: not-formalized
+    note: >-
+      Not formalized: the Lean keeps the hypothesis as a hypothesis of polygon_numerators_vanish_on_ear_locus, and
+      its library proofs discharge it chord by chord with a different point, pkR_b_wit4: a Gram point of four legs,
+      two in the odd-ended side of the chord and two outside it, at which the planar variable of the chord is -1.
+  - source: Lemma F.9 (only the extreme term survives)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.only_extreme_term_survives
+    modules:
+    - PionCompleteness.Paper
+    status: proved
+  - source: Definition F.10 (chords over a marked leg, the marked locus, numerators)
+    lean:
+    - PionCompleteness.Pi.pkRLam
+    - PionCompleteness.Pi.pkRIsMem
+    - PionCompleteness.Pi.pkRMchord
+    - PionCompleteness.Pi.pkRMinrect
+    - PionCompleteness.Pi.pkRCstp
+    - PionCompleteness.PionNLSM.NP
+    - PionCompleteness.Pi.pkRBNP
+    modules:
+    - PionCompleteness.C6
+    - PionCompleteness.C7
+    - PionCompleteness.Base.PionNLSM
+    status: defined-in-another-form
+    note: >-
+      The Lean's standard polygon (n, d1) is the n-gon with the marked leg r = 2 d1 + 1. A chord over r is pkRIsMem
+      of an index pair (i, j), whose chord pkRMchord is (2i + 1, 2 d1 + 2j + 2) and whose odd-ended side is 2i +
+      1, ..., 2 d1 + 2j + 1. pkRLam n d1 I is the marked locus, with xi the mesh variable of the legs 1 and n -
+      1 and xi' that of the pair pkRCstp; its third condition uses pkRMinrect, the flank overlap. NP is the numerator
+      of the amplitude, defined in the Lean as the coefficient of the delta-expansion of a polynomial numerator,
+      and equal to the amplitude times the product of the odd planar variables wherever none of them vanishes (nlsm_numerator_hom);
+      pkRBNP n K is the numerator of the amplitude avoiding K.
+  - source: Lemma F.11 (coordinates on the marked locus)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.genericity
+    - PionCompleteness.Paper.NLSM.Amplitude.genericity_span
+    - PionCompleteness.Paper.NLSM.Amplitude.genericity_w_independent
+    - PionCompleteness.Paper.NLSM.Amplitude.genericity_w_pairs
+    - PionCompleteness.Pi.pkR_XQ
+    - PionCompleteness.Pi.pkR_G2
+    - PionCompleteness.Pi.pkR_Gq
+    - PionCompleteness.Pi.pkR_xwit
+    - PionCompleteness.Pi.pkR_c9_wit
+    - PionCompleteness.Pi.pkR_GW_pair
+    - PionCompleteness.Pi.pkRW
+    - PionCompleteness.Pi.pkR_lamI_W
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.C6
+    - PionCompleteness.C7
+    - PionCompleteness.C8
+    status: proved-in-another-form
+    note: >-
+      The Lean states the non-vanishing facts of (b) one by one, each as a point: genericity and pkR_G2 for X_P
+      on the locus of the empty set at xi = 0, pkR_Gq for the locus of one chord q, pkR_xwit and pkR_c9_wit for
+      xi on the locus of the empty set (that xi does not vanish identically on the locus of a non-empty I is not
+      stated in the Lean). For (c), on W_q (pkRW), pkR_lamI_W is the inclusion of the locus of I in W_q for q in
+      I. genericity_w_independent states xi' = xi + c(alpha, beta) and that xi and xi' are linearly independent.
+      genericity_w_pairs states, for each of xi, xi' and X_Q, a point of W_q at which it is non-zero, and that no
+      two of the three are proportional, which for linear forms says that one does not vanish identically on the
+      zero set of the other. pkR_GW_pair states, for two chords Q, Q' other than q, a point of W_q at which X_Q
+      is zero and X_Q' is not. genericity_span is a consequence. pkR_XQ gives the last sentence of (a), X_Q = xi
+      for Q in I; the coordinates and the formula of (a) are not stated in the Lean, whose witnesses are explicit
+      points.
+  - source: Lemma F.12 (children on the marked locus)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.genericity_regions
+    - PionCompleteness.Pi.pkR_childA
+    - PionCompleteness.Pi.pkR_childB
+    - PionCompleteness.Pi.pkR_omega_split
+    - PionCompleteness.Pi.pkR_b_res1
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.C8
+    - PionCompleteness.C7
+    status: proved-in-another-form
+    note: >-
+      The Lean reads the B-child of q in a rotated labeling, pkR_childB: the leg n of the n-gon stays the last leg
+      and the new leg is the marked one. Here the B-child is numbered as in Definition 6.6, from the first leg of
+      B_q, so the new leg is last and the leg n is the marked leg; the two are the same polygon, rotated. The facts
+      of (i) are not separate Lean statements. That the marked legs of the children are odd is the form of the marked
+      locus pkRLam, whose marked leg is 2 d1 + 1 for its parameter d1. Which chords of I are chords of each child
+      is the set that genericity_regions, pkR_childA and pkR_childB pass to it: the members of I nested inside q
+      or around q, shifted. That the other members cross q is not stated. (iii) is pkR_omega_split read at a point
+      of the marked locus; the identity as stated here is its first step, pkR_b_res1 at the set of the one chord
+      C. That the odd chords other than C are the chords of the two children and those crossing C is not stated
+      in the Lean.
+  - source: Lemma F.13 (the numerator avoiding a chord of I)
+    lean:
+    - PionCompleteness.Pi.pkR_notq_lam
+    modules:
+    - PionCompleteness.C8
+    status: proved-in-another-form
+    note: >-
+      pkR_notq_lam takes the two one-chord ear lemmas as hypotheses hR5two and hR5one, which pkR_omega discharges
+      with pkR_b_R5one2 and pkR_b_R5one1; its numerator avoiding q is pkRBNP n at the set of the one chord pkRMchord
+      d1 q, and the marked locus is pkRLam of the standard polygon (Definition F.10).
+  - source: Lemma F.14 (value on the marked locus of the empty set)
+    lean:
+    - PionCompleteness.Pi.pkR_omega0
+    - PionCompleteness.Pi.pkR_const9
+    - PionCompleteness.Pi.pkR_psi_all
+    modules:
+    - PionCompleteness.C8
+    - PionCompleteness.C7
+    status: proved-in-another-form
+    note: >-
+      pkR_omega0 states this for the standard polygon (n, d1), with the two one-chord ear lemmas as hypotheses hR5two
+      and hR5one, which pkR_omega discharges with pkR_b_R5one2 and pkR_b_R5one1. Its two parts are pkR_const9 (the
+      constant c, with F_1 = c times the product on the locus at xi = 0) and pkR_psi_all (c is not 0).
+  - source: Theorem F.15 (value on the marked locus)
+    lean:
+    - PionCompleteness.Pi.pkR_omega
+    - PionCompleteness.Paper.nlsm_numerator_hom
+    modules:
+    - PionCompleteness.C9
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      pkR_omega states this for the standard polygon (n, d1), the n-gon with the marked leg r = 2 d1 + 1, and every
+      set I of chords over r (pkRIsMem), with NP the numerator, the identity at every rational point of the locus;
+      nlsm_numerator_hom says that NP is the amplitude times the product of the odd planar variables wherever none
+      of them vanishes. The paper-form declaration polygon_numerator_value states, for closed sets I only, the same
+      identity at the points of the locus where no odd planar variable vanishes, and adds that the product over
+      the odd chords outside I does not vanish identically on the locus at xi = 0; no proof here uses that clause.
+  - source: Theorem F.16 (the strip factor is a non-zero constant on the hyperplane)
+    lean:
+    - PionCompleteness.Paper.NLSM.Amplitude.stripFactor_sub_const_restrictsToZero
+    - PionCompleteness.Paper.NLSM.Amplitude.strip_factor_value
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean's stripFactor_sub_const_restrictsToZero states this for the members Q, Q' with A_Q' contained in
+      A_Q, Q = Q' included, where stripFactor is 1 and the constant is 1. strip_factor_value is its case Q = t,
+      Q' = b. Its proof is the library's pkR_d2_omegaQ, which reads the region as the standard polygon of pkR_omega.
+  - source: Lemma G.1 (run chords)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.occupied_run_chords
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states P' in poleChords N S, Theta in admSeps with even legs and free, and the conclusion as a Q
+      in poleChords N S with oddSide N Q = Z.
+  - source: Lemma G.2 (sub-arcs)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.separated_pairs_of_sub_arc
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean gives an arc by its first leg and its number of legs, L with fewer than N legs, and takes any set
+      Theta of numbers; sepIn only sees the legs of Theta in the arc, so the lemma is the case of a set of legs
+      of L.
+  - source: Lemma G.3 (avoidance)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.separators_avoid_linked_side
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states B' linked as NoFreeSep N S (tailStart P') (tailLen N P') 1, the admissible separator as tau
+      in admSeps N (tailStart Q) (tailLen N Q) 1, free as a sepIn disjoint from missing N S, and int B' as intArc.
+      It assumes only that N is even, not N >= 4: below four legs there is no odd chord.
+  - source: Lemma G.4 (shortening)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.shortening_spread_separator
+    - PionCompleteness.Paper.Combinatorics.Polygons.shortening_spread_separator_mirror
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      Two declarations, one per part. The Lean writes Theta' as Theta minus (Icc 1 N minus reachPiece), "X before
+      Y" by positions along A' (cycPos), y_0 and x_1 as the first and the last leg by position, and "X and Y in
+      different runs" as no SameRun for any two of their legs.
+  - source: Lemma G.5 (no spread)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.innermost_chord_has_no_spread_separator
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the innermost chord as IsInnermostChord N S P*, Theta in admSeps with even legs and free,
+      and the conclusion as not IsSpread. Its proof is the library's evenTop, whose EvenTopP states the conclusion
+      with Spread (positions), read as IsSpread by spread_of_isSpread.
+  - source: Lemma G.6 (side lemma)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.unlinked_side_has_smaller_linked_chord
+    - PionCompleteness.Paper.Combinatorics.Polygons.unlinked_side_has_smaller_linked_chord_mirror
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      Two declarations, one per part. The Lean states P' as goodTail N S, Q as poleChords N S with innerOO N S Q
+      = innerOO N S P', the free separator as the singleton of x in admSeps of the head with sepIn disjoint from
+      missing N S, a pair inside a part of A_Q by positions along A_Q, and the part of A' from x to its last leg
+      as the filter of oddSide N P' by position, with its strictness.
+  - source: Corollary G.7 (no odd singleton)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.no_odd_singleton_separator
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the innermost chord as IsInnermostChord N S P*, Q in hitClass N S P*, and the conclusion as
+      sepIn of the singleton of x meeting missing N S.
+  - source: Lemma G.8 (thin runs)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.thin_runs
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states P' as goodTail N S, Q as cleanChords N S, the runs by IsRunOf along the even-ended side from
+      its first leg, R_tau as the run R of B_Q minus tau that contains B' (not through reachPiece), and Q+ by evenSide
+      N Q+ = R, with innerOO, hitSet and strict inclusion of the odd-ended sides. The Lean's corollary assumes innerEE
+      N S Q nonempty, which the paper's hypotheses give (e_in(Q) contains e_in(P'), as B_Q contains B').
+  - source: Lemma G.9 (absorption)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.residue_chord_joins_innermost_flank_class
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the innermost chord as IsInnermostChord N S P*, Q as poleChords N S with innerOO N S Q = innerOO
+      N S P*, and the conclusion as Q in hitClass N S P*. Its proof is the library's pkCh_noB1, a strong induction
+      on the size of the even-ended side.
+  - source: Lemma G.10 (lift)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.spread_separator_passes_to_innermost_chord
+    - PionCompleteness.Pi.pkCh_lift_explicit
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.C2
+    status: proved-in-another-form
+    note: >-
+      spread_separator_passes_to_innermost_chord states the lemma, with P an on-shell chord as P in cleanChords
+      N S, Theta in admSeps with even legs and free as a sepIn disjoint from missing N S, and spread as IsSpread.
+      Its name, kept for the registry key, is that of the special case of P' with a linked even-ended side and P
+      in its flank class. It is proved from the library's pkCh_lift_explicit, the form on the main proof path (through
+      pkCh_lift), which states spread by Spread (positions), equal to IsSpread by isSpread_iff_spread.
+  - source: Lemma H.1 (block lemma)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.parity_block_witness_in_cut
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean takes Theta and A = [1, omega] with no condition on them: the rest of the setting is not needed,
+      including that N is even, that Theta is even, non-empty and inside [2, omega - 1], that omega is odd and that
+      omega + 3 <= N. It drops a < b and that the legs of K lie in 1..N (neither is needed, so its statement is
+      stronger). It states the extremality as K inside Icc 1 b and Icc a N, a pair of S_G as sepPairs N G, C_A as
+      runSepA and K separates as InST K.
+  - source: Definition H.2 (wide gap, zone set)
+    lean:
+    - PionCompleteness.Paper.HasWideGap
+    - PionCompleteness.Paper.CaseEP
+    - PionCompleteness.Paper.PX
+    - PionCompleteness.Paper.PY
+    - PionCompleteness.Paper.RemovedTau
+    - PionCompleteness.Paper.RemovedSigma
+    - PionCompleteness.Paper.zoneSet
+    - PionCompleteness.Pi.pkTZoneSet
+    - PionCompleteness.Pi.pkTZH
+    modules:
+    - PionCompleteness.Paper
+    - PionCompleteness.C1
+    status: defined-in-another-form
+    note: >-
+      HasWideGap, CaseEP, PX, PY, RemovedTau, RemovedSigma and zoneSet state the definition. The library forms that
+      the proof path uses differ: pkTZoneSet writes no leg in [1, x0] as no leg at most x0, which also counts 0,
+      so it equals zoneSet for sets of legs only (zoneSet_eq_pkT_zoneSet); pkTZH bundles the setting, tau and sigma
+      odd and no wide gap. The definition also makes claims that are not Lean statements: that the second condition
+      of (A) follows from the third, the reading of the rules as a walk, the two examples at n = 12 and that the
+      zone set is the witness in the zone case (the last is the zone lemma, Lemma H.6).
+  - source: Lemma H.3 (gap lemma)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.separator_meets_every_gap_interval
+    - PionCompleteness.Paper.Combinatorics.Polygons.removed_leg_of_tau_iff
+    - PionCompleteness.Paper.Combinatorics.Polygons.removed_leg_of_sigma_iff
+    - PionCompleteness.Paper.Combinatorics.Polygons.side_gap_gamma_sigma
+    - PionCompleteness.Paper.Combinatorics.Polygons.side_gap_gamma_tau
+    - PionCompleteness.Paper.Combinatorics.Polygons.side_gap_left_sigma
+    - PionCompleteness.Paper.Combinatorics.Polygons.side_gap_right_tau
+    - PionCompleteness.Paper.Combinatorics.Polygons.zoneSet_keeps_middle_legs
+    - PionCompleteness.Paper.Combinatorics.Polygons.zoneSet_keeps_common_legs
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      Part (a)'s wrapper states the zone case as tau, sigma odd and not CaseEP, K as Icc x0 x1 union tau or Icc
+      y0 y1 union sigma, and leaves the rest of the setting out. Parts (b) to (d) have one wrapper per claim, each
+      with the setting and the zone case: (b) as two equivalences, whose forward direction contains (b)'s first
+      sentence, the one for tau for any number t (that t is a leg of tau is not needed, so its statement is stronger);
+      (c) as four, with gamma as x1 + 1 and gamma' as y0 - 1; (d) as two, kept as membership in zoneSet.
+  - source: Lemma H.4 (convexity)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.reach_witness_is_odd_interval
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the zone case as tau, sigma odd and not CaseEP, G' as zoneSet, and the second part for every
+      proof that G' is not empty, with min' and max'; U_o is odds of tau union sigma.
+  - source: Lemma H.5 (two legs)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.reach_witness_has_two_legs
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: The Lean states the zone case as tau, sigma odd and not CaseEP, and G' as zoneSet.
+  - source: Lemma H.6 (zone lemma)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.reach_witness_pairs_in_cut
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      The Lean states the zone case as tau, sigma odd and not CaseEP, G' as zoneSet, S_G' as sepPairs N (zoneSet
+      ...) and the union of the cuts as threeSepCut.
+  - source: Corollary H.7 (three cuts, one parity)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.Polygons.three_separators_contain_t_separated_set
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      A set of at least two legs of one parity is IsSameParitySet N G (Admissible N r G: G is a subset of [1, N]
+      with at least two elements, all of parity r).
+  - source: Proposition I.1 (members of the list)
+    lean:
+    - PionCompleteness.Paper.NLSM.Zeros.Families.members_are_closed_zeros
+    modules:
+    - PionCompleteness.Paper
+    status: proved-in-another-form
+    note: >-
+      Linearly closed is stated as: for every pair t outside Z there is a rational point of the locus at which the
+      mesh variable of t is non-zero.
+  - source: Lemma I.2 (antichain)
+    lean:
+    - PionCompleteness.Paper.Combinatorics.SetSystems.separated_pair_family_is_antichain
+    modules:
+    - PionCompleteness.Paper
+    status: proved

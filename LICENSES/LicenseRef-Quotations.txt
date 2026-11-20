@@ -1,0 +1,7 @@
+Quotations from other works
+
+Some data files of a paper folder (REUSE.toml names them) quote other works, such as papers and Wikipedia articles.
+Each quotation names its source next to it. The quotations are not licensed by this repository: they remain under
+their sources' terms, and are reproduced here to record where a word, letter or symbol was found. Reuse a quotation
+only as its source's terms, or an exception for quotation in your law, allow.
+The rest of each such file is licensed under CC BY 4.0 (LICENSES/CC-BY-4.0.txt).

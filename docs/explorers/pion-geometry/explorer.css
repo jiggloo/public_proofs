@@ -59,6 +59,16 @@ body.help-open .help { display: block; }
 .slider label { font-size: 16px; }
 .slider input { width: 100%; accent-color: var(--ca); height: 30px; }
 .slider output { font-variant-numeric: tabular-nums; text-align: right; }
+.slider.soft-on label, .slider.soft-on output { color: var(--pr); font-weight: 600; }
+.soft-h { margin-top: 14px; }
+.soft { display: grid; grid-template-columns: 3.2em minmax(0, 1fr) 3em; align-items: center; gap: 8px; margin: 4px 0; }
+.soft select { grid-column: 2 / 4; }
+.soft input { width: 100%; accent-color: var(--pr); height: 30px; }
+.soft output { font-variant-numeric: tabular-nums; text-align: right; }
+#soft { margin-bottom: 4px; }
+#softverdict { margin-bottom: 14px; }
+#softverdict:empty { display: none; }
+#soft table { margin: 4px 0 8px; }
 .note { font-size: 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 10px; margin: 12px 0; min-height: 3em; }
 details { border-top: 1px solid var(--rule); padding: 8px 0; }
 summary { cursor: pointer; font-weight: 600; min-height: 30px; }

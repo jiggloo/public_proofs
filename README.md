@@ -4,6 +4,9 @@
   (Theorem Π): the paper, as a draft PDF, and the Lean 4 / Mathlib project that proves its main theorem. See
   [`pion_completeness/README.md`](pion_completeness/README.md). **Status: a draft, not a release, and not peer
   reviewed.**
+- [`selected_results.pdf`](selected_results.pdf): *Special kinematics for scattering amplitudes: a summary of results for
+  discussion*. A summary of results, not a proof, so it has no folder of its own here. **Status: a draft, not a release,
+  and not peer reviewed.** Its Section 10 says how AI was used and what was checked.
 - [`docs/`](docs/): the website, interactive pages on the mathematics of the papers, served by GitHub Pages from this
   folder. Each page is static and works offline from a clone: open [`docs/index.html`](docs/index.html).
 

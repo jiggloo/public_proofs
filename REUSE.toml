@@ -25,6 +25,12 @@ path = "*/paper/**"
 SPDX-FileCopyrightText = "2026 Henru Wang"
 SPDX-License-Identifier = "CC-BY-4.0"
 
+# The summary of results: a paper's PDF at the root, with no paper folder.
+[[annotations]]
+path = "selected_results.pdf"
+SPDX-FileCopyrightText = "2026 Henru Wang"
+SPDX-License-Identifier = "CC-BY-4.0"
+
 # Code in the paper folder, at any depth: scripts and build files.
 [[annotations]]
 path = [

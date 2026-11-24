@@ -181,9 +181,14 @@
 
   /* ---------- state ---------- */
   const EXAMPLES = DATA.examples;
-  const st = { c: Object.assign({}, EXAMPLES[0].c), pt: null, note: EXAMPLES[0].note };
+  const st = { c: Object.assign({}, EXAMPLES[0].c), pt: null, note: EXAMPLES[0].note, soft: { leg: '', tau: 1 }, softPt: null };
+  /* the soft limit: a leg whose three mesh variables are all sliders, multiplied by tau */
+  const ROWS = { 1: ['13', '14', '15'], 3: ['13', '35', '36'], 5: ['15', '25', '35'] };
+  const scaled = (c, leg, t) => { const e = Object.assign({}, c); if (leg) ROWS[leg].forEach(k => { e[k] = +c[k] * t; }); return e; };
+  /* the mesh variables in force: the sliders, with the soft leg's row times tau */
+  const eff = () => scaled(st.c, st.soft.leg, st.soft.tau);
   function geometry() {
-    const f = chart(st.c);
+    const f = chart(eff());
     const H = ['X13', 'X35', 'X15', 'X14', 'X24', 'X25', 'X26', 'X36', 'X46'].map(k => ({ g: f[k].slice(0, 3), h: f[k][3], lab: k, kind: ODD.includes(k.slice(1)) ? 'odd' : 'even' }));
     const P = polyH(H), sl = pionSlice(f), sh = shadowOf(P);
     const has = sl.poly.length > 2 && sl.area > 1e-9;
@@ -299,7 +304,7 @@
     return { trphi3: zp, pion: zn };
   }
   function zeros(f) {
-    const key = SLIDERS.filter(k => +st.c[k] === 0).join(','), exact = DATA.zeros[key], num = numericZeros(f);
+    const e = eff(), key = SLIDERS.filter(k => +e[k] === 0).join(','), exact = DATA.zeros[key], num = numericZeros(f);
     return { key, exact, orders: DATA.orders[key], agree: exact.trphi3 === num.trphi3 && exact.pion === num.pion };
   }
 
@@ -337,16 +342,59 @@
       rows += `<tr><th>pions</th><td class="num">${a.pion.toPrecision(4)}</td><td class="small">the same all along the δ-line</td></tr>`;
       $('values').innerHTML = rows;
     }
+    /* the table is not a live region; only its verdict is, and both change only when their text does */
+    const soft = softReadout();
+    if (soft.table !== lastSoft.table) { $('soft').innerHTML = soft.table; lastSoft.table = soft.table; }
+    if (soft.verdict !== lastSoft.verdict) { $('softverdict').innerHTML = soft.verdict; lastSoft.verdict = soft.verdict; }
     const outside = has && sliceOutsideShadow(sl, sh);
     $('geom').textContent = `Tr(φ³): ${!P ? 'empty' : flat ? 'flat, lower-dimensional' : `a polytope with ${P.V.length} vertices and ${P.F.length} facets`}. Pions: ${has ? `a slice with ${sl.poly.length} vertices, area ${sl.area.toFixed(3)}${outside ? ', partly outside the shadow' : ''}` : 'the slice collapses, no area'}.`;
+  }
+  /* the soft limit at a fixed point: the leg's row times tau from the sliders' values, the point held fixed in the
+     chart, so the approach is a straight line that soon leaves the collapsing slice, as a generic soft approach does
+     (one that stays inside the cone ends on the pole X_{s-1,s+2}, where the amplitude stays finite) */
+  const TAUS = [1, 0.1, 0.01, 0.001, 0.0001];
+  const lastSoft = { table: '', verdict: '' };
+  function softReadout() {
+    const leg = st.soft.leg;
+    if (!leg) return { table: '', verdict: '' };
+    if (!st.softPt) st.softPt = genericPoint();
+    const row = ROWS[leg].map(k => `<var>c</var><sub>${k}</sub>`).join(', ');
+    let h = `<h2>Soft limit of leg ${leg}</h2><p class="small">Leg ${leg} goes soft: ${row} times <var>τ</var>. The table keeps the chosen point fixed and runs <var>τ</var> down from 1; it does not follow the <var>τ</var> slider:</p>`;
+    if (!st.softPt) return { table: h, verdict: 'At these values the slice has no area, so there is no point to start from: choose an example with a slice, such as “Approaching the soft limit of leg 1”.' };
+    const p = pl3(st.softPt[0], st.softPt[1]);
+    /* where the line ends (tau = 0): on an odd wall the amplitude has a pole there and stays finite */
+    const f0 = chart(scaled(st.c, leg, 0)), ends = ODD.filter(k => Math.abs(val(f0, 'X' + k, p)) < 1e-9);
+    const r = TAUS.map(t => { const a = amps(chart(scaled(st.c, leg, t)), p).pion; return { t, a, q: a / t }; });
+    h += `<div class="table-wrap"><table><tr><th><var>τ</var></th><th class="num">pion amplitude</th><th class="num">÷ <var>τ</var></th></tr>` +
+      r.map(x => `<tr><td>${x.t}</td><td class="num">${x.a.toPrecision(4)}</td><td class="num">${x.q.toPrecision(4)}</td></tr>`).join('') + '</table></div>';
+    /* the order measured over the last tenfold step: the amplitude falls like tau^k */
+    const [u, w] = r.slice(-2).map(x => Math.abs(x.a)), k = Math.log10(u / w);
+    const order = Number.isFinite(k) ? `From <var>τ</var> = 0.001 to 0.0001 the amplitude falls like <var>τ</var><sup><var>k</var></sup> with <var>k</var> ≈ ${k.toFixed(2)}` : '';
+    const verdict = ends.length
+      ? `The soft approach from this point ends (at <var>τ</var> = 0) on the pole ${ends.map(e => `<var>X</var><sub>${e}</sub>`).join(', ')} = 0, where the amplitude stays finite: choose another point by clicking inside the slice.`
+      : Math.abs(k - 1) < 0.1
+        ? `${order}: <b class="ok">a zero of order 1, the Adler zero.</b>`
+        : `${order ? order + ', not yet 1: ' : ''}the soft approach from this point passes near a pole; choose another point by clicking inside the slice.`;
+    return { table: h, verdict };
   }
   function redraw() { drawPlot(); drawPoly3(); drawPlane(); readouts(); }
 
   /* ---------- inputs ---------- */
-  $('sliders').innerHTML = SLIDERS.map(k => `<div class="slider"><label for="s${k}"><var>c</var><sub>${k}</sub></label><input id="s${k}" type="range" min="0" max="2.5" step="0.05"><output id="o${k}" for="s${k}"></output></div>`).join('');
-  function setSliders() { SLIDERS.forEach(k => { $('s' + k).value = st.c[k]; $('o' + k).textContent = (+st.c[k]).toFixed(2); }); }
+  $('sliders').innerHTML = SLIDERS.map(k => `<div class="slider" id="r${k}"><label for="s${k}" id="l${k}"><var>c</var><sub>${k}</sub></label><input id="s${k}" type="range" min="0" max="2.5" step="0.05"><output id="o${k}" for="s${k}"></output></div>`).join('');
+  /* the soft leg's rows read τc_ij, in the tau slider's colour, and their outputs show τc_ij: the value in force */
+  function setSliders() {
+    const e = eff(), row = st.soft.leg ? ROWS[st.soft.leg] : [];
+    SLIDERS.forEach(k => {
+      const on = row.includes(k);
+      $('s' + k).value = st.c[k]; $('o' + k).textContent = (+e[k]).toFixed(2);
+      $('r' + k).classList.toggle('soft-on', on);
+      $('l' + k).innerHTML = `${on ? '<var>τ</var>' : ''}<var>c</var><sub>${k}</sub>`;
+    });
+  }
   SLIDERS.forEach(k => $('s' + k).addEventListener('input', e => {
-    st.c[k] = +e.target.value; $('o' + k).textContent = st.c[k].toFixed(2);
+    st.c[k] = +e.target.value; $('o' + k).textContent = (+eff()[k]).toFixed(2);
+    /* the soft table's point stays in the slice (at tau = 1) as the sliders move, and is the point drawn */
+    if (st.soft.leg && (!st.softPt || !inSlice(chart(st.c), st.softPt))) { st.pt = genericPoint(); st.softPt = st.pt; }
     st.note = 'Your own values. The six mesh variables shape the associahedron; for the pions they only choose the slice.';
     document.querySelectorAll('#examples button').forEach(b => b.setAttribute('aria-pressed', 'false'));
     redraw();
@@ -356,8 +404,30 @@
     const b = e.target.closest('button');
     if (!b) return;
     const x = EXAMPLES[+b.dataset.i];
-    st.c = Object.assign({}, x.c); st.note = x.note; st.pt = null;
+    st.c = Object.assign({}, x.c); st.note = x.note; st.pt = null; st.softPt = null;
+    st.soft.tau = 1; $('tau').value = 1; $('otau').textContent = '1.00';
+    if (st.soft.leg) { st.pt = genericPoint(); st.softPt = st.pt; } /* off the symmetric centroid, as for a new leg */
     document.querySelectorAll('#examples button').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    setSliders(); redraw();
+  });
+  /* the soft limit's inputs: a leg (or none) and tau; a new leg starts at tau = 1, at the chosen point */
+  /* a point of the slice off its symmetry lines: the centroid of a symmetric slice (All equal) can sit on a line whose
+     soft approach ends exactly on an odd wall, so a new soft leg starts from a fixed, lopsided blend instead */
+  function genericPoint() {
+    const sl = pionSlice(chart(st.c)), v = sl.poly, n = v.length;
+    if (n < 3 || sl.area <= 1e-9) return null; /* no slice, no point: the readout then points to an example with one */
+    const cen = [sum(v.map(q => q[0])) / n, sum(v.map(q => q[1])) / n], a = v[0], b = v[1];
+    const q = [0.4 * cen[0] + 0.45 * a[0] + 0.15 * b[0], 0.4 * cen[1] + 0.45 * a[1] + 0.15 * b[1]];
+    return inSlice(chart(st.c), q) ? q : cen;
+  }
+  $('softleg').addEventListener('change', e => {
+    st.soft = { leg: e.target.value, tau: 1 };
+    if (st.soft.leg) { st.pt = genericPoint(); st.softPt = st.pt; }
+    $('tau').disabled = !st.soft.leg; $('tau').value = 1; $('otau').textContent = '1.00';
+    setSliders(); redraw();
+  });
+  $('tau').addEventListener('input', e => {
+    st.soft.tau = +e.target.value; $('otau').textContent = st.soft.tau.toFixed(2);
     setSliders(); redraw();
   });
 
@@ -387,7 +457,7 @@
     const choose = e => {
       if (!pick) return;
       const r = box.getBoundingClientRect(), q = [(e.clientX - r.left - pick.ox) / pick.sc, (pick.oy - (e.clientY - r.top)) / pick.sc];
-      if (inSlice(chart(st.c), q)) { st.pt = q; redraw(); }
+      if (inSlice(chart(eff()), q)) { st.pt = q; st.softPt = q; redraw(); }
     };
     box.addEventListener('pointerdown', e => { down = true; box.setPointerCapture(e.pointerId); choose(e); });
     box.addEventListener('pointermove', e => { if (down) choose(e); });
@@ -397,10 +467,10 @@
       const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
       if (!d || !st.pt) return;
       e.preventDefault();
-      const sl = pionSlice(chart(st.c)), xs = sl.poly.map(q => q[0]), ys = sl.poly.map(q => q[1]);
+      const sl = pionSlice(chart(eff())), xs = sl.poly.map(q => q[0]), ys = sl.poly.map(q => q[1]);
       const step = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 20;
       const q = [st.pt[0] + d[0] * step, st.pt[1] + d[1] * step];
-      if (inSlice(chart(st.c), q)) { st.pt = q; redraw(); }
+      if (inSlice(chart(eff()), q)) { st.pt = q; st.softPt = q; redraw(); }
     });
   }
   /* colour themes: the CSS swaps the colours; the text names whichever the theme shows */
@@ -426,6 +496,8 @@
   const spin = () => { if (view.spin && visible && !document.hidden) { view.yaw += 0.004; drawPoly3(); } requestAnimationFrame(spin); };
   requestAnimationFrame(spin);
 
+  /* a browser may restore the soft controls on reload; the page starts with none, as its state does */
+  $('softleg').value = ''; $('tau').value = 1; $('tau').disabled = true; $('otau').textContent = '1.00';
   setSliders();
   redraw();
 })();
